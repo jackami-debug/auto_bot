@@ -131,7 +131,7 @@ def get_image_path(image_name):
             return temp_path
     return None
 
-def find_only(image_name, custom_confidence=None):
+def find_only(image_name, custom_confidence=None, region=None):
     """
     [V13] 使用多層次信心度來尋找圖片，以應對 HDMI Dummy 造成的渲染差異。
     [V14] 修正了 Unicode 路徑問題，確保圖片能被正確讀取。
@@ -152,7 +152,12 @@ def find_only(image_name, custom_confidence=None):
     # 針對每個信心度嘗試全螢幕搜尋
     for conf in unique_confidences:
         try:
-            location = pyautogui.locateCenterOnScreen(needle_image, confidence=conf, grayscale=True)
+            if region:
+                location = pyautogui.locateCenterOnScreen(
+                    needle_image, confidence=conf, grayscale=True, region=region
+                )
+            else:
+                location = pyautogui.locateCenterOnScreen(needle_image, confidence=conf, grayscale=True)
             if location:
                 return location
                 
@@ -164,68 +169,145 @@ def find_only(image_name, custom_confidence=None):
             
     return None
 
-def find_and_click(image_name, custom_confidence=None, clicks=1):
-    location = find_only(image_name, custom_confidence)
+def find_and_click(image_name, custom_confidence=None, clicks=1, region=None):
+    location = find_only(image_name, custom_confidence, region=region)
     if location:
         print(f"🎯 發現: {image_name} @ {location}")
         human_click(location, clicks=clicks)
         return True
     return False
 
+def get_center_region(width_ratio=0.7, height_ratio=0.7):
+    """回傳螢幕中央區域，降低全螢幕誤判。"""
+    screen_width, screen_height = pyautogui.size()
+    region_width = int(screen_width * width_ratio)
+    region_height = int(screen_height * height_ratio)
+    left = (screen_width - region_width) // 2
+    top = (screen_height - region_height) // 2
+    return (left, top, region_width, region_height)
+
+def wait_seconds_with_abort(seconds, title):
+    """可中止的等待。"""
+    print(f"\n⏳ {title} ({seconds} 秒)...")
+    for remaining in range(seconds, 0, -1):
+        if keyboard.is_pressed('q'):
+            print("🛑 使用者中止。")
+            return False
+        if remaining % 5 == 0 or remaining <= 5:
+            print(f"   -> 倒數 {remaining} 秒")
+        time.sleep(1)
+    return True
+
+def click_screen_center():
+    """點擊螢幕中央，作為無法辨識按鈕時的備援。"""
+    screen_width, screen_height = pyautogui.size()
+    human_click((screen_width // 2, screen_height // 2))
+
 def handle_dialog_windows():
     """
     全螢幕處理可能阻擋流程的詢問視窗。
     """
-    if find_and_click("warn.png", custom_confidence=0.75):
+    dialog_region = get_center_region(0.72, 0.72)
+
+    # yes.png 容易誤判，僅在已偵測到 warn 視窗後才會點
+    if find_and_click("warn.png", custom_confidence=0.8, region=dialog_region):
         time.sleep(0.5)
-        if find_and_click("yes.png", custom_confidence=0.75):
+        if find_and_click("yes.png", custom_confidence=0.88, region=dialog_region):
             return True
-        if find_and_click("confirm.png", custom_confidence=0.75):
+        if find_and_click("confirm.png", custom_confidence=0.88, region=dialog_region):
             return True
-        if find_and_click("ok.png", custom_confidence=0.75):
+        if find_and_click("ok.png", custom_confidence=0.9, region=dialog_region):
             return True
         return True
 
     dialog_buttons = [
-        ("yes.png", 0.75, 1),
-        ("confirm.png", 0.75, 1),
-        ("ok.png", 0.75, 1),
-        ("OK.png", 0.75, 1),
-        ("accept_all.png", 0.75, 1),
+        ("confirm.png", 0.88, 1),
+        ("ok.png", 0.9, 1),
+        ("OK.png", 0.9, 1),
+        ("accept_all.png", 0.88, 1),
     ]
 
     for image_name, conf, clicks in dialog_buttons:
-        if find_and_click(image_name, custom_confidence=conf, clicks=clicks):
+        if find_and_click(image_name, custom_confidence=conf, clicks=clicks, region=dialog_region):
             return True
 
     return False
 
-def wait_for_press_to_start():
+def wait_for_press_to_start(max_wait_seconds=120, center_click_interval=3.0):
     """
-    不做視窗定位，直接全螢幕持續偵測 press_to_start.png，直到點擊成功。
+    不做視窗定位，直接全螢幕偵測 press_to_start.png。
+    若長時間找不到，會定期點擊螢幕中央嘗試推進流程。
     """
-    print("\n⏳ 全螢幕持續偵測 'press_to_start.png'...")
-    idle_loops = 0
+    print("\n⏳ 全螢幕持續偵測 'press_to_start.png'（含中央點擊備援）...")
+    start_time = time.time()
+    last_center_click_time = 0.0
+    last_progress_log_time = 0.0
 
-    while True:
+    while time.time() - start_time < max_wait_seconds:
         if keyboard.is_pressed('q'):
             print("🛑 使用者中止。")
             return False
+
+        # 若已經看到疑似進入大廳/戰鬥的元素，視為已進入遊戲
+        if find_only("settings_gear.png", custom_confidence=0.8) or \
+           find_only("dispatch.png", custom_confidence=0.8) or \
+           find_only("start.png", custom_confidence=0.8):
+            print("✅ 偵測到遊戲內介面元素，視為已成功進入。")
+            return True
 
         if find_and_click("press_to_start.png", custom_confidence=0.8):
             print("✅ 已點擊 'Press to Start'。")
             return True
 
         if handle_dialog_windows():
-            idle_loops = 0
             time.sleep(0.8)
             continue
 
-        idle_loops += 1
-        if idle_loops % 20 == 0:
-            print("   -> 尚未找到 'Press to Start'，持續偵測中...")
+        now = time.time()
+        if now - last_center_click_time >= center_click_interval:
+            print("   👉 未找到 'Press to Start'，點擊螢幕中央嘗試喚醒流程...")
+            click_screen_center()
+            last_center_click_time = now
+            time.sleep(1.2)
+            continue
+
+        if now - last_progress_log_time >= 5:
+            remaining = int(max_wait_seconds - (now - start_time))
+            print(f"   -> 尚未找到 'Press to Start'，持續偵測中... (剩餘 {remaining} 秒)")
+            last_progress_log_time = now
             wake_up_gpu()
-        time.sleep(0.6)
+
+        time.sleep(0.4)
+
+    print("❌ 等待 'Press to Start' 超時。")
+    save_debug_screenshot("press_to_start_timeout")
+    return False
+
+def wait_for_image(image_name, timeout=15.0, custom_confidence=None):
+    """
+    動態等待直到畫面出現指定的圖片。
+    :param image_name: 要等待的圖片名稱
+    :param timeout: 最多等幾秒 (預設 15 秒)
+    :param custom_confidence: 辨識信心度
+    :return: 找到回傳 True，超時回傳 False
+    """
+    print(f"   ⏳ 等待畫面: {image_name} (最多等 {timeout} 秒)...")
+    start_time = time.time()
+    
+    while time.time() - start_time < timeout:
+        # 呼叫我們之前寫好的 find_only 函式來找圖 (只看不點)
+        location = find_only(image_name, custom_confidence)
+        
+        if location:
+            elapsed = time.time() - start_time
+            print(f"   ✅ 畫面出現了！(耗時 {elapsed:.1f} 秒)")
+            return True
+            
+        # 每 0.5 秒檢查一次，避免 CPU 跑到 100%
+        time.sleep(0.5)
+        
+    print(f"   ❌ 等待超時 ({timeout} 秒)，沒看到 {image_name}！")
+    return False
 
 def launch_game_from_steam():
     """
@@ -256,8 +338,7 @@ def launch_game_from_steam():
     
     # 2. 等待 Steam 主視窗載入
     print("   -> 等待 Steam 啟動... (10秒)")
-    time.sleep(10)
-
+    wait_for_image("who.png", timeout=30.0)
     # 3. 選擇帳號並登入 (懸停顯示-點擊機制)
     print("   -> 開始尋找 Steam 帳號...")
     
@@ -368,10 +449,15 @@ def main():
         return # 或 sys.exit()
 
     # 啟動後，直接持續全螢幕找 Press to Start，直到成功
+    if not wait_seconds_with_abort(30, "等待遊戲主程式啟動完成"):
+        return
+
     if not wait_for_press_to_start():
         print("🛑 未能完成 'Press to Start'，程式結束。")
         return
 
+"""
+    #刷關迴圈
     while True:
         if keyboard.is_pressed('q'):
             print("🛑 程式停止。")
@@ -424,6 +510,6 @@ def main():
                 print("❓ 連續100次無動作，保存截圖後持續監控...")
                 save_debug_screenshot("lost_track_long")
                 not_found_streak = 0 # 重置計數器
-
+"""
 if __name__ == "__main__":
     main()
