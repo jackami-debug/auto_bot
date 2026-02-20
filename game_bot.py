@@ -110,15 +110,35 @@ def read_image_safe(path):
 
 def human_click(location, clicks=1):
     if not location: return
-    x, y = location
-    offset_x = x + random.randint(-8, 8)
-    offset_y = y + random.randint(-5, 5)
-    pyautogui.moveTo(offset_x, offset_y, duration=random.uniform(0.1, 0.2))
-    for i in range(clicks):
-        pyautogui.mouseDown()
-        time.sleep(random.uniform(0.08, 0.15)) 
-        pyautogui.mouseUp()
-        if clicks > 1: time.sleep(random.uniform(0.05, 0.1))
+    
+    original_failsafe_state = pyautogui.FAILSAFE
+    try:
+        # 暫時禁用防呆，以允許點擊靠近角落的目標
+        pyautogui.FAILSAFE = False
+        
+        x, y = location
+        offset_x = x + random.randint(-8, 8)
+        offset_y = y + random.randint(-5, 5)
+        
+        # 確保座標不會超出螢幕範圍 (額外保護)
+        screen_width, screen_height = pyautogui.size()
+        offset_x = min(screen_width - 1, max(0, offset_x))
+        offset_y = min(screen_height - 1, max(0, offset_y))
+
+        pyautogui.moveTo(offset_x, offset_y, duration=random.uniform(0.1, 0.2))
+        for i in range(clicks):
+            pyautogui.mouseDown()
+            time.sleep(random.uniform(0.08, 0.15)) 
+            pyautogui.mouseUp()
+            if clicks > 1: time.sleep(random.uniform(0.05, 0.1))
+    
+    except Exception as e:
+        # 在發生錯誤時印出資訊
+        print(f"   -> ⚠️ human_click 發生錯誤: {e}")
+    
+    finally:
+        # 無論如何都恢復防呆功能
+        pyautogui.FAILSAFE = original_failsafe_state
 
 def detect_game_window():
     """
@@ -207,6 +227,84 @@ def find_and_click(image_name, custom_confidence=None, clicks=1):
         return True
     return False
 
+def launch_game_from_steam():
+    """
+    從 Steam 啟動遊戲 "Rise of Eros" 的完整流程。
+    假設已有 find_and_click() 函式可供使用。
+    """
+    print("\n🚀 === 開始從 Steam 啟動遊戲 ===")
+
+    # 0. 點擊螢幕最右下角 (顯示桌面)
+    print("   -> 正在點擊右下角以顯示桌面...")
+    try:
+        # 暫時禁用防呆機制，以便點擊螢幕角落
+        pyautogui.FAILSAFE = False
+        screen_width, screen_height = pyautogui.size()
+        pyautogui.click(screen_width - 1, screen_height - 1)
+        time.sleep(1) # 等待桌面顯示動畫
+    except Exception as e:
+        print(f"   -> ⚠️ 點擊右下角時發生錯誤: {e}")
+    finally:
+        # 無論如何，操作結束後都恢復防呆機制
+        pyautogui.FAILSAFE = True
+
+    # 1. 點擊 Steam 圖示 (改為雙擊)
+    print("   -> 正在尋找並雙擊 Steam 圖示...")
+    if not find_and_click("steam_icon.png", custom_confidence=0.8, clicks=2):
+        print("   -> ❌ 錯誤：在桌面或工作列上找不到 'steam_icon.png'。")
+        return False
+    
+    # 2. 等待 Steam 主視窗載入
+    print("   -> 等待 Steam 啟動... (10秒)")
+    time.sleep(10)
+
+    # 3. 選擇帳號並登入
+    print("   -> 正在尋找指定帳號 (loopcraft001 或 e08s93)...")
+    account_clicked = find_and_click("loopcraft001.png", custom_confidence=0.85)
+    if not account_clicked:
+        account_clicked = find_and_click("e08s93.png", custom_confidence=0.85)
+
+    if account_clicked:
+        print("   -> 偵測到帳號，已點擊。")
+    else:
+        # 如果找不到特定帳號，可能是因為已自動登入，所以只顯示提示訊息而不是中止
+        print("   -> ℹ️ 未找到特定帳號截圖，假設 Steam 會自動登入。")
+
+    # 4. 等待登入與主介面載入
+    print("   -> 等待 Steam 登入與載入主介面... (20秒)")
+    time.sleep(20)
+
+    # 5. 關閉彈出廣告
+    print("   -> 正在嘗試關閉 Steam 彈出廣告...")
+    if find_and_click("steam_close_ad.png", custom_confidence=0.85):
+        print("   -> 已關閉廣告視窗。")
+        time.sleep(2) # 等待視窗關閉動畫
+    else:
+        print("   -> 未發現廣告視窗。")
+
+    # 6. 點擊「收藏庫」
+    print("   -> 正在點擊「收藏庫」...")
+    if not find_and_click("steam_library.png", custom_confidence=0.8):
+        print("   -> ❌ 錯誤：找不到「收藏庫」按鈕 'steam_library.png'。")
+        return False
+    time.sleep(3)
+
+    # 7. 在左側列表中選擇遊戲
+    print("   -> 正在從收藏庫選擇 'Rise of Eros'...")
+    if not find_and_click("rise_of_eros_list.png", custom_confidence=0.9):
+         print("   -> ❌ 錯誤：在收藏庫中找不到遊戲 'rise_of_eros_list.png'。")
+         return False
+    time.sleep(3)
+
+    # 8. 點擊「開始遊戲」
+    print("   -> 正在點擊「開始遊戲」按鈕...")
+    if not find_and_click("steam_play_btn.png", custom_confidence=0.8):
+        print("   -> ❌ 錯誤：找不到「開始遊戲」按鈕 'steam_play_btn.png'。")
+        return False
+    
+    print("✅ === 遊戲啟動指令已發送！ ===")
+    return True
+
 # --- 5. 主程式 ---
 
 def main():
@@ -218,6 +316,12 @@ def main():
     
     last_log_time = time.time()
     not_found_streak = 0
+    
+     # 首先啟動遊戲
+    if not launch_game_from_steam():
+        print("🛑 遊戲啟動失敗，程式結束。")
+        return # 或 sys.exit()
+
 
     while True:
         if keyboard.is_pressed('q'):
