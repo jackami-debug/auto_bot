@@ -1,0 +1,24 @@
+Python 暫存檔
+
+pycache/
+*.py[cod]
+*$py.class
+
+虛擬環境 (如果你未來有使用的話)
+
+venv/
+env/
+.env
+
+腳本產生的除錯圖片 (避免塞爆 GitHub)
+
+debug_screenshots/
+
+VS Code 設定檔
+
+.vscode/
+
+系統檔案
+
+.DS_Store
+Thumbs.db
