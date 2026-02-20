@@ -40,24 +40,13 @@ except ImportError as e:
     sys.exit(1)
 
 # --- 3. 路徑與全域變數 ---
-def get_valid_image_folder():
-    user_home = os.path.expanduser("~")
-    potential_paths = [
-        r"C:\Users\e08s9\OneDrive\桌面\gogo",
-        os.path.join(user_home, "OneDrive", "Desktop", "gogo"),
-        os.path.join(user_home, "OneDrive", "桌面", "gogo"),
-        os.path.join(user_home, "Desktop", "gogo"),
-        os.path.join(user_home, "桌面", "gogo"),
-        os.path.dirname(os.path.abspath(__file__))
-    ]
-    for path in potential_paths:
-        if os.path.exists(path) and os.path.isdir(path):
-            return path
-    return None
+# 修正：將圖片資料夾路徑直接設定為腳本所在的目錄，以實現可攜性
+# 這移除了所有硬編碼的路徑，讓程式更容易轉移
+IMAGE_FOLDER = os.path.dirname(os.path.abspath(__file__))
 
-IMAGE_FOLDER = get_valid_image_folder()
-if not IMAGE_FOLDER:
-    input("❌ 錯誤：找不到圖片資料夾，按 Enter 退出...")
+# 檢查該路徑是否存在（雖然它應該永遠存在）
+if not os.path.isdir(IMAGE_FOLDER):
+    input(f"❌ 錯誤：腳本目錄 '{IMAGE_FOLDER}' 不存在或不是一個資料夾，按 Enter 退出...")
     sys.exit(1)
 
 GAME_REGION = None 
@@ -222,8 +211,8 @@ def find_and_click(image_name, custom_confidence=None, clicks=1):
 
 def main():
     global GAME_REGION
-    print("\n=== OpenClaw V12 (Active Search) ===")
-    print("特色：持續視窗搜尋、解析度監控、防休眠")
+    print("\n=== OpenClaw V15 (Portable Paths) ===")
+    print("特色：可攜式路徑、持續視窗搜尋、解析度監控、防休眠")
     print(f"初始解析度: {LAST_RESOLUTION}")
     detect_game_window()
     
