@@ -49,9 +49,6 @@ if not os.path.isdir(IMAGE_FOLDER):
     input(f"❌ 錯誤：腳本目錄 '{IMAGE_FOLDER}' 不存在或不是一個資料夾，按 Enter 退出...")
     sys.exit(1)
 
-GAME_REGION = None 
-LAST_RESOLUTION = pyautogui.size() # 記錄目前的解析度
-
 # --- 4. 核心功能 ---
 
 def save_debug_screenshot(reason):
@@ -81,22 +78,6 @@ def wake_up_gpu():
     # 2. 按一下 Shift (通常不會影響遊戲，但能喚醒系統)
     pyautogui.press('shift')
     # print("   ⚡ 嘗試喚醒 GPU 渲染...")
-
-def check_resolution_change():
-    """
-    [V11 新功能]
-    監控螢幕解析度是否因為 HDMI Dummy 切換而改變。
-    如果改變了，強制重置遊戲視窗鎖定。
-    """
-    global LAST_RESOLUTION, GAME_REGION
-    current_res = pyautogui.size()
-    if current_res != LAST_RESOLUTION:
-        print(f"\n⚠️ 警告：偵測到螢幕解析度改變！")
-        print(f"   舊: {LAST_RESOLUTION} -> 新: {current_res}")
-        print("   正在重置視窗鎖定，請稍候...")
-        LAST_RESOLUTION = current_res
-        GAME_REGION = None # 強制重置區域
-        detect_game_window() # 重新抓視窗
 
 def read_image_safe(path):
     try:
@@ -140,35 +121,6 @@ def human_click(location, clicks=1):
         # 無論如何都恢復防呆功能
         pyautogui.FAILSAFE = original_failsafe_state
 
-def detect_game_window():
-    """
-    [V13] 使用多層次信心度偵測遊戲視窗，以適應 HDMI Dummy。
-    """
-    global GAME_REGION
-    GAME_REGION = None # 每次偵測都先重置
-    window_img_path = os.path.join(IMAGE_FOLDER, "game_window.png")
-
-    try:
-        img_array = np.fromfile(window_img_path, dtype=np.uint8)
-        window_needle = cv2.imdecode(img_array, cv2.IMREAD_COLOR)
-        if window_needle is None: return
-    except Exception:
-        return # Cannot read image, nothing to do
-
-    # 從高到低嘗試不同的信心度
-    confidence_levels = [0.8, 0.7, 0.65, 0.6]
-    for conf in confidence_levels:
-        try:
-            box = pyautogui.locateOnScreen(window_needle, confidence=conf, grayscale=True)
-            if box:
-                GAME_REGION = (int(box.left), int(box.top), 1024, 780)
-                print(f"✅ 視窗成功鎖定 (信心度: {conf}): {GAME_REGION}")
-                return # 成功找到，退出函式
-        except pyautogui.PyAutoGUIException:
-            continue # 找不到，繼續用下一個信心度
-        except Exception:
-            return # 其他錯誤
-
 def get_image_path(image_name):
     possible_names = [image_name, image_name.upper(), image_name.lower()]
     if not image_name.lower().endswith((".png", ".jpg")):
@@ -197,16 +149,9 @@ def find_only(image_name, custom_confidence=None):
     confidence_levels = [base_conf, base_conf - 0.1, 0.7, 0.6] # 逐步降低
     unique_confidences = sorted(list(set(c for c in confidence_levels if c >= 0.6)), reverse=True)
 
-    # 針對每個信心度，都先嘗試區域再嘗試全螢幕
+    # 針對每個信心度嘗試全螢幕搜尋
     for conf in unique_confidences:
         try:
-            # 1. 優先在鎖定區域找
-            if GAME_REGION:
-                location = pyautogui.locateCenterOnScreen(needle_image, confidence=conf, grayscale=True, region=GAME_REGION)
-                if location:
-                    return location
-            
-            # 2. 如果區域找不到或無區域，則全螢幕尋找
             location = pyautogui.locateCenterOnScreen(needle_image, confidence=conf, grayscale=True)
             if location:
                 return location
@@ -222,10 +167,65 @@ def find_only(image_name, custom_confidence=None):
 def find_and_click(image_name, custom_confidence=None, clicks=1):
     location = find_only(image_name, custom_confidence)
     if location:
-        print(f"🎯 發現: {image_name}")
+        print(f"🎯 發現: {image_name} @ {location}")
         human_click(location, clicks=clicks)
         return True
     return False
+
+def handle_dialog_windows():
+    """
+    全螢幕處理可能阻擋流程的詢問視窗。
+    """
+    if find_and_click("warn.png", custom_confidence=0.75):
+        time.sleep(0.5)
+        if find_and_click("yes.png", custom_confidence=0.75):
+            return True
+        if find_and_click("confirm.png", custom_confidence=0.75):
+            return True
+        if find_and_click("ok.png", custom_confidence=0.75):
+            return True
+        return True
+
+    dialog_buttons = [
+        ("yes.png", 0.75, 1),
+        ("confirm.png", 0.75, 1),
+        ("ok.png", 0.75, 1),
+        ("OK.png", 0.75, 1),
+        ("accept_all.png", 0.75, 1),
+    ]
+
+    for image_name, conf, clicks in dialog_buttons:
+        if find_and_click(image_name, custom_confidence=conf, clicks=clicks):
+            return True
+
+    return False
+
+def wait_for_press_to_start():
+    """
+    不做視窗定位，直接全螢幕持續偵測 press_to_start.png，直到點擊成功。
+    """
+    print("\n⏳ 全螢幕持續偵測 'press_to_start.png'...")
+    idle_loops = 0
+
+    while True:
+        if keyboard.is_pressed('q'):
+            print("🛑 使用者中止。")
+            return False
+
+        if find_and_click("press_to_start.png", custom_confidence=0.8):
+            print("✅ 已點擊 'Press to Start'。")
+            return True
+
+        if handle_dialog_windows():
+            idle_loops = 0
+            time.sleep(0.8)
+            continue
+
+        idle_loops += 1
+        if idle_loops % 20 == 0:
+            print("   -> 尚未找到 'Press to Start'，持續偵測中...")
+            wake_up_gpu()
+        time.sleep(0.6)
 
 def launch_game_from_steam():
     """
@@ -258,17 +258,65 @@ def launch_game_from_steam():
     print("   -> 等待 Steam 啟動... (10秒)")
     time.sleep(10)
 
-    # 3. 選擇帳號並登入
-    print("   -> 正在尋找指定帳號 (loopcraft001 或 e08s93)...")
-    account_clicked = find_and_click("loopcraft001.png", custom_confidence=0.85)
-    if not account_clicked:
-        account_clicked = find_and_click("e08s93.png", custom_confidence=0.85)
+    # 3. 選擇帳號並登入 (懸停顯示-點擊機制)
+    print("   -> 開始尋找 Steam 帳號...")
+    
+    account_found_and_clicked = False
+    who_buttons_found = False # 用於判斷是否曾找到who.png
+    original_failsafe_state = pyautogui.FAILSAFE
+    try:
+        # a. 找到 'who.png' 的圖片路徑
+        who_image_path = get_image_path('who.png')
+        if not who_image_path:
+             print("   -> ℹ️ 未在資料夾中找到 'who.png' 圖片，跳過帳號選擇。")
+        else:
+            # 暫時禁用防呆，因為我們可能會在螢幕角落進行尋找或懸停
+            pyautogui.FAILSAFE = False
+            
+            # a. 找到畫面上所有 'who.png' 的位置
+            who_buttons = list(pyautogui.locateAllOnScreen(who_image_path, confidence=0.85, grayscale=True))
+            who_buttons_found = len(who_buttons) > 0
 
-    if account_clicked:
-        print("   -> 偵測到帳號，已點擊。")
-    else:
-        # 如果找不到特定帳號，可能是因為已自動登入，所以只顯示提示訊息而不是中止
-        print("   -> ℹ️ 未找到特定帳號截圖，假設 Steam 會自動登入。")
+            # b. 從左到右排序
+            who_buttons.sort(key=lambda box: box.left)
+            
+            if not who_buttons:
+                print("   -> ℹ️ 未在畫面上找到 'who.png' 按鈕，假設 Steam 會自動登入。")
+            else:
+                print(f"   -> 找到 {len(who_buttons)} 個潛在帳號，開始從左到右檢查...")
+                
+                # c. 遍歷所有按鈕
+                for button_box in who_buttons:
+                    button_center = pyautogui.center(button_box)
+                    
+                    # d. 移動滑鼠到按鈕上以觸發懸停效果
+                    pyautogui.moveTo(button_center.x, button_center.y, duration=0.2)
+                    time.sleep(0.5) # 等待帳號名稱出現
+
+                    # e. 檢查是否出現了目標帳號的圖片
+                    if find_only("loopcraft001.png", custom_confidence=0.85) or \
+                       find_only("e08s93.png", custom_confidence=0.85):
+                        
+                        print(f"   -> 找到目標帳號！正在點擊位於 ({button_center.x}, {button_center.y}) 的按鈕...")
+                        # human_click 內部已有自己的防呆處理
+                        human_click(button_center)
+                        account_found_and_clicked = True
+                        break # 找到並點擊後，跳出迴圈
+    
+    except Exception as e:
+        print(f"   -> ⚠️ 尋找帳號時發生錯誤: {e}")
+    finally:
+        # 確保防呆在任何情況下都恢復到原始狀態
+        pyautogui.FAILSAFE = original_failsafe_state
+
+    # 根據查找結果決定後續流程
+    if not account_found_and_clicked:
+        if who_buttons_found:
+            # 找到了 who.png 但沒有匹配的帳號
+            print("   -> ⚠️ 檢查了所有帳號，但未找到 'loopcraft001.png' 或 'e08s93.png'。請確認截圖。")
+        else:
+            # 從一開始就沒找到 who.png
+            print("   -> ℹ️ 未找到任何帳號按鈕，假設 Steam 會自動登入。")
 
     # 4. 等待登入與主介面載入
     print("   -> 等待 Steam 登入與載入主介面... (20秒)")
@@ -298,66 +346,43 @@ def launch_game_from_steam():
 
     # 8. 點擊「開始遊戲」
     print("   -> 正在點擊「開始遊戲」按鈕...")
-    if not find_and_click("steam_play_btn.png", custom_confidence=0.8):
+    if not find_and_click("steam_play_btn.png", custom_confidence=1): # Use confidence=1 for higher accuracy
         print("   -> ❌ 錯誤：找不到「開始遊戲」按鈕 'steam_play_btn.png'。")
         return False
-    
+    time.sleep(3)
+
     print("✅ === 遊戲啟動指令已發送！ ===")
     return True
 
 # --- 5. 主程式 ---
 
 def main():
-    global GAME_REGION
     print("\n=== OpenClaw V15 (Portable Paths) ===")
-    print("特色：可攜式路徑、持續視窗搜尋、解析度監控、防休眠")
-    print(f"初始解析度: {LAST_RESOLUTION}")
-    detect_game_window()
-    
-    last_log_time = time.time()
+    print("特色：可攜式路徑、全螢幕偵測、防休眠")
+    print(f"初始解析度: {pyautogui.size()}")
     not_found_streak = 0
     
-     # 首先啟動遊戲
+    # 首先啟動遊戲
     if not launch_game_from_steam():
         print("🛑 遊戲啟動失敗，程式結束。")
         return # 或 sys.exit()
 
+    # 啟動後，直接持續全螢幕找 Press to Start，直到成功
+    if not wait_for_press_to_start():
+        print("🛑 未能完成 'Press to Start'，程式結束。")
+        return
 
     while True:
         if keyboard.is_pressed('q'):
             print("🛑 程式停止。")
             break
-        
-        # --- 1. 檢查與維持環境 ---
-        check_resolution_change() # 可能會重置 GAME_REGION
 
-        # --- 2. 核心：視窗搜尋模式 ---
-        if GAME_REGION is None:
-            print("❓ 遊戲視窗遺失，進入持續搜尋模式...")
-            
-            # 嘗試點擊圖示來啟動或喚醒遊戲
-            if find_and_click("game_sign.png", custom_confidence=0.8):
-                print("   -> 點擊了啟動圖示，等待 3 秒讓視窗反應...")
-                time.sleep(3)
-            else:
-                # 如果連圖示都找不到，可能視窗已開啟但未被偵測，或被遮擋
-                print("   -> 未找到啟動圖示，5 秒後重試...")
-                time.sleep(5)
-
-            # 無論如何都重新偵測一次
-            detect_game_window()
-            # 立即重新開始迴圈，檢查 GAME_REGION 是否已找到
-            # 如果找到了，下一個迴圈就會進入遊戲邏輯；如果沒找到，會再次進入此模式
-            continue
-
-        # --- 3. 遊戲內決策流程 (僅在 GAME_REGION 有效時執行) ---
+        # --- 遊戲內決策流程 ---
         time.sleep(0.3) # 在活躍狀態下降低CPU使用率
         action_taken = False
 
-        if find_and_click("warn.png"):
-             time.sleep(1)
-             find_and_click("yes.png", clicks=2)
-             action_taken = True
+        if handle_dialog_windows():
+            action_taken = True
         elif find_and_click("next_level.png", custom_confidence=0.75):
             print("🚀 點擊：下一關")
             time.sleep(4)
@@ -370,12 +395,8 @@ def main():
         elif find_only("victory.png", custom_confidence=0.7):
             if not find_only("next_level.png", 0.6) and not find_only("fight_again.png", 0.6):
                  print("🏆 Victory 動畫... 加速")
-                 if GAME_REGION: # Should always be true here
-                     cx = GAME_REGION[0] + 512
-                     cy = GAME_REGION[1] + 384
-                     pyautogui.click(cx, cy)
-                 else:
-                     pyautogui.click(960, 540)
+                 screen_width, screen_height = pyautogui.size()
+                 pyautogui.click(screen_width // 2, screen_height // 2)
                  time.sleep(0.5)
                  action_taken = True
         elif find_and_click("start.png"):
@@ -386,8 +407,6 @@ def main():
             time.sleep(1)
             action_taken = True
         elif find_and_click("fast_forward.png") or find_and_click("skip.png"):
-            action_taken = True
-        elif find_and_click("confirm.png"):
             action_taken = True
 
         # --- 4. 狀態管理與日誌 ---
@@ -402,9 +421,8 @@ def main():
             
             # 如果連續非常多次都找不到，可能視窗真的卡死了，強制重新偵測
             if not_found_streak >= 100:
-                print("❓ 連續100次無動作，強制重新鎖定視窗...")
+                print("❓ 連續100次無動作，保存截圖後持續監控...")
                 save_debug_screenshot("lost_track_long")
-                GAME_REGION = None # 這會讓下一個迴圈進入搜尋模式
                 not_found_streak = 0 # 重置計數器
 
 if __name__ == "__main__":
