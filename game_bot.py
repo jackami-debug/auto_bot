@@ -414,7 +414,7 @@ def launch_game_from_steam():
     
     account_found_and_clicked = False
     who_buttons_found = False # 用於判斷是否曾找到who.png
-    target_account_images = ["e08s93.123.png"]
+    target_account_images = ["loopcraft001.png"]
     
     original_failsafe_state = pyautogui.FAILSAFE
     try:
@@ -549,8 +549,7 @@ def leave_game():
     steps = [
         ("set.png", 0.85, 1),
         ("quit_game.png", 0.85, 1),
-        ("confirm.png", 0.88, 5),
-        ("steam_bottom.png", 0.85, 2),
+        ("confirm.png", 0.88, 10),
         ("steam_sign.png", 0.85, 1),
         ("quit.png", 0.85, 0),
     ]
@@ -574,7 +573,7 @@ def consume_energy():
     自動執行消耗體力的流程。
     """
     print("\n💪 === 開始執行消耗體力流程 ===")
-    wait_for_image("ongoing_activity.png", timeout=15.0)
+    wait_for_image("ongoing_activity.png", timeout=30.0)
     # 1. 點擊 "ongoing_activity"
     if not find_and_click("ongoing_activity.png", custom_confidence=0.8):
         print("   -> ❌ 錯誤：找不到 'ongoing_activity.png'。")
@@ -694,96 +693,90 @@ def consume_energy():
 # --- 5. 主程式 ---
 
 def main():
-    """
-    print("🔍 正在尋找遊戲畫面...")
     
+    print("🔍 正在尋找遊戲畫面...")
     print("\n=== OpenClaw V15 (Portable Paths) ===")
     print("特色：可攜式路徑、全螢幕偵測、防休眠")
     print(f"初始解析度: {pyautogui.size()}")
     not_found_streak = 0
-    
-    # 首先啟動遊戲
-    if not launch_game_from_steam():
-        print("🛑 遊戲啟動失敗，程式結束。")
-        return # 或 sys.exit()
-
-    # 啟動後，直接持續全螢幕找 Press to Start，直到成功
-    if not wait_for_press_to_start(max_wait_seconds=120):
-        print("🛑 等待 'Press to Start' 失敗，程式結束。")
-        return
-    """
+        
+    launch_game_from_steam() # 首先啟動遊戲
+    wait_for_press_to_start(max_wait_seconds=120)# 啟動後，直接持續全螢幕找 Press to Start，直到成功
+    consume_energy() # 執行消耗體力的流程
+    time.sleep(10) # 等待一些時間，確保流程完成
+    leave_game() # 執行離開遊戲的流程
       
     
 
 
 
-#功能測試迴圈
-while True:
-    if leave_game():
-        print("✅ 找到 'set.png'，成功進入遊戲！")
-        break  # 找到目標了，打破迴圈往下執行
-    else:
-        print("⏳ 還沒看到畫面，等待 2 秒後重試...")
-        time.sleep(0.5)  # 找不到就等 2 秒再找一次
-        # 這裡不用寫 continue，迴圈本來就會自動重頭開始
+# #功能測試迴圈
+# while True:
+#     if find_and_click("ongoing_activity.png", custom_confidence=0.8):
+#         print("✅ 測試成功")
+#         break  # 找到目標了，打破迴圈往下執行
+#     else:
+#         print("⏳ 還沒看到畫面，等待 0.5 秒後重試...")
+#         time.sleep(0.5)  # 找不到就等 0.5 秒再找一次
+        
 
        
         
 
-"""
-    #刷關迴圈
-    while True:
-        if keyboard.is_pressed('q'):
-            print("🛑 程式停止。")
-            break
 
-        # --- 遊戲內決策流程 ---
-        time.sleep(0.3) # 在活躍狀態下降低CPU使用率
-        action_taken = False
+    # #刷關迴圈
+    # while True:
+    #     if keyboard.is_pressed('q'):
+    #         print("🛑 程式停止。")
+    #         break
 
-        if handle_dialog_windows():
-            action_taken = True
-        elif find_and_click("next_level.png", custom_confidence=0.75):
-            print("🚀 點擊：下一關")
-            time.sleep(4)
-            action_taken = True
-        elif find_only("fight_again.png", custom_confidence=0.75):
-            if find_and_click("next_level.png", custom_confidence=0.6):
-                print("🚀 (再次挑戰觸發) 下一關")
-                time.sleep(4)
-                action_taken = True
-        elif find_only("victory.png", custom_confidence=0.7):
-            if not find_only("next_level.png", 0.6) and not find_only("fight_again.png", 0.6):
-                 print("🏆 Victory 動畫... 加速")
-                 screen_width, screen_height = pyautogui.size()
-                 pyautogui.click(screen_width // 2, screen_height // 2)
-                 time.sleep(0.5)
-                 action_taken = True
-        elif find_and_click("start.png"):
-            print("⚔️ 開始戰鬥")
-            time.sleep(5)
-            action_taken = True
-        elif find_and_click("auto.png"):
-            time.sleep(1)
-            action_taken = True
-        elif find_and_click("fast_forward.png") or find_and_click("skip.png"):
-            action_taken = True
+    #     # --- 遊戲內決策流程 ---
+    #     time.sleep(0.3) # 在活躍狀態下降低CPU使用率
+    #     action_taken = False
 
-        # --- 4. 狀態管理與日誌 ---
-        if action_taken:
-            not_found_streak = 0
-            continue # 如果有動作，直接進入下一輪
-        else:
-            not_found_streak += 1
-            if not_found_streak % 15 == 0: # 每隔約4.5秒
-                print(f"👀 監控中... (Streak: {not_found_streak})")
-                wake_up_gpu()
+    #     if handle_dialog_windows():
+    #         action_taken = True
+    #     elif find_and_click("next_level.png", custom_confidence=0.75):
+    #         print("🚀 點擊：下一關")
+    #         time.sleep(4)
+    #         action_taken = True
+    #     elif find_only("fight_again.png", custom_confidence=0.75):
+    #         if find_and_click("next_level.png", custom_confidence=0.6):
+    #             print("🚀 (再次挑戰觸發) 下一關")
+    #             time.sleep(4)
+    #             action_taken = True
+    #     elif find_only("victory.png", custom_confidence=0.7):
+    #         if not find_only("next_level.png", 0.6) and not find_only("fight_again.png", 0.6):
+    #              print("🏆 Victory 動畫... 加速")
+    #              screen_width, screen_height = pyautogui.size()
+    #              pyautogui.click(screen_width // 2, screen_height // 2)
+    #              time.sleep(0.5)
+    #              action_taken = True
+    #     elif find_and_click("start.png"):
+    #         print("⚔️ 開始戰鬥")
+    #         time.sleep(5)
+    #         action_taken = True
+    #     elif find_and_click("auto.png"):
+    #         time.sleep(1)
+    #         action_taken = True
+    #     elif find_and_click("fast_forward.png") or find_and_click("skip.png"):
+    #         action_taken = True
+
+    #     # --- 4. 狀態管理與日誌 ---
+    #     if action_taken:
+    #         not_found_streak = 0
+    #         continue # 如果有動作，直接進入下一輪
+    #     else:
+    #         not_found_streak += 1
+    #         if not_found_streak % 15 == 0: # 每隔約4.5秒
+    #             print(f"👀 監控中... (Streak: {not_found_streak})")
+    #             wake_up_gpu()
             
-            # 如果連續非常多次都找不到，可能視窗真的卡死了，強制重新偵測
-            if not_found_streak >= 100:
-                print("❓ 連續100次無動作，保存截圖後持續監控...")
-                save_debug_screenshot("lost_track_long")
-                not_found_streak = 0 # 重置計數器
-"""
+    #         # 如果連續非常多次都找不到，可能視窗真的卡死了，強制重新偵測
+    #         if not_found_streak >= 100:
+    #             print("❓ 連續100次無動作，保存截圖後持續監控...")
+    #             save_debug_screenshot("lost_track_long")
+    #             not_found_streak = 0 # 重置計數器
+
 if __name__ == "__main__":
     main()
