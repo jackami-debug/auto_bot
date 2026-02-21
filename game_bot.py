@@ -240,32 +240,55 @@ def click_screen_center():
 
 def handle_dialog_windows():
     """
-    全螢幕處理可能阻擋流程的詢問視窗。
+    處理可能阻擋流程的詢問視窗。
+    回傳 True 代表本輪有實際點擊到任何按鈕。
     """
-    dialog_region = get_center_region(0.72, 0.72)
+    center_region = get_center_region(0.82, 0.82)
+    full_region = None
+    acted = False
 
-    # yes.png 容易誤判，僅在已偵測到 warn 視窗後才會點
-    if find_and_click("warn.png", custom_confidence=0.8, region=dialog_region):
-        time.sleep(0.5)
-        if find_and_click("yes.png", custom_confidence=0.88, region=dialog_region):
-            return True
-        if find_and_click("confirm.png", custom_confidence=0.88, region=dialog_region):
-            return True
-        if find_and_click("ok.png", custom_confidence=0.9, region=dialog_region):
-            return True
-        return True
+    def click_buttons(buttons, region):
+        nonlocal acted
+        for image_name, conf, clicks in buttons:
+            if find_and_click(image_name, custom_confidence=conf, clicks=clicks, region=region):
+                print(f"   -> 已處理對話框: {image_name}")
+                acted = True
+                return True
+        return False
 
-    dialog_buttons = [
-        ("confirm.png", 0.88, 1),
-        ("ok.png", 0.9, 1),
-        ("OK.png", 0.9, 1),
-        ("accept_all.png", 0.88, 1),
+    warn_buttons = [("warn.png", 0.88, 1)]
+    followup_buttons = [
+        ("yes.png", 0.9, 1),
+        ("confirm.png", 0.9, 1),
+        ("ok.png", 0.92, 1),
+        ("OK.png", 0.92, 1),
+        ("OK03.png", 0.92, 1),
+        ("close.png", 0.92, 1),
+        ("close_02.png", 0.92, 1),
+    ]
+    common_buttons = [
+        ("confirm.png", 0.9, 1),
+        ("ok.png", 0.92, 1),
+        ("OK.png", 0.92, 1),
+        ("OK03.png", 0.92, 1),
+        ("accept_all.png", 0.9, 1),
+        ("close.png", 0.92, 1),
+        ("close_02.png", 0.92, 1),
     ]
 
-    for image_name, conf, clicks in dialog_buttons:
-        if find_and_click(image_name, custom_confidence=conf, clicks=clicks, region=dialog_region):
-            return True
+    # 先檢查 warn，再嘗試關閉後續視窗
+    if click_buttons(warn_buttons, center_region):
+        time.sleep(0.35)
+        followup_clicked = click_buttons(followup_buttons, center_region)
+        if not followup_clicked:
+            click_buttons(followup_buttons, full_region)
+        return True
 
+    # 一般彈窗先找中心，再找全螢幕
+    if click_buttons(common_buttons, center_region):
+        return True
+    if click_buttons(common_buttons, full_region):
+        return True
     return False
 
 def wait_for_press_to_start(max_wait_seconds=120, center_click_interval=3.0):
@@ -283,26 +306,40 @@ def wait_for_press_to_start(max_wait_seconds=120, center_click_interval=3.0):
             print("🛑 使用者中止。")
             return False
 
-        # 若已經看到疑似進入大廳/戰鬥的元素，視為已進入遊戲
-        if find_only("set.png", custom_confidence=1):
+        # 若已經看到遊戲內元素，視為已進入遊戲
+        if find_only_strict("set.png", confidence=0.94, grayscale=True):
+            print("✅ 偵測到遊戲內介面元素，視為已成功進入。")
+            return True
+        if find_only("set_02.png", custom_confidence=0.94):
             print("✅ 偵測到遊戲內介面元素，視為已成功進入。")
             return True
 
-        if find_and_click("press_to_start.png", custom_confidence=0.8):
-            print("✅ 已點擊 'Press to Start'。")
-            return True
+        if find_and_click("press_to_start.png", custom_confidence=0.85):
+            print("✅ 已點擊 'Press to Start'，確認是否成功進入...")
+            verify_deadline = time.time() + 8
+            while time.time() < verify_deadline:
+                if find_only_strict("set.png", confidence=0.94):
+                    print("✅ 按下後已進入遊戲。")
+                    return True
+                if handle_dialog_windows():
+                    time.sleep(0.6)
+                time.sleep(0.3)
+            print("   -> 已點擊但尚未進入，繼續偵測...")
 
         if handle_dialog_windows():
-            time.sleep(2)
+            time.sleep(1.2)
             continue
 
         now = time.time()
         if now - last_center_click_time >= center_click_interval:
             print("   👉 未找到 'Press to Start'，點擊螢幕中央嘗試喚醒流程...")
             click_screen_center()
+            time.sleep(0.8)
+            if handle_dialog_windows():
+                time.sleep(0.8)
             last_center_click_time = now
-            time.sleep(1.2)
-            continue
+            time.sleep(0.8)
+            continue            
 
         if now - last_progress_log_time >= 5:
             remaining = int(max_wait_seconds - (now - start_time))
@@ -377,7 +414,7 @@ def launch_game_from_steam():
     
     account_found_and_clicked = False
     who_buttons_found = False # 用於判斷是否曾找到who.png
-    target_account_images = ["e08s93.png"]
+    target_account_images = ["e08s93.123.png"]
     
     original_failsafe_state = pyautogui.FAILSAFE
     try:
@@ -468,7 +505,7 @@ def launch_game_from_steam():
 
     # 4. 等待登入與主介面載入
     print("   -> 等待 Steam 登入與載入主介面... (20秒)")
-    time.sleep(20)
+    wait_for_image("steam_library.png", timeout=60.0)
 
     # 5. 關閉彈出廣告
     print("   -> 正在嘗試關閉 Steam 彈出廣告...")
@@ -670,13 +707,26 @@ def main():
         return # 或 sys.exit()
 
     # 啟動後，直接持續全螢幕找 Press to Start，直到成功
-    if not wait_seconds_with_abort(30, "等待遊戲主程式啟動完成"):
+    if not wait_for_press_to_start(max_wait_seconds=120):
+        print("🛑 等待 'Press to Start' 失敗，程式結束。")
         return
+      
+    
 
-    if not wait_for_press_to_start():
-        print("🛑 未能完成 'Press to Start'，程式結束。")
-        return
-   
+
+
+"""功能測試迴圈
+while True:
+    if find_only_strict("set.png", confidence=0.94, grayscale=True):
+        print("✅ 找到 'set.png'，成功進入遊戲！")
+        break  # 找到目標了，打破迴圈往下執行
+    else:
+        print("⏳ 還沒看到畫面，等待 2 秒後重試...")
+        time.sleep(0.5)  # 找不到就等 2 秒再找一次
+        # 這裡不用寫 continue，迴圈本來就會自動重頭開始
+
+"""       
+        
 
 """
     #刷關迴圈
