@@ -549,7 +549,8 @@ def leave_game():
     steps = [
         ("set.png", 0.85, 1),
         ("quit_game.png", 0.85, 1),
-        ("confirm.png", 0.88, 1),
+        ("confirm.png", 0.88, 5),
+        ("steam_bottom.png", 0.85, 2),
         ("steam_sign.png", 0.85, 1),
         ("quit.png", 0.85, 0),
     ]
@@ -693,7 +694,7 @@ def consume_energy():
 # --- 5. 主程式 ---
 
 def main():
-    
+    """
     print("🔍 正在尋找遊戲畫面...")
     
     print("\n=== OpenClaw V15 (Portable Paths) ===")
@@ -710,14 +711,15 @@ def main():
     if not wait_for_press_to_start(max_wait_seconds=120):
         print("🛑 等待 'Press to Start' 失敗，程式結束。")
         return
+    """
       
     
 
 
 
-"""功能測試迴圈
+#功能測試迴圈
 while True:
-    if find_only_strict("set.png", confidence=0.94, grayscale=True):
+    if leave_game():
         print("✅ 找到 'set.png'，成功進入遊戲！")
         break  # 找到目標了，打破迴圈往下執行
     else:
@@ -725,7 +727,7 @@ while True:
         time.sleep(0.5)  # 找不到就等 2 秒再找一次
         # 這裡不用寫 continue，迴圈本來就會自動重頭開始
 
-"""       
+       
         
 
 """
