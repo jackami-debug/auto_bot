@@ -379,7 +379,7 @@ def wait_for_image(image_name, timeout=15.0, custom_confidence=None):
     print(f"   ❌ 等待超時 ({timeout} 秒)，沒看到 {image_name}！")
     return False
 
-def launch_game_from_steam():
+def launch_game_from_steam(name = "steam_icon.png"):
     """
     從 Steam 啟動遊戲 "Rise of Eros" 的完整流程。
     假設已有 find_and_click() 函式可供使用。
@@ -408,13 +408,13 @@ def launch_game_from_steam():
     
     # 2. 等待 Steam 主視窗載入
     print("   -> 等待 Steam 啟動... (10秒)")
-    wait_for_image("who.png", timeout=30.0)
+    wait_for_image("who.png", timeout=60.0)
     # 3. 選擇帳號並登入 (懸停顯示-點擊機制)
     print("   -> 開始尋找 Steam 帳號...")
     
     account_found_and_clicked = False
     who_buttons_found = False # 用於判斷是否曾找到who.png
-    target_account_images = ["loopcraft001.png"]
+    target_account_images = [name]
     
     original_failsafe_state = pyautogui.FAILSAFE
     try:
@@ -517,6 +517,7 @@ def launch_game_from_steam():
 
     # 6. 點擊「收藏庫」
     print("   -> 正在點擊「收藏庫」...")
+    wait_for_image("steam_library.png", timeout=60.0)
     if not find_and_click("steam_library.png", custom_confidence=0.8):
         print("   -> ❌ 錯誤：找不到「收藏庫」按鈕 'steam_library.png'。")
         return False
@@ -524,6 +525,7 @@ def launch_game_from_steam():
 
     # 7. 在左側列表中選擇遊戲
     print("   -> 正在從收藏庫選擇 'Rise of Eros'...")
+    wait_for_image("rise_of_eros_list.png", timeout=60.0)
     if not find_and_click("rise_of_eros_list.png", custom_confidence=0.9):
          print("   -> ❌ 錯誤：在收藏庫中找不到遊戲 'rise_of_eros_list.png'。")
          return False
@@ -531,6 +533,7 @@ def launch_game_from_steam():
 
     # 8. 點擊「開始遊戲」
     print("   -> 正在點擊「開始遊戲」按鈕...")
+    wait_for_image("steam_play_btn.png", timeout=60.0)
     if not find_and_click("steam_play_btn.png", custom_confidence=1): # Use confidence=1 for higher accuracy
         print("   -> ❌ 錯誤：找不到「開始遊戲」按鈕 'steam_play_btn.png'。")
         return False
@@ -568,33 +571,27 @@ def leave_game():
     print("✅ 離開遊戲流程完成。")
     return True
 
-def consume_energy():
+def consume_energy(battle):
     """
     自動執行消耗體力的流程。
     """
     print("\n💪 === 開始執行消耗體力流程 ===")
-    wait_for_image("ongoing_activity.png", timeout=30.0)
+    wait_for_image("ongoing_activity.png", timeout=60.0)
     # 1. 點擊 "ongoing_activity"
     if not find_and_click("ongoing_activity.png", custom_confidence=0.8):
         print("   -> ❌ 錯誤：找不到 'ongoing_activity.png'。")
         save_debug_screenshot("no_ongoing_activity")
         return False
     
-    # 2. 等待5秒
-    if not wait_seconds_with_abort(5, "等待活動頁面載入"):
-        return False # 使用者中止
-
     # 3. 點擊 "activity"
+    wait_for_image("activity.png", timeout=60.0)
     if not find_and_click("activity.png", custom_confidence=0.8):
         print("   -> ❌ 錯誤：找不到 'activity.png'。")
         save_debug_screenshot("no_activity_button")
         return False
     
-    if not wait_seconds_with_abort(2, "等待戰鬥按鈕"):
-        return False
-
     # 4. 點擊 "battle"
-    
+    wait_for_image("battle.png", timeout=60.0)
     if not find_and_click("battle.png", custom_confidence=0.85):
         print("   -> ❌ 錯誤：找不到 'battle.png'。")
         save_debug_screenshot("no_battle_button")
@@ -603,17 +600,23 @@ def consume_energy():
 
     if not wait_seconds_with_abort(2, "等待關卡選擇畫面"):
         return False
+    match battle:
+        case 8:
+            # 5. 點擊 "battle7" 右方的關卡
+            # 策略：以 "battle7" 按鈕位置為基準，向右偏移來點擊關卡
+            print("   -> 嘗試點擊 'battle7' 按鈕右方的關卡...")
+            battle_location = find_only("battle7.png", custom_confidence=0.9)
+            # 假設關卡在右方約 250 像素的位置，Y 軸不變。這是一個估計值。
+            target_x = battle_location.x + random.randint(400, 600) # 增加隨機偏移，避免每次點擊完全相同的位置
+            target_y = battle_location.y
+            print(f"   -> 計算出的關卡座標: ({target_x}, {target_y})")
+            human_click((target_x, target_y))
+            
+        case 7:
+            # 5. 點擊 "battle7" 右方的關卡
+            print("   -> 嘗試點擊 'battle7' 按鈕右方的關卡...")
+            find_and_click("battle7.png", custom_confidence=0.9)
 
-    # 5. 點擊 "battle7" 右方的關卡
-    # 策略：以 "battle7" 按鈕位置為基準，向右偏移來點擊關卡
-    print("   -> 嘗試點擊 'battle7' 按鈕右方的關卡...")
-    battle_location = find_only("battle7.png", custom_confidence=0.9)
-    # 假設關卡在右方約 250 像素的位置，Y 軸不變。這是一個估計值。
-    target_x = battle_location.x + random.randint(400, 600) # 增加隨機偏移，避免每次點擊完全相同的位置
-    target_y = battle_location.y
-    print(f"   -> 計算出的關卡座標: ({target_x}, {target_y})")
-    human_click((target_x, target_y))
-    
     if not wait_seconds_with_abort(3, "等待關卡資訊載入"):
         return False
 
@@ -639,7 +642,7 @@ def consume_energy():
  # === 新增：8.1 升級/額外彈窗偵測與補掃蕩 ===
     print("   -> ⏳ 正在檢查是否有升級畫面 (等待 2 秒)...")
     # 這裡稍微停久一點，因為升級動畫通常比較慢
-    if not wait_seconds_with_abort(2, "等待升級判定"):
+    if not wait_seconds_with_abort(4, "等待升級判定"):
         return False
 
     # 偵測是否有額外的 "confirm" (升級視窗)
@@ -695,17 +698,26 @@ def consume_energy():
 def main():
     
     print("🔍 正在尋找遊戲畫面...")
-    print("\n=== OpenClaw V15 (Portable Paths) ===")
-    print("特色：可攜式路徑、全螢幕偵測、防休眠")
-    print(f"初始解析度: {pyautogui.size()}")
+
     not_found_streak = 0
         
-    launch_game_from_steam() # 首先啟動遊戲
+    launch_game_from_steam("loopcraft001.png") # 首先啟動遊戲
+    time.sleep(5) # 等待遊戲啟動指令發送後的一些時間，讓 Steam 和遊戲有機會開始載入
     wait_for_press_to_start(max_wait_seconds=120)# 啟動後，直接持續全螢幕找 Press to Start，直到成功
-    consume_energy() # 執行消耗體力的流程
+    time.sleep(5) # 確保進入遊戲後的畫面穩定
+    consume_energy(8) # 執行消耗體力的流程
     time.sleep(10) # 等待一些時間，確保流程完成
     leave_game() # 執行離開遊戲的流程
-      
+
+    print("🔍 正在尋找遊戲畫面2...")
+
+    not_found_streak = 0
+        
+    launch_game_from_steam("e08s93.123.png") # 首先啟動遊戲
+    wait_for_press_to_start(max_wait_seconds=120)# 啟動後，直接持續全螢幕找 Press to Start，直到成功
+    consume_energy(7) # 執行消耗體力的流程
+    time.sleep(10) # 等待一些時間，確保流程完成
+    leave_game() # 執行離開遊戲的流程
     
 
 
