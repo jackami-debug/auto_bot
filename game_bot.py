@@ -433,9 +433,86 @@ def launch_game_from_steam():
     print("✅ === 遊戲啟動指令已發送！ ===")
     return True
 
+def consume_energy():
+    """
+    自動執行消耗體力的流程。
+    """
+    print("\n💪 === 開始執行消耗體力流程 ===")
+    wait_for_image("ongoing_activity.png", timeout=15.0)
+    # 1. 點擊 "ongoing_activity"
+    if not find_and_click("ongoing_activity.png", custom_confidence=0.8):
+        print("   -> ❌ 錯誤：找不到 'ongoing_activity.png'。")
+        save_debug_screenshot("no_ongoing_activity")
+        return False
+    
+    # 2. 等待5秒
+    if not wait_seconds_with_abort(5, "等待活動頁面載入"):
+        return False # 使用者中止
+
+    # 3. 點擊 "activity"
+    if not find_and_click("activity.png", custom_confidence=0.8):
+        print("   -> ❌ 錯誤：找不到 'activity.png'。")
+        save_debug_screenshot("no_activity_button")
+        return False
+    
+    if not wait_seconds_with_abort(2, "等待戰鬥按鈕"):
+        return False
+
+    # 4. 點擊 "battle"
+    
+    if not find_and_click("battle.png", custom_confidence=0.85):
+        print("   -> ❌ 錯誤：找不到 'battle.png'。")
+        save_debug_screenshot("no_battle_button")
+        return False
+    
+
+    if not wait_seconds_with_abort(2, "等待關卡選擇畫面"):
+        return False
+
+    # 5. 點擊 "battle7" 右方的關卡
+    # 策略：以 "battle7" 按鈕位置為基準，向右偏移來點擊關卡
+    print("   -> 嘗試點擊 'battle7' 按鈕右方的關卡...")
+    battle_location = find_only("battle7.png", custom_confidence=0.9)
+    # 假設關卡在右方約 250 像素的位置，Y 軸不變。這是一個估計值。
+    target_x = battle_location.x + random.randint(400, 600) # 增加隨機偏移，避免每次點擊完全相同的位置
+    target_y = battle_location.y
+    print(f"   -> 計算出的關卡座標: ({target_x}, {target_y})")
+    human_click((target_x, target_y))
+    
+    if not wait_seconds_with_abort(3, "等待關卡資訊載入"):
+        return False
+
+    # 6. 點擊 "swape" (掃蕩)
+    if not find_and_click("swape.png", custom_confidence=0.8):
+        print("   -> ⚠️ 警告：找不到 'swape.png'，腳本將繼續。")
+        save_debug_screenshot("swape_not_found")
+        pass # 即使找不到也嘗試繼續
+
+    if not wait_seconds_with_abort(2, "等待掃蕩視窗"):
+        return False
+
+    # 7. 點擊 "max"
+    if not find_and_click("max.png", custom_confidence=0.8):
+        print("   -> ❌ 錯誤：找不到 'max.png'。")
+        save_debug_screenshot("max_not_found")
+        return False
+    
+    
+    return True
+
 # --- 5. 主程式 ---
 
 def main():
+    
+    print("🔍 正在測試函式...")
+    while True:
+        # 縮排 1: 在 while 內的程式碼
+        if consume_energy():
+            # 縮排 2: 在 if 內的程式碼
+            print("✅ 已經在遊戲內了！")
+            break  # 找到就跳出迴圈
+    
+    """
     print("🔍 正在尋找遊戲畫面...")
     
     print("\n=== OpenClaw V15 (Portable Paths) ===")
@@ -455,7 +532,7 @@ def main():
     if not wait_for_press_to_start():
         print("🛑 未能完成 'Press to Start'，程式結束。")
         return
-    
+    """
 
 """
     #刷關迴圈
