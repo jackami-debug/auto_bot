@@ -496,8 +496,63 @@ def consume_energy():
         print("   -> ❌ 錯誤：找不到 'max.png'。")
         save_debug_screenshot("max_not_found")
         return False
+    # 8. 點擊 "confirm" (確認)
+    if not find_and_click("confirm.png", custom_confidence=0.8):
+        print("   -> ❌ 錯誤：找不到 'confirm.png'。")
+        save_debug_screenshot("confirm_not_found")
+        return False
+ # === 新增：8.1 升級/額外彈窗偵測與補掃蕩 ===
+    print("   -> ⏳ 正在檢查是否有升級畫面 (等待 2 秒)...")
+    # 這裡稍微停久一點，因為升級動畫通常比較慢
+    if not wait_seconds_with_abort(2, "等待升級判定"):
+        return False
+
+    # 偵測是否有額外的 "confirm" (升級視窗)
+    # 如果找到，find_and_click 會直接點擊它，並進入 if 區塊
+    if find_and_click("confirm.png", custom_confidence=0.8):
+        print("   -> 🆙 偵測到升級視窗！執行「補掃蕩」流程...")
+        
+        # 步驟 A: 點擊 OK (關閉升級後的獎勵顯示或其他視窗)
+        # 這裡假設你的 OK 按鈕是 OK_02.png，如果升級畫面的 OK 長得不一樣，請更換圖片檔名
+        wait_seconds_with_abort(2, "等待OK按鈕") 
+        if not find_and_click("OK_02.png", custom_confidence=0.8):
+            print("   -> ⚠️ 升級後找不到 OK 按鈕，嘗試繼續...")
+        
+        # 步驟 B: 重新執行掃蕩設定 (Swape -> Max -> Confirm)
+        print("   -> 🔄 利用升級體力，重新設定掃蕩...")
+        
+        wait_seconds_with_abort(2, "等待回到關卡畫面")
+        
+        # 點擊 Swape
+        if find_and_click("swape.png", custom_confidence=0.8):
+            wait_seconds_with_abort(1, "等待Max")
+            # 點擊 Max
+            find_and_click("max.png", custom_confidence=0.8)
+            wait_seconds_with_abort(1, "等待確認")
+            # 點擊 Confirm
+            find_and_click("confirm.png", custom_confidence=0.8)
+            print("   -> ✅ 補掃蕩設定完成，等待結算...")
+            
+            # 這裡需要多等一下，因為重新掃蕩需要時間
+            wait_seconds_with_abort(3, "等待補掃蕩結算")
+        else:
+            print("   -> ❌ 找不到 swape 按鈕，無法執行補掃蕩。")
+
+    else:
+        print("   -> 👌 未偵測到升級畫面，繼續正常流程。")
+    # ==========================================
     
     
+    # 9. 點擊 "OK_02" (OK)
+    if not find_and_click("OK_02.png", custom_confidence=0.8):
+        print("   -> ❌ 錯誤：找不到 'OK_02.png'。")
+        save_debug_screenshot("ok_02_not_found")
+        return False
+    # 10. 點擊 "main_page" (主畫面)
+    if not find_and_click("main_page.png", custom_confidence=0.8):
+        print("   -> ❌ 錯誤：找不到 'main_page.png'。")
+        save_debug_screenshot("main_page_not_found")
+        return False
     return True
 
 # --- 5. 主程式 ---
