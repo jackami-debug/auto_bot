@@ -249,9 +249,7 @@ def wait_for_press_to_start(max_wait_seconds=120, center_click_interval=3.0):
             return False
 
         # 若已經看到疑似進入大廳/戰鬥的元素，視為已進入遊戲
-        if find_only("settings_gear.png", custom_confidence=0.8) or \
-           find_only("dispatch.png", custom_confidence=0.8) or \
-           find_only("start.png", custom_confidence=0.8):
+        if find_only("set.png", custom_confidence=1):
             print("✅ 偵測到遊戲內介面元素，視為已成功進入。")
             return True
 
@@ -260,7 +258,7 @@ def wait_for_press_to_start(max_wait_seconds=120, center_click_interval=3.0):
             return True
 
         if handle_dialog_windows():
-            time.sleep(0.8)
+            time.sleep(2)
             continue
 
         now = time.time()
@@ -438,6 +436,8 @@ def launch_game_from_steam():
 # --- 5. 主程式 ---
 
 def main():
+    print("🔍 正在尋找遊戲畫面...")
+    
     print("\n=== OpenClaw V15 (Portable Paths) ===")
     print("特色：可攜式路徑、全螢幕偵測、防休眠")
     print(f"初始解析度: {pyautogui.size()}")
@@ -455,6 +455,7 @@ def main():
     if not wait_for_press_to_start():
         print("🛑 未能完成 'Press to Start'，程式結束。")
         return
+    
 
 """
     #刷關迴圈
