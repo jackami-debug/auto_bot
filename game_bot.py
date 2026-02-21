@@ -1,4 +1,4 @@
-import time
+﻿import time
 import random
 import os
 import sys
@@ -169,6 +169,32 @@ def find_only(image_name, custom_confidence=None, region=None):
             
     return None
 
+def find_only_strict(image_name, confidence=0.97, region=None, grayscale=False):
+    """
+    嚴格比對模式：不自動降低 confidence，避免誤判。
+    適合帳號名稱、文字等高精度辨識場景。
+    """
+    target_path = get_image_path(image_name)
+    if not target_path:
+        return None
+
+    needle_image = read_image_safe(target_path)
+    if needle_image is None:
+        return None
+
+    try:
+        if region:
+            return pyautogui.locateCenterOnScreen(
+                needle_image, confidence=confidence, grayscale=grayscale, region=region
+            )
+        return pyautogui.locateCenterOnScreen(
+            needle_image, confidence=confidence, grayscale=grayscale
+        )
+    except pyautogui.PyAutoGUIException:
+        return None
+    except Exception:
+        return None
+
 def find_and_click(image_name, custom_confidence=None, clicks=1, region=None):
     location = find_only(image_name, custom_confidence, region=region)
     if location:
@@ -185,6 +211,15 @@ def get_center_region(width_ratio=0.7, height_ratio=0.7):
     left = (screen_width - region_width) // 2
     top = (screen_height - region_height) // 2
     return (left, top, region_width, region_height)
+
+def get_region_around_point(x, y, width=900, height=420):
+    """以座標為中心產生搜尋區域，並自動限制在螢幕範圍內。"""
+    screen_width, screen_height = pyautogui.size()
+    left = max(0, int(x - width // 2))
+    top = max(0, int(y - height // 2))
+    right = min(screen_width, left + width)
+    bottom = min(screen_height, top + height)
+    return (left, top, right - left, bottom - top)
 
 def wait_seconds_with_abort(seconds, title):
     """可中止的等待。"""
@@ -342,6 +377,8 @@ def launch_game_from_steam():
     
     account_found_and_clicked = False
     who_buttons_found = False # 用於判斷是否曾找到who.png
+    target_account_images = ["e08s93.png"]
+    
     original_failsafe_state = pyautogui.FAILSAFE
     try:
         # a. 找到 'who.png' 的圖片路徑
@@ -353,7 +390,7 @@ def launch_game_from_steam():
             pyautogui.FAILSAFE = False
             
             # a. 找到畫面上所有 'who.png' 的位置
-            who_buttons = list(pyautogui.locateAllOnScreen(who_image_path, confidence=0.85, grayscale=True))
+            who_buttons = list(pyautogui.locateAllOnScreen(who_image_path, confidence=0.99, grayscale=True))
             who_buttons_found = len(who_buttons) > 0
 
             # b. 從左到右排序
@@ -370,12 +407,44 @@ def launch_game_from_steam():
                     
                     # d. 移動滑鼠到按鈕上以觸發懸停效果
                     pyautogui.moveTo(button_center.x, button_center.y, duration=0.2)
-                    time.sleep(0.5) # 等待帳號名稱出現
+                    time.sleep(0.65) # 等待帳號名稱出現
 
-                    # e. 檢查是否出現了目標帳號的圖片
-                    if find_only("loopcraft001.png", custom_confidence=0.85) or \
-                       find_only("e08s93.png", custom_confidence=0.85):
-                        
+                    # e. 只在懸停按鈕附近做比對：先嚴格再逐步放寬
+                    hover_region = get_region_around_point(button_center.x, button_center.y, width=1200, height=520)
+                    match_profiles = [
+                        ("strict_color", 0.97, False, 2),
+                        ("balanced_color", 0.94, False, 2),
+                        ("balanced_gray", 0.92, True, 1),
+                    ]
+                    account_matched = False
+
+                    for profile_name, profile_conf, profile_gray, required_hits in match_profiles:
+                        stable_hits = 0
+                        for _ in range(2):
+                            matched = False
+                            for account_image in target_account_images:
+                                if find_only_strict(
+                                    account_image,
+                                    confidence=profile_conf,
+                                    region=hover_region,
+                                    grayscale=profile_gray
+                                ):
+                                    matched = True
+                                    break
+                            if matched:
+                                stable_hits += 1
+                            time.sleep(0.12)
+
+                        print(
+                            f"   -> 帳號比對 {profile_name}: "
+                            f"hits={stable_hits}/2, conf={profile_conf}, gray={profile_gray}"
+                        )
+
+                        if stable_hits >= required_hits:
+                            account_matched = True
+                            break
+
+                    if account_matched:
                         print(f"   -> 找到目標帳號！正在點擊位於 ({button_center.x}, {button_center.y}) 的按鈕...")
                         # human_click 內部已有自己的防呆處理
                         human_click(button_center)
@@ -431,6 +500,35 @@ def launch_game_from_steam():
     time.sleep(3)
 
     print("✅ === 遊戲啟動指令已發送！ ===")
+    return True
+
+def leave_game():
+    """
+    依序離開遊戲：
+    set.png -> quit_game.png -> confirm.png -> steam_sign.png -> quit.png
+    """
+    print("\n🚪 === 開始執行離開遊戲流程 ===")
+
+    steps = [
+        ("set.png", 0.85, 1),
+        ("quit_game.png", 0.85, 1),
+        ("confirm.png", 0.88, 1),
+        ("steam_sign.png", 0.85, 1),
+        ("quit.png", 0.85, 0),
+    ]
+
+    for image_name, confidence, wait_after_click in steps:
+        print(f"   -> 嘗試點擊: {image_name}")
+        if not find_and_click(image_name, custom_confidence=confidence):
+            print(f"   -> ❌ 錯誤：找不到 '{image_name}'。")
+            save_debug_screenshot(f"leave_game_no_{os.path.splitext(image_name)[0]}")
+            return False
+
+        if wait_after_click > 0:
+            if not wait_seconds_with_abort(wait_after_click, f"等待 {image_name} 操作完成"):
+                return False
+
+    print("✅ 離開遊戲流程完成。")
     return True
 
 def consume_energy():
@@ -559,15 +657,6 @@ def consume_energy():
 
 def main():
     
-    print("🔍 正在測試函式...")
-    while True:
-        # 縮排 1: 在 while 內的程式碼
-        if consume_energy():
-            # 縮排 2: 在 if 內的程式碼
-            print("✅ 已經在遊戲內了！")
-            break  # 找到就跳出迴圈
-    
-    """
     print("🔍 正在尋找遊戲畫面...")
     
     print("\n=== OpenClaw V15 (Portable Paths) ===")
@@ -587,7 +676,7 @@ def main():
     if not wait_for_press_to_start():
         print("🛑 未能完成 'Press to Start'，程式結束。")
         return
-    """
+   
 
 """
     #刷關迴圈
