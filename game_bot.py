@@ -709,7 +709,7 @@ def leave_game():
     print("\n🚪 === 開始執行離開遊戲流程 ===")
 
     steps = [
-        ("set.png", 0.85, 1),
+        ("set.png", 0.85, 2),
         ("quit_game.png", 0.85, 1),
         ("confirm.png", 0.88, 10),
         ("steam_sign.png", 0.85, 1),

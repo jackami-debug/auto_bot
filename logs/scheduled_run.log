@@ -92,4 +92,41 @@ Traceback (most recent call last):
     bytes_consumed, errcode, data = e.encode(bufsize)
                                     ~~~~~~~~^^^^^^^^^
 KeyboardInterrupt
+^C[2026-03-03_23:00:02] scheduled run start 
+🔍 正在尋找遊戲畫面...
+
+🚀 === 開始從 Steam 啟動遊戲 ===
+   -> 正在點擊右下角以顯示桌面...
+   -> 正在尋找並雙擊 Steam 圖示...
+🎯 發現: steam_icon.png @ Point(x=np.int64(167), y=np.int64(56))
+   -> 等待 Steam 啟動... (10秒)
+   ⏳ 等待畫面: who.png (最多等 60.0 秒)...
+Traceback (most recent call last):
+  File "D:\New_world\auto_bot\game_bot.py", line 978, in <module>
+    main()
+    ~~~~^^
+  File "D:\New_world\auto_bot\game_bot.py", line 887, in main
+    launch_game_from_steam("loopcraft001.png") # 首先啟動遊戲
+    ~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^
+  File "D:\New_world\auto_bot\game_bot.py", line 570, in launch_game_from_steam
+    wait_for_image("who.png", timeout=60.0)
+    ~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\New_world\auto_bot\game_bot.py", line 372, in wait_for_image
+    location = find_only(image_name, custom_confidence)
+  File "D:\New_world\auto_bot\game_bot.py", line 163, in find_only
+    location = pyautogui.locateCenterOnScreen(needle_image, confidence=conf, grayscale=True)
+  File "C:\Users\e08s9\AppData\Local\Programs\Python\Python313\Lib\site-packages\pyautogui\__init__.py", line 172, in wrapper
+    return wrappedFunction(*args, **kwargs)
+  File "C:\Users\e08s9\AppData\Local\Programs\Python\Python313\Lib\site-packages\pyautogui\__init__.py", line 204, in locateCenterOnScreen
+    return pyscreeze.locateCenterOnScreen(*args, **kwargs)
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^
+  File "C:\Users\e08s9\AppData\Local\Programs\Python\Python313\Lib\site-packages\pyscreeze\__init__.py", line 447, in locateCenterOnScreen
+    coords = locateOnScreen(image, **kwargs)
+  File "C:\Users\e08s9\AppData\Local\Programs\Python\Python313\Lib\site-packages\pyscreeze\__init__.py", line 405, in locateOnScreen
+    retVal = locate(image, screenshotIm, **kwargs)
+  File "C:\Users\e08s9\AppData\Local\Programs\Python\Python313\Lib\site-packages\pyscreeze\__init__.py", line 383, in locate
+    points = tuple(locateAll(needleImage, haystackImage, **kwargs))
+  File "C:\Users\e08s9\AppData\Local\Programs\Python\Python313\Lib\site-packages\pyscreeze\__init__.py", line 251, in _locateAll_opencv
+    result = cv2.matchTemplate(haystackImage, needleImage, cv2.TM_CCOEFF_NORMED)
+KeyboardInterrupt
 ^C
