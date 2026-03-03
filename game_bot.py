@@ -842,11 +842,33 @@ def consume_energy(battle):
     # ==========================================
     
     
-    # 9. 點擊 "OK_02" (OK)
+    # 9. 點擊 "OK_02" 
     if not find_and_click("OK_02.png", custom_confidence=0.8):
         print("   -> ❌ 錯誤：找不到 'OK_02.png'。")
         save_debug_screenshot("ok_02_not_found")
         return False
+    
+    # 9.1 點擊 "mission_01" 
+    if not find_and_click("mission_01.png", custom_confidence=0.8, clicks=2):
+        print("   -> ❌ 錯誤：找不到 'mission_01.png'。")
+        save_debug_screenshot("mission_01_not_found")
+        return False
+        # 9.2 點擊 "daily"
+    if not find_and_click("daily.png", custom_confidence=0.8, clicks=2):
+        print("   -> ❌ 錯誤：找不到 'daily.png'。")
+        save_debug_screenshot("daily_not_found")
+        return False
+            # 9.3 點擊 "accept_all"
+    if not find_and_click("accept_all.png", custom_confidence=0.8, clicks=2):
+        print("   -> ❌ 錯誤：找不到 'accept_all.png'。")
+        save_debug_screenshot("accept_all_not_found")
+        return False
+                # 9.4 點擊 "ok_03"
+    if not find_and_click("ok_03.png", custom_confidence=0.8):
+        print("   -> ❌ 錯誤：找不到 'ok_03.png'。")
+        save_debug_screenshot("ok_03_not_found")
+        return False
+
     # 10. 點擊 "main_page" (主畫面)
     if not find_and_click("main_page.png", custom_confidence=0.8):
         print("   -> ❌ 錯誤：找不到 'main_page.png'。")
