@@ -4,7 +4,7 @@ import os
 import sys
 import subprocess
 import datetime
-import json
+import math
 
 # --- 1. 自動安裝缺失庫 ---
 def install_requirements():
@@ -44,8 +44,6 @@ except ImportError as e:
 # 修正：將圖片資料夾路徑直接設定為腳本所在的目錄，以實現可攜性
 # 這移除了所有硬編碼的路徑，讓程式更容易轉移
 IMAGE_FOLDER = os.path.dirname(os.path.abspath(__file__))
-SHOP_WHITELIST_FOLDER = os.path.join(IMAGE_FOLDER, "shop_whitelist")
-SHOP_PURCHASE_HISTORY_FILE = os.path.join(SHOP_WHITELIST_FOLDER, "_bought_once.json")
 
 # 檢查該路徑是否存在（雖然它應該永遠存在）
 if not os.path.isdir(IMAGE_FOLDER):
@@ -268,15 +266,19 @@ def handle_dialog_windows():
         ("OK03.png", 0.92, 1),
         ("close.png", 0.92, 1),
         ("close_02.png", 0.92, 1),
+        ("close_03.png", 0.92, 1),
     ]
     common_buttons = [
         ("confirm.png", 0.9, 1),
         ("ok.png", 0.92, 1),
         ("OK.png", 0.92, 1),
         ("OK03.png", 0.92, 1),
-        ("accept_all.png", 0.9, 1),
+        ("close_05.png", 0.8, 1),
+        ("close_03.png", 0.92, 1),
+        #("accept_all.png", 0.99, 1),
         ("close.png", 0.92, 1),
         ("close_02.png", 0.92, 1),
+
     ]
 
     # 先檢查 warn，再嘗試關閉後續視窗
@@ -358,185 +360,41 @@ def wait_for_press_to_start(max_wait_seconds=120, center_click_interval=3.0):
 
 def wait_for_image(image_name, timeout=15.0, custom_confidence=None):
     """
-    動態等待直到畫面出現指定的圖片。
-    :param image_name: 要等待的圖片名稱
+    動態等待直到畫面出現指定的圖片（支援單一圖片或多張圖片列表）。
+    :param image_name: 要等待的圖片名稱 (字串 str) 或 圖片名稱列表 (列表 list)
     :param timeout: 最多等幾秒 (預設 15 秒)
     :param custom_confidence: 辨識信心度
-    :return: 找到回傳 True，超時回傳 False
+    :return: 找到任何一張回傳 True，超時回傳 False
     """
-    print(f"   ⏳ 等待畫面: {image_name} (最多等 {timeout} 秒)...")
+    # 1. 統一型別：如果傳入的是單一字串，就把它包裝成列表
+    if isinstance(image_name, str):
+        image_targets = [image_name]
+    else:
+        image_targets = image_name
+
+    # 為了讓 print 印出來好看，把列表變成用逗號隔開的字串
+    target_names_str = ", ".join(image_targets)
+    print(f"   ⏳ 等待畫面: {target_names_str} (最多等 {timeout} 秒)...")
+    
     start_time = time.time()
     
     while time.time() - start_time < timeout:
-        # 呼叫我們之前寫好的 find_only 函式來找圖 (只看不點)
-        location = find_only(image_name, custom_confidence)
-        
-        if location:
-            elapsed = time.time() - start_time
-            print(f"   ✅ 畫面出現了！(耗時 {elapsed:.1f} 秒)")
-            return True
+        # 2. 輪流檢查列表中的每一張圖片
+        for img in image_targets:
+            # 呼叫之前寫好的 find_only 函式來找圖 (這時 img 保證是單一字串，不會再報錯)
+            location = find_only(img, custom_confidence)
             
-        # 每 0.5 秒檢查一次，避免 CPU 跑到 100%
+            if location:
+                elapsed = time.time() - start_time
+                # 稍微修改印出內容，標示出具體是找到哪一張圖
+                print(f"   ✅ 畫面出現了！({img}) (耗時 {elapsed:.1f} 秒)")
+                return True
+                
+        # 每 0.5 秒檢查一次，避免 CPU 跑到 100% (移到 for 迴圈外面，等所有圖片都找過一輪才 sleep)
         time.sleep(0.5)
         
-    print(f"   ❌ 等待超時 ({timeout} 秒)，沒看到 {image_name}！")
+    print(f"   ❌ 等待超時 ({timeout} 秒)，沒看到 {target_names_str}！")
     return False
-
-def normalize_shop_item_name(item_filename):
-    return os.path.basename(item_filename).strip().lower()
-
-def load_shop_purchase_history():
-    default_history = {"version": 1, "accounts": {}}
-    if not os.path.exists(SHOP_PURCHASE_HISTORY_FILE):
-        return default_history
-
-    try:
-        with open(SHOP_PURCHASE_HISTORY_FILE, "r", encoding="utf-8") as f:
-            loaded = json.load(f)
-    except Exception as e:
-        print(f"   -> ⚠️ 讀取購買紀錄失敗，改用空白紀錄: {e}")
-        return default_history
-
-    if not isinstance(loaded, dict):
-        return default_history
-    if "accounts" not in loaded or not isinstance(loaded.get("accounts"), dict):
-        loaded["accounts"] = {}
-    if "version" not in loaded:
-        loaded["version"] = 1
-    return loaded
-
-def save_shop_purchase_history(history):
-    os.makedirs(SHOP_WHITELIST_FOLDER, exist_ok=True)
-    temp_file = SHOP_PURCHASE_HISTORY_FILE + ".tmp"
-    with open(temp_file, "w", encoding="utf-8") as f:
-        json.dump(history, f, ensure_ascii=False, indent=2)
-    os.replace(temp_file, SHOP_PURCHASE_HISTORY_FILE)
-
-def get_account_shop_history(history, account_key):
-    accounts = history.setdefault("accounts", {})
-    return accounts.setdefault(account_key, {})
-
-def mark_shop_item_bought(history, account_key, item_filename):
-    account_history = get_account_shop_history(history, account_key)
-    normalized_name = normalize_shop_item_name(item_filename)
-    account_history[normalized_name] = {
-        "filename": item_filename,
-        "bought_at": datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
-    }
-    save_shop_purchase_history(history)
-
-def open_shop_page():
-    print("\n🛒 === 嘗試進入商店 ===")
-    if not find_and_click("store.png", custom_confidence=0.8):
-        print("   -> ⚠️ 找不到 'store.png'，本輪略過商店購買。")
-        return False
-
-    time.sleep(2.0)
-    if find_only("shops.png", custom_confidence=0.75):
-        print("   -> ✅ 已進入商店畫面。")
-    else:
-        print("   -> ⚠️ 未偵測到 'shops.png'，仍嘗試以白名單掃描購買。")
-    return True
-
-def scroll_shop_page(direction='down', amount=600):
-    center_x, center_y = pyautogui.size()
-    center_x = center_x // 2
-    center_y = center_y // 2
-    pyautogui.moveTo(center_x, center_y, duration=random.uniform(0.2, 0.4))
-    multiplier = -1 if direction == 'down' else 1
-    pyautogui.scroll(amount * multiplier)
-
-def buy_daily_shop_items_once(account_key, max_scrolls=2):
-    """
-    只購買白名單內且「此帳號尚未買過」的商品。
-    買成功後會立即寫入 shop_whitelist/_bought_once.json，後續執行將永久略過。
-    """
-    print(f"\n🛍️ === 每日商店白名單購買（帳號: {account_key}）===")
-
-    if not open_shop_page():
-        return 0
-
-    if not os.path.exists(SHOP_WHITELIST_FOLDER):
-        os.makedirs(SHOP_WHITELIST_FOLDER)
-        print(f"   -> ⚠️ 找不到白名單資料夾，已建立: {SHOP_WHITELIST_FOLDER}")
-        return 0
-
-    whitelist_items = sorted(
-        f for f in os.listdir(SHOP_WHITELIST_FOLDER)
-        if f.lower().endswith((".png", ".jpg", ".jpeg"))
-    )
-    if not whitelist_items:
-        print(f"   -> ⚠️ 白名單為空，請放入商品截圖: {SHOP_WHITELIST_FOLDER}")
-        find_and_click("main_page.png", custom_confidence=0.8)
-        return 0
-
-    purchase_history = load_shop_purchase_history()
-    account_history = get_account_shop_history(purchase_history, account_key)
-    pending_items = [
-        f for f in whitelist_items
-        if normalize_shop_item_name(f) not in account_history
-    ]
-
-    if not pending_items:
-        print("   -> ℹ️ 白名單商品都已買過，本輪不再購買。")
-        find_and_click("main_page.png", custom_confidence=0.8)
-        return 0
-
-    print(f"   -> 本輪待購買 {len(pending_items)} 項: {', '.join(pending_items)}")
-    items_bought = 0
-    scrolls_done = 0
-
-    while scrolls_done <= max_scrolls and pending_items:
-        bought_something_on_this_screen = False
-
-        for item_filename in list(pending_items):
-            relative_path = os.path.join("shop_whitelist", item_filename)
-            location = find_only_strict(relative_path, confidence=0.7, grayscale=False)
-            if not location:
-                continue
-
-            print(f"   -> 🎯 找到白名單商品: {item_filename}")
-            human_click(location)
-            time.sleep(1.0)
-
-            if find_and_click("buy_confirm_btn.png", custom_confidence=0.8):
-                print("   -> ✅ 已完成購買並寫入一次性紀錄。")
-                items_bought += 1
-                mark_shop_item_bought(purchase_history, account_key, item_filename)
-                pending_items.remove(item_filename)
-                time.sleep(2.0)
-                find_and_click("ok_03.png", custom_confidence=0.8)
-                time.sleep(1.2)
-            else:
-                print("   -> ⚠️ 未找到確認按鈕，可能已售完或貨幣不足。")
-                pyautogui.click(960, 200)
-                time.sleep(1.0)
-
-            bought_something_on_this_screen = True
-            break
-
-        if pending_items and not bought_something_on_this_screen:
-            if scrolls_done < max_scrolls:
-                print(f"   -> ⬇️ 本屏未命中，向下滾動繼續搜尋 ({scrolls_done + 1}/{max_scrolls})")
-                scroll_shop_page(direction='down', amount=600)
-                time.sleep(1.5)
-                scrolls_done += 1
-            else:
-                print("   -> ℹ️ 已到達最大滾動次數，停止本輪商店掃描。")
-                break
-
-    if scrolls_done > 0:
-        for _ in range(scrolls_done):
-            scroll_shop_page(direction='up', amount=650)
-            time.sleep(0.5)
-
-    if pending_items:
-        print(f"   -> 尚未購得 {len(pending_items)} 項（下次會再嘗試）: {', '.join(pending_items)}")
-    print(f"✅ 商店購買結束，本輪成功購買 {items_bought} 項。")
-
-    find_and_click("main_page.png", custom_confidence=0.8)
-    time.sleep(1.0)
-    return items_bought
 
 def launch_game_from_steam(name = "steam_icon.png"):
     """
@@ -744,7 +602,7 @@ def consume_energy(battle):
     
     # 3. 點擊 "activity"
     wait_for_image("activity.png", timeout=60.0)
-    if not find_and_click("activity.png", custom_confidence=0.8,clicks=2):
+    if not find_and_click("activity.png", custom_confidence=0.8):
         print("   -> ❌ 錯誤：找不到 'activity.png'。")
         save_debug_screenshot("no_activity_button")
         return False
@@ -763,7 +621,6 @@ def consume_energy(battle):
         case 8:
             # 5. 點擊 "battle7" 右方的關卡
             # 策略：以 "battle7" 按鈕位置為基準，向右偏移來點擊關卡
-            wait_for_image("battle7.png", timeout=60.0)
             print("   -> 嘗試點擊 'battle7' 按鈕右方的關卡...")
             battle_location = find_only("battle7.png", custom_confidence=0.9)
             # 假設關卡在右方約 250 像素的位置，Y 軸不變。這是一個估計值。
@@ -774,7 +631,6 @@ def consume_energy(battle):
             
         case 7:
             # 5. 點擊 "battle7" 右方的關卡
-            wait_for_image("battle7.png", timeout=60.0)
             print("   -> 嘗試點擊 'battle7' 按鈕右方的關卡...")
             find_and_click("battle7.png", custom_confidence=0.9)
 
@@ -854,34 +710,432 @@ def consume_energy(battle):
         return False
     return True
 
+def dispatch():
+    """
+    依序進行部屬：
+    set.png -> quit_game.png -> confirm.png -> steam_sign.png -> quit.png
+    """
+    print("\n🚪 === 開始執行離開遊戲流程 ===")
+
+    steps = [
+        ("dispatch.png", 0.85, 1),
+        ("all_accept.png", 0.85, 1),
+        ("ok.png", 0.88, 10),
+        ("all_dispatch.png", 0.85, 1),
+        ("backward_02.png", 0.80, 0),
+    ]
+
+    for image_name, confidence, wait_after_click in steps:
+        print(f"   -> 嘗試點擊: {image_name}")
+        wait_for_image(image_name, timeout=120)
+        if not find_and_click(image_name, custom_confidence=confidence):
+            print(f"   -> ❌ 錯誤：找不到 '{image_name}'。")
+            save_debug_screenshot(f"leave_game_no_{os.path.splitext(image_name)[0]}")
+            return False
+
+        if wait_after_click > 0:
+            if not wait_seconds_with_abort(wait_after_click, f"等待 {image_name} 操作完成"):
+                return False
+
+    print("✅ 完成派遣。")
+    return True
+
+def swap_coins():
+    steps = [
+        ("fight.png", 0.85, 1),
+        ("resource.png", 0.85, 1),
+        ("coins.png", 0.88, 10),
+        ("level_5.png", 0.90, 1),
+        ("swap04.png", 0.80, 0),
+        ("confirm.png", 0.80, 0),
+        ("OK.png", 0.80, 0),
+        ("backward_03.png", 0.80, 0),
+    ]
+
+    for image_name, confidence, wait_after_click in steps:
+        print(f"   -> 嘗試點擊: {image_name}")
+        wait_for_image(image_name, timeout=120)
+        if not find_and_click(image_name, custom_confidence=confidence):
+            print(f"   -> ❌ 錯誤：找不到 '{image_name}'。")
+            save_debug_screenshot(f"leave_game_no_{os.path.splitext(image_name)[0]}")
+            return False
+
+        if wait_after_click > 0:
+            if not wait_seconds_with_abort(wait_after_click, f"等待 {image_name} 操作完成"):
+                return False
+
+    print("✅ 完成每日金幣掃蕩。")
+    return True
+
+def swap_refine(element = "water"):
+    steps = [
+        ("refine.png", 0.85, 1),
+        (f"{element}_refine.png", 0.85, 1),
+        ("level_04.png", 0.88, 10),
+        ("swap04.png", 0.85, 1),
+        ("confirm.png", 0.80, 0),
+        ("OK.png", 0.80, 0),
+        ("backward_03.png", 0.80, 0),
+    ]
+
+    for image_name, confidence, wait_after_click in steps:
+        print(f"   -> 嘗試點擊: {image_name}")
+        wait_for_image(image_name, timeout=120)
+        if not find_and_click(image_name, custom_confidence=confidence):
+            print(f"   -> ❌ 錯誤：找不到 '{image_name}'。")
+            save_debug_screenshot(f"leave_game_no_{os.path.splitext(image_name)[0]}")
+            return False
+
+        if wait_after_click > 0:
+            if not wait_seconds_with_abort(wait_after_click, f"等待 {image_name} 操作完成"):
+                return False
+
+    print("✅ 完成每日金幣掃蕩。")
+    return True
+
+def swap_bond(level = "01"):
+    steps = [
+        ("bond.png", 0.85, 1),
+        (f"bond_level_{level}.png", 0.85, 1),
+        (f"{level}_level.png", 0.85, 1),
+        ("swap04.png", 0.85, 1),
+        ("max.png", 0.80, 0),
+        ("confirm.png", 0.80, 0),
+        ("OK.png", 0.80, 0),
+        ("backward_03.png", 0.80, 0),
+    ]
+
+    for image_name, confidence, wait_after_click in steps:
+        print(f"   -> 嘗試點擊: {image_name}")
+        wait_for_image(image_name, timeout=120)
+        if not find_and_click(image_name, custom_confidence=confidence):
+            print(f"   -> ❌ 錯誤：找不到 '{image_name}'。")
+            save_debug_screenshot(f"leave_game_no_{os.path.splitext(image_name)[0]}")
+            return False
+
+        if wait_after_click > 0:
+            if not wait_seconds_with_abort(wait_after_click, f"等待 {image_name} 操作完成"):
+                return False
+
+    print("✅ 完成每日神伴掃蕩。")
+    return True
+
+def use_expiring_energy():
+    search_area = (406, 427, 881, 233)
+    while find_only("hour_label.png", custom_confidence=0.7, region=search_area):
+        human_click(find_only("hour_label.png", custom_confidence=0.7, region=search_area), clicks=1)
+    
+        #0點擊 OK03.png
+    print("-> 嘗試點擊: OK03.png")
+    wait_for_image("OK03.png", timeout=120)
+    if not find_and_click("OK03.png", custom_confidence=0.85):
+        print(f"   -> ❌ 錯誤：找不到 'OK03.png'。")
+        save_debug_screenshot(f"leave_game_no_ok03")
+        return False
+        #0點擊 confirm.png
+    print("-> 嘗試點擊: confirm.png")
+    wait_for_image("confirm.png", timeout=120)
+    if not find_and_click("confirm.png", custom_confidence=0.85):
+        print(f"   -> ❌ 錯誤：找不到 'confirm.png'。")
+        save_debug_screenshot(f"leave_game_no_confirm")
+        return False
+        
+def swap_activity(battle = 7):
+    steps = [
+        ("daily_activity.png", 0.85, 1),
+        ("activity.png", 0.85, 1),
+        ("battle.png", 0.85, 1),
+        (f"battle{battle}.png", 0.85, 1),
+        ("plus.png", 0.85, 1),
+        use_expiring_energy,  # 👈 關鍵修改：拔掉括號！只傳遞函式「名稱」本身
+        ("swap04.png", 0.80, 0),
+        ("max.png", 0.80, 0),
+        ("confirm.png", 0.80, 0),
+        ("ok_03.png", 0.80, 0),
+        ("home.png", 0.80, 0),
+    ]
+
+    for step in steps:
+        # 判斷這一步是不是一個函式 (Function)
+        if callable(step):
+            print(f"   -> 執行插入的特殊程序...")
+            step()  # 👈 在這裡加上括號，才真正去執行它
+            continue # 執行完函式就跳過下面的圖片點擊邏輯，進入下一步迴圈
+
+        # 如果不是函式，那就是原本的 tuple，我們把它解包
+        image_name, confidence, wait_after_click = step
+
+        print(f"   -> 嘗試點擊: {image_name}")
+        wait_for_image(image_name, timeout=120)
+        
+        if not find_and_click(image_name, custom_confidence=confidence):
+            print(f"   -> ❌ 錯誤：找不到 '{image_name}'。")
+            save_debug_screenshot(f"leave_game_no_{os.path.splitext(image_name)[0]}")
+            return False
+
+        if wait_after_click > 0:
+            if not wait_seconds_with_abort(wait_after_click, f"等待 {image_name} 操作完成"):
+                return False
+
+    print("✅ 完成每日活動掃蕩。")
+    return True
+
+def swap_pvp_normal(round = 5):
+    #0點擊 PVP
+    print("-> 嘗試點擊: PVP")
+    wait_for_image("pvp.png", timeout=120)
+    if not find_and_click("pvp.png", custom_confidence=0.85):
+        print(f"   -> ❌ 錯誤：找不到 'pvp.png'。")
+        save_debug_screenshot(f"leave_game_no_pvp")
+        return False
+
+    #1點擊一般
+    print("-> 嘗試點擊: 一般")
+    wait_for_image("normal.png", timeout=120)
+    if not find_and_click("normal.png", custom_confidence=0.85):
+        print(f"   -> ❌ 錯誤：找不到 'normal.png'。")
+        save_debug_screenshot(f"leave_game_no_normal")
+        return False
+    for i in range(round):
+    #2點擊出戰
+        print("-> 嘗試點擊: 出戰")
+        wait_for_image("fight_02.png", timeout=120)
+        if not find_and_click("fight_02.png", custom_confidence=0.85):
+            print(f"   -> ❌ 錯誤：找不到 'fight_02.png'。")
+            save_debug_screenshot(f"leave_game_no_fight_02")
+            return False
+    #2點擊skip
+        print("-> 嘗試點擊: skip")
+        wait_for_image("skip.png", timeout=120)
+        if not find_and_click("skip.png", custom_confidence=0.85):
+            print(f"   -> ❌ 錯誤：找不到 'skip.png'。")
+            save_debug_screenshot(f"leave_game_no_skip")
+            return False
+    #2.1 wait till victory or defeated
+        print("-> 等待戰鬥結果...")
+        wait_for_image(["new_rank.png","defeated.png"], timeout=120)
+    #3判斷勝利或是失敗
+        if find_only("new_rank.png", custom_confidence=0.85):
+            print("-> 本輪 PVP 勝利！")
+            find_and_click("ok.png", custom_confidence=0.85)
+            find_and_click("back.png", custom_confidence=0.85)
+        elif find_only("defeated.png", custom_confidence=0.85):
+            print("-> 本輪 PVP 失敗...")
+            find_and_click("back.png", custom_confidence=0.85)
+    #2點擊backward_04
+    print("-> 嘗試點擊: backward_04")
+    wait_for_image("backward_04.png", timeout=120)
+    if not find_and_click("backward_04.png", custom_confidence=0.85):
+        print(f"   -> ❌ 錯誤：找不到 'backward_04.png'。")
+        save_debug_screenshot(f"leave_game_no_backward_04")
+        return False    
+
+
+    print("✅ 完成每日一般競技場出戰。")
+    return True
+
+def swap_pvp_special(round = 5):
+    #1點擊special
+    print("-> 嘗試點擊: special")
+    wait_for_image("special.png", timeout=120)
+    if not find_and_click("special.png", custom_confidence=0.85):
+        print(f"   -> ❌ 錯誤：找不到 'special.png'。")
+        save_debug_screenshot(f"leave_game_no_special")
+        return False
+    for i in range(round):
+    #2點擊出戰
+        print("-> 嘗試點擊: 出戰")
+        wait_for_image("fight_02.png", timeout=120)
+        if not find_and_click("fight_02.png", custom_confidence=0.85):
+            print(f"   -> ❌ 錯誤：找不到 'fight_02.png'。")
+            save_debug_screenshot(f"leave_game_no_fight_02")
+            return False
+    #2點擊skip
+        print("-> 嘗試點擊: skip")
+        wait_for_image("skip.png", timeout=120)
+        if not find_and_click("skip.png", custom_confidence=0.85):
+            print(f"   -> ❌ 錯誤：找不到 'skip.png'。")
+            save_debug_screenshot(f"leave_game_no_skip")
+            return False
+    #2.1 wait till victory or defeated
+        print("-> 等待戰鬥結果...")
+        wait_for_image(["new_rank.png","defeated.png"], timeout=120)
+    #3判斷勝利或是失敗
+        if find_only("new_rank.png", custom_confidence=0.85):
+            print("-> 本輪 PVP 勝利！")
+            find_and_click("ok.png", custom_confidence=0.85)
+            find_and_click("back.png", custom_confidence=0.85)
+        elif find_only("defeated.png", custom_confidence=0.85):
+            print("-> 本輪 PVP 失敗...")
+            find_and_click("back.png", custom_confidence=0.85)
+    #4點擊backward_05
+    print("-> 嘗試點擊: backward_05")
+    wait_for_image("backward_05.png", timeout=120)
+    if not find_and_click("backward_05.png", custom_confidence=0.85):
+        print(f"   -> ❌ 錯誤：找不到 'backward_05.png'。")
+        save_debug_screenshot(f"leave_game_no_backward_05")
+        return False    
+    #5點擊backward_05(回主畫面)
+    print("-> 嘗試點擊: backward_05")
+    wait_for_image("backward_05.png", timeout=120)
+    if not find_and_click("backward_05.png", custom_confidence=0.85):
+        print(f"   -> ❌ 錯誤：找不到 'backward_05.png'。")
+        save_debug_screenshot(f"leave_game_no_backward_05")
+        return False   
+
+    print("✅ 完成每日特殊競技場出戰。")
+    return True
+
+def get_daily_rewards():
+
+    print("\n🚪 === 開始領取獎勵流程 ===")
+
+    steps = [
+        ("rewards.png", 0.85, 1),
+        ("get_all.png", 0.85, 1),
+        ("ok.png", 0.88, 10),
+        ("backward_02.png", 0.85, 1),
+    ]
+
+    for image_name, confidence, wait_after_click in steps:
+        print(f"   -> 嘗試點擊: {image_name}")
+        wait_for_image(image_name, timeout=120)
+        if not find_and_click(image_name, custom_confidence=confidence):
+            print(f"   -> ❌ 錯誤：找不到 '{image_name}'。")
+            save_debug_screenshot(f"leave_game_no_{os.path.splitext(image_name)[0]}")
+            return False
+
+        if wait_after_click > 0:
+            if not wait_seconds_with_abort(wait_after_click, f"等待 {image_name} 操作完成"):
+                return False
+
+    print("✅ 完成派遣。")
+    return True
+
+def human_scroll(target_x, target_y, total_scroll, direction='down'):
+    """
+    擬人化移動滑鼠並滾動滾輪
+    
+    :param target_x: 目標區域的中心 X 座標
+    :param target_y: 目標區域的中心 Y 座標
+    :param total_scroll: 預計總共要滾動的單位 (大約值，例如 500)
+    :param direction: 'down' (向下滾) 或 'up' (向上滾)
+    """
+    print(f"👉 準備移動至 ({target_x}, {target_y}) 並向{direction}滾動...")
+
+    # ==========================================
+    # 1. 擬人化移動滑鼠 (Human-like Mouse Movement)
+    # ==========================================
+    
+    # 隨機偏移座標 (在目標點周圍 20x20 像素內隨機落點)
+    offset_x = target_x + random.randint(-15, 15)
+    offset_y = target_y + random.randint(-15, 15)
+    
+    # 隨機移動時間 (0.3秒 到 0.8秒之間)
+    move_duration = random.uniform(0.3, 0.8)
+    
+    # 使用 easeOutQuad 讓滑鼠軌跡「先快後慢」，非常像真人的手部動作
+    pyautogui.moveTo(offset_x, offset_y, duration=move_duration, tween=pyautogui.easeOutQuad)
+    
+    # 移動到定位後，稍微停頓一下才開始滾 (人類反應時間)
+    time.sleep(random.uniform(0.1, 0.3))
+
+    # ==========================================
+    # 2. 擬人化分段滾動 (Human-like Scrolling)
+    # ==========================================
+    
+    # 決定滾動方向的符號 (PyAutoGUI 往下滾是負數，往上滾是正數)
+    multiplier = -1 if direction == 'down' else 1
+    
+    # 把總滾動量拆分成 2 到 4 次的「小滾動」(分段進行)
+    chunks = random.randint(2, 4)
+    base_scroll_per_chunk = total_scroll // chunks
+    
+    print(f"   ⚙️ 分 {chunks} 段滾動...")
+    
+    for i in range(chunks):
+        # 每次的小滾動再加入一點點隨機誤差 (例如原本預計滾 100，變成滾 85~115)
+        actual_scroll = base_scroll_per_chunk + random.randint(-20, 20)
+        
+        # 執行滾動
+        pyautogui.scroll(actual_scroll * multiplier)
+        
+        # 每次手指撥動滾輪之間，會有微小的停頓
+        time.sleep(random.uniform(0.05, 0.15))
+        
+    # 滾完之後再稍微停頓一下，讓遊戲畫面有時間加載或平滑滑動
+    time.sleep(random.uniform(0.2, 0.5))
+    print("   ✅ 滾動完成！")
+
+def scroll_at_image(image_name, total_scroll, direction='down', custom_confidence=None, region=None):
+    """
+    [新功能] 自動尋找圖片位置並執行擬人化滾動
+    
+    :param image_name: 要尋找的圖片檔名
+    :param total_scroll: 滾動的距離
+    :param direction: 滾動方向 ('down' 或 'up')
+    :return: 成功回傳 True，找不到圖片回傳 False
+    """
+    print(f"🔍 尋找目標: {image_name} 以執行滾動...")
+    location = find_only(image_name, custom_confidence, region)
+    
+    if location:
+        x, y = location
+        print(f"🎯 成功找到目標，座標: ({int(x)}, {int(y)})")
+        human_scroll(x, y, total_scroll, direction)
+        return True
+    else:
+        print(f"❌ 找不到圖片 {image_name}，取消滾動操作。")
+        return False
+
+def daily_job(accout_name="loopcraft001",element = "thorns", activity_battle = 7, pvp_normal_round = 2,pvpspecial_round = 2):
+    """
+    執行每日任務的完整流程：
+    1. 啟動遊戲並等待進入主畫面
+    2. 處理可能的對話框
+    3. 執行部屬
+    4. 金幣掃蕩
+    5. 試煉掃蕩
+    6. 神伴掃蕩
+    7. 活動掃蕩
+    8. 一般競技場出戰
+    9. 特殊競技場出戰
+    10. 領取獎勵
+    11. 離開遊戲
+
+    :param account_name: Steam 上的帳號名稱，用於啟動遊戲
+    :param element: 試煉掃蕩的元素類型 (例如 "thorns", "water", "fire" 等)
+    :param battle: 活動掃蕩的關卡編號 (例如 7 或 8)
+    :param pvp_round: PVP 出戰的輪數 (例如 2)
+    """
+    print("🔍 正在尋找遊戲畫面...")
+    not_found_streak = 0
+    time.sleep(5) 
+    launch_game_from_steam(accout_name) # 首先啟動遊戲
+    time.sleep(5) # 等待遊戲啟動指令發送後的一些時間，讓 Steam 和遊戲有機會開始載入
+    wait_for_press_to_start(max_wait_seconds=120)# 啟動後，直接持續全螢幕找 Press to Start，直到成功
+    time.sleep(5) # 確保進入遊戲後的畫面穩定
+    handle_dialog_windows() # 處理可能的對話框
+    time.sleep(5)
+    dispatch() # 部屬
+    swap_coins() # 金幣掃蕩
+    swap_refine(element) # 試煉掃蕩
+    swap_bond(level = "03") # 神伴掃蕩
+    swap_activity(activity_battle)
+    swap_pvp_normal(pvp_normal_round)
+    swap_pvp_special(pvpspecial_round)
+    get_daily_rewards()
+    time.sleep(20) # 等待一些時間，確保流程完成
+    leave_game() # 執行離開遊戲的流程
+
+    print("🔍 完成每日任務...")
+
 # --- 5. 主程式 ---
 
 def main():
-    
-    print("🔍 正在尋找遊戲畫面...")
-
-    not_found_streak = 0
-        
-    launch_game_from_steam("loopcraft001.png") # 首先啟動遊戲
-    time.sleep(5) # 等待遊戲啟動指令發送後的一些時間，讓 Steam 和遊戲有機會開始載入
-    wait_for_press_to_start(max_wait_seconds=120)# 啟動後，直接持續全螢幕找 Press to Start，直到成功
-    time.sleep(5) # 確保進入遊戲後的畫面穩
-    consume_energy(7)
-    time.sleep(10) # 等待一些時間，確保流程完成
-    leave_game() # 執行離開遊戲的流程
-
-    print("🔍 正在尋找遊戲畫面2...")
-
-    not_found_streak = 0
-        
-    launch_game_from_steam("e08s93.123.png") # 首先啟動遊戲
-    wait_for_press_to_start(max_wait_seconds=120)# 啟動後，直接持續全螢幕找 Press to Start，直到成功
-    time.sleep(5)
-    consume_energy(7) # 執行消耗體力的流程
-    time.sleep(10) # 等待一些時間，確保流程完成
-    leave_game() # 執行離開遊戲的流程
-    
-
+    daily_job(accout_name="e08s93",element = "water", activity_battle = 7, pvp_normal_round = 1,pvpspecial_round = 1)
+    daily_job(accout_name="e08s93.123",element = "thorns", activity_battle = 7, pvp_normal_round = 5,pvpspecial_round = 1)
+    daily_job(accout_name="loopcraft001",element = "thorns", activity_battle = 7, pvp_normal_round = 5,pvpspecial_round = 5)
 
 
 # #功能測試迴圈
