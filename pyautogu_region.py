@@ -158,22 +158,16 @@ class RegionPickerApp:
         self._keep_overlay_topmost()
 
     def _create_default_selection(self) -> None:
-        width = max(260, self.screen_w // 4)
-        height = max(160, self.screen_h // 4)
-        x1 = (self.screen_w - width) // 2
-        y1 = (self.screen_h - height) // 2
-        x2 = x1 + width
-        y2 = y1 + height
-        self.selection = (x1, y1, x2, y2)
-
+        self.selection = None
         self.rect_id = self.canvas.create_rectangle(
-            x1,
-            y1,
-            x2,
-            y2,
+            0,
+            0,
+            0,
+            0,
             outline="white",
             width=2,
             dash=(4, 4),
+            state="hidden",
         )
 
     def _draw_overlay_guides(self) -> None:
@@ -296,6 +290,7 @@ class RegionPickerApp:
 
         if self.selection is None:
             self.selection = (x, y, x + self.MIN_SIZE, y + self.MIN_SIZE)
+            self.canvas.itemconfig(self.rect_id, state="normal")
         self.drag_origin = self._normalize_selection(self.selection)
 
         if mode == "draw":
@@ -376,11 +371,17 @@ class RegionPickerApp:
             self.canvas.configure(cursor="crosshair")
 
     def _render_selection(self) -> None:
-        if self.canvas is None or self.rect_id is None or self.selection is None:
+        if self.canvas is None or self.rect_id is None:
+            return
+
+        if self.selection is None:
+            self.canvas.itemconfig(self.rect_id, state="hidden")
+            self.canvas.itemconfig(self.value_text_id, text="")
             return
 
         x1, y1, x2, y2 = self._normalize_selection(self.selection)
         self.selection = (x1, y1, x2, y2)
+        self.canvas.itemconfig(self.rect_id, state="normal")
         self.canvas.coords(self.rect_id, x1, y1, x2, y2)
 
         width = x2 - x1
