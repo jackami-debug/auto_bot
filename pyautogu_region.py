@@ -1,4 +1,25 @@
 import tkinter as tk
+import time
+import sys
+import ctypes
+
+try:
+    from pynput import keyboard as pynput_keyboard
+except Exception:
+    pynput_keyboard = None
+
+
+def _enable_windows_dpi_awareness() -> None:
+    if not sys.platform.startswith("win"):
+        return
+
+    try:
+        ctypes.windll.shcore.SetProcessDpiAwareness(2)
+    except Exception:
+        try:
+            ctypes.windll.user32.SetProcessDPIAware()
+        except Exception:
+            pass
 
 
 class RegionPickerApp:
@@ -8,7 +29,7 @@ class RegionPickerApp:
     def __init__(self, root: tk.Tk) -> None:
         self.root = root
         self.root.title("pyauto-region")
-        self.root.geometry("560x260")
+        self.root.geometry("560x300")
         self.root.resizable(False, False)
 
         self.region = None
@@ -25,12 +46,26 @@ class RegionPickerApp:
         self.screen_w = 0
         self.screen_h = 0
         self.dash_offset = 0
+        self.last_enter_trigger = 0.0
+        self.global_listener = None
+        self.global_enabled = tk.BooleanVar(value=False)
+        detected_resolution = f"{self.root.winfo_screenwidth()}x{self.root.winfo_screenheight()}"
+        self.resolution_options = [
+            f"Auto ({detected_resolution})",
+            "1920x1080",
+            "1600x900",
+            "1366x768",
+            "1280x720",
+            "2560x1440",
+        ]
+        self.resolution_var = tk.StringVar(value=self.resolution_options[0])
 
         self.region_var = tk.StringVar(value="(x, y, width, height)")
         self.status_var = tk.StringVar(value="Press Enter to start selecting region.")
 
         self._build_ui()
-        self.root.bind("<Return>", self._start_selection_from_key)
+        self.root.bind("<Return>", self._on_enter_pressed)
+        self.root.protocol("WM_DELETE_WINDOW", self._on_close)
         self.root.after(120, self.root.focus_force)
 
     def _build_ui(self) -> None:
@@ -58,6 +93,48 @@ class RegionPickerApp:
             pady=10,
         )
         desc.pack(fill="x")
+
+        resolution_row = tk.Frame(container)
+        resolution_row.pack(fill="x", pady=(0, 8))
+
+        resolution_label = tk.Label(
+            resolution_row,
+            text="Resolution:",
+            font=("Segoe UI", 10),
+            anchor="w",
+        )
+        resolution_label.pack(side="left")
+
+        resolution_menu = tk.OptionMenu(
+            resolution_row,
+            self.resolution_var,
+            *self.resolution_options,
+        )
+        resolution_menu.configure(font=("Segoe UI", 10), width=18)
+        resolution_menu.pack(side="left", padx=(8, 0))
+
+        global_row = tk.Frame(container)
+        global_row.pack(fill="x", pady=(2, 8))
+
+        global_check = tk.Checkbutton(
+            global_row,
+            text="Global Enter listen",
+            variable=self.global_enabled,
+            command=self._toggle_global_listener,
+            font=("Segoe UI", 10),
+            anchor="w",
+        )
+        global_check.pack(side="left")
+
+        if pynput_keyboard is None:
+            global_check.configure(state="disabled")
+            note = tk.Label(
+                global_row,
+                text="(install: pip install pynput)",
+                font=("Segoe UI", 9),
+                fg="#a35300",
+            )
+            note.pack(side="left", padx=(8, 0))
 
         row = tk.Frame(container)
         row.pack(fill="x", pady=(12, 6))
@@ -97,9 +174,19 @@ class RegionPickerApp:
         )
         status.pack(fill="x")
 
-    def _start_selection_from_key(self, _event) -> None:
+    def _on_enter_pressed(self, _event=None) -> None:
+        self._trigger_enter_action()
+
+    def _trigger_enter_action(self) -> None:
+        now = time.monotonic()
+        if now - self.last_enter_trigger < 0.22:
+            return
+        self.last_enter_trigger = now
+
         if self.overlay is None:
             self.start_selection()
+        else:
+            self._confirm_selection()
 
     def start_selection(self) -> None:
         if self.overlay is not None:
@@ -109,8 +196,7 @@ class RegionPickerApp:
         self.overlay.withdraw()
         self.overlay.overrideredirect(True)
 
-        self.screen_w = self.overlay.winfo_screenwidth()
-        self.screen_h = self.overlay.winfo_screenheight()
+        self.screen_w, self.screen_h = self._get_selected_resolution()
         self.overlay.geometry(f"{self.screen_w}x{self.screen_h}+0+0")
 
         try:
@@ -140,7 +226,7 @@ class RegionPickerApp:
         self.canvas.bind("<B1-Motion>", self._on_canvas_drag)
         self.canvas.bind("<ButtonRelease-1>", self._on_canvas_release)
         self.canvas.bind("<Motion>", self._on_canvas_motion)
-        self.overlay.bind("<Return>", self._confirm_selection)
+        self.overlay.bind("<Return>", self._on_enter_pressed)
         self.overlay.bind("<Escape>", self._cancel_selection)
 
         self.overlay.deiconify()
@@ -152,10 +238,31 @@ class RegionPickerApp:
         except tk.TclError:
             pass
 
-        self.status_var.set("Overlay active. Drag to adjust region, then press Enter.")
+        self.status_var.set(
+            f"Overlay active ({self.screen_w}x{self.screen_h}). Drag to adjust, then press Enter."
+        )
         self._render_selection()
         self._animate_dashed_border()
         self._keep_overlay_topmost()
+
+    def _get_selected_resolution(self) -> tuple[int, int]:
+        actual_w = self.overlay.winfo_screenwidth()
+        actual_h = self.overlay.winfo_screenheight()
+        selected = self.resolution_var.get().strip()
+
+        if selected.startswith("Auto"):
+            return actual_w, actual_h
+
+        try:
+            width_text, height_text = selected.lower().split("x", 1)
+            width = int(width_text)
+            height = int(height_text)
+        except (ValueError, TypeError):
+            return actual_w, actual_h
+
+        width = max(640, min(width, actual_w))
+        height = max(360, min(height, actual_h))
+        return width, height
 
     def _create_default_selection(self) -> None:
         self.selection = None
@@ -388,7 +495,7 @@ class RegionPickerApp:
         height = y2 - y1
         self.canvas.itemconfig(self.value_text_id, text=f"({x1}, {y1}, {width}, {height})")
 
-    def _confirm_selection(self, _event) -> None:
+    def _confirm_selection(self, _event=None) -> None:
         if self.selection is None or self.overlay is None:
             self.status_var.set("No region selected yet.")
             return
@@ -409,7 +516,7 @@ class RegionPickerApp:
         self.status_var.set("Region recorded. Click region button to copy.")
         self._close_overlay()
 
-    def _cancel_selection(self, _event) -> None:
+    def _cancel_selection(self, _event=None) -> None:
         self.status_var.set("Selection canceled. Press Enter to start again.")
         self._close_overlay()
 
@@ -431,14 +538,51 @@ class RegionPickerApp:
         self.drag_start = None
         self.drag_origin = None
         self.dash_offset = 0
-        self.root.focus_force()
+        if not self.global_enabled.get():
+            self.root.focus_force()
+
+    def _toggle_global_listener(self) -> None:
+        if self.global_enabled.get():
+            self._start_global_listener()
+        else:
+            self._stop_global_listener()
+
+    def _start_global_listener(self) -> None:
+        if pynput_keyboard is None:
+            self.global_enabled.set(False)
+            self.status_var.set("Global listen unavailable. Install with: pip install pynput")
+            return
+
+        if self.global_listener is not None:
+            return
+
+        def on_press(key) -> None:
+            if key == pynput_keyboard.Key.enter:
+                self.root.after(0, self._trigger_enter_action)
+
+        self.global_listener = pynput_keyboard.Listener(on_press=on_press)
+        self.global_listener.daemon = True
+        self.global_listener.start()
+        self.status_var.set("Global Enter listen is ON.")
+
+    def _stop_global_listener(self) -> None:
+        if self.global_listener is not None:
+            self.global_listener.stop()
+            self.global_listener = None
+        self.status_var.set("Global Enter listen is OFF.")
+
+    def _on_close(self) -> None:
+        self._stop_global_listener()
+        if self.overlay is not None:
+            self._close_overlay()
+        self.root.destroy()
 
     def copy_region(self) -> None:
         if self.region is None:
             self.status_var.set("No region recorded. Press Enter and select first.")
             return
 
-        value = f"({self.region[0]}, {self.region[1]}, {self.region[2]}, {self.region[3]})"
+        value = f"{self.region[0]},{self.region[1]},{self.region[2]},{self.region[3]}"
         self.root.clipboard_clear()
         self.root.clipboard_append(value)
         self.root.update()
@@ -446,6 +590,7 @@ class RegionPickerApp:
 
 
 def main() -> None:
+    _enable_windows_dpi_awareness()
     root = tk.Tk()
     RegionPickerApp(root)
     root.mainloop()

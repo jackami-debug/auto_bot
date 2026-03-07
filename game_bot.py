@@ -701,51 +701,209 @@ def launch_game_from_steam(name = "steam_icon.png"):
     print("✅ === 遊戲啟動指令已發送！ ===")
     return True
 
+def change_game_account_from_steam(name = "steam_icon.png"):
+    """
+    從 Steam 啟動遊戲 "Rise of Eros" 的完整流程。
+    """
+    print("\n🚀 === 開始從 Steam 啟動遊戲 ===")
+
+    # 0. 點擊螢幕最右下角 (顯示桌面)
+    # 1. 點擊 draw 圖示 
+    print("   -> 正在尋找draw圖示...")
+    if not find_and_click("draw.png", custom_confidence=0.8, clicks=1):
+        print("   -> ❌ 錯誤：在桌面或工作列上找不到 'draw.png'。")
+        return False
+    # 1.1 點擊 change_account 圖示 
+    print("   -> 正在尋找change_account圖示...")
+    if not find_and_click("change_account.png", custom_confidence=0.8, clicks=1):
+        print("   -> ❌ 錯誤：在桌面或工作列上找不到 'change_account.png'。")
+        return False
+    # 1.2 點擊 continue 圖示 
+    print("   -> 正在尋找continue圖示...")
+    if not find_and_click("continue.png", custom_confidence=0.8, clicks=1):
+        print("   -> ❌ 錯誤：在桌面或工作列上找不到 'continue.png'。")
+        try_click(686,408,119,31)
+        return False
+    
+    # 2. 等待 Steam 主視窗載入
+    print("   -> 等待 Steam 啟動... (10秒)")
+    wait_for_image("who.png", timeout=60.0)
+    # 3. 選擇帳號並登入 (懸停顯示-點擊機制)
+    print("   -> 開始尋找 Steam 帳號...")
+    
+    account_found_and_clicked = False
+    who_buttons_found = False # 用於判斷是否曾找到who.png
+    target_account_images = [name]
+    
+    original_failsafe_state = pyautogui.FAILSAFE
+    try:
+        # a. 找到 'who.png' 的圖片路徑
+        who_image_path = get_image_path('who.png')
+        if not who_image_path:
+             print("   -> ℹ️ 未在資料夾中找到 'who.png' 圖片，跳過帳號選擇。")
+        else:
+            # 暫時禁用防呆，因為我們可能會在螢幕角落進行尋找或懸停
+            pyautogui.FAILSAFE = False
+            
+            # a. 找到畫面上所有 'who.png' 的位置
+            who_buttons = list(pyautogui.locateAllOnScreen(who_image_path, confidence=0.99, grayscale=True))
+            who_buttons_found = len(who_buttons) > 0
+
+            # b. 從左到右排序
+            who_buttons.sort(key=lambda box: box.left)
+            
+            if not who_buttons:
+                print("   -> ℹ️ 未在畫面上找到 'who.png' 按鈕，假設 Steam 會自動登入。")
+            else:
+                print(f"   -> 找到 {len(who_buttons)} 個潛在帳號，開始從左到右檢查...")
+                
+                # c. 遍歷所有按鈕
+                for button_box in who_buttons:
+                    button_center = pyautogui.center(button_box)
+                    
+                    # d. 移動滑鼠到按鈕上以觸發懸停效果
+                    pyautogui.moveTo(button_center.x, button_center.y, duration=0.2)
+                    time.sleep(0.65) # 等待帳號名稱出現
+
+                    # e. 只在懸停按鈕附近做比對：先嚴格再逐步放寬
+                    hover_region = get_region_around_point(button_center.x, button_center.y, width=1200, height=520)
+                    match_profiles = [
+                        ("strict_color", 0.97, False, 2),
+                        ("balanced_color", 0.94, False, 2),
+                        ("balanced_gray", 0.92, True, 1),
+                    ]
+                    account_matched = False
+
+                    for profile_name, profile_conf, profile_gray, required_hits in match_profiles:
+                        stable_hits = 0
+                        for _ in range(2):
+                            matched = False
+                            for account_image in target_account_images:
+                                if find_only_strict(
+                                    account_image,
+                                    confidence=profile_conf,
+                                    region=hover_region,
+                                    grayscale=profile_gray
+                                ):
+                                    matched = True
+                                    break
+                            if matched:
+                                stable_hits += 1
+                            time.sleep(0.12)
+
+                        print(
+                            f"   -> 帳號比對 {profile_name}: "
+                            f"hits={stable_hits}/2, conf={profile_conf}, gray={profile_gray}"
+                        )
+
+                        if stable_hits >= required_hits:
+                            account_matched = True
+                            break
+
+                    if account_matched:
+                        print(f"   -> 找到目標帳號！正在點擊位於 ({button_center.x}, {button_center.y}) 的按鈕...")
+                        # human_click 內部已有自己的防呆處理
+                        human_click(button_center)
+                        account_found_and_clicked = True
+                        break # 找到並點擊後，跳出迴圈
+    
+    except Exception as e:
+        print(f"   -> ⚠️ 尋找帳號時發生錯誤: {e}")
+    finally:
+        # 確保防呆在任何情況下都恢復到原始狀態
+        pyautogui.FAILSAFE = original_failsafe_state
+
+    # 根據查找結果決定後續流程
+    if not account_found_and_clicked:
+        if who_buttons_found:
+            # 找到了 who.png 但沒有匹配的帳號
+            print("   -> ⚠️ 檢查了所有帳號，但未找到 'loopcraft001.png' 或 'e08s93.png'。請確認截圖。")
+        else:
+            # 從一開始就沒找到 who.png
+            print("   -> ℹ️ 未找到任何帳號按鈕，假設 Steam 會自動登入。")
+
+    # 4. 等待登入與主介面載入
+    print("   -> 等待 Steam 登入與載入主介面... (20秒)")
+    wait_for_image("steam_library.png", timeout=60.0)
+
+    # 5. 關閉彈出廣告
+    print("   -> 正在嘗試關閉 Steam 彈出廣告...")
+    if find_and_click("steam_close_ad.png", custom_confidence=0.85):
+        print("   -> 已關閉廣告視窗。")
+        time.sleep(2) # 等待視窗關閉動畫
+    else:
+        print("   -> 未發現廣告視窗。")
+
+    # 6. 點擊「收藏庫」
+    print("   -> 正在點擊「收藏庫」...")
+    wait_for_image("steam_library.png", timeout=60.0)
+    if not find_and_click("steam_library.png", custom_confidence=0.8):
+        print("   -> ❌ 錯誤：找不到「收藏庫」按鈕 'steam_library.png'。")
+        return False
+    time.sleep(3)
+
+    # 7. 在左側列表中選擇遊戲
+    print("   -> 正在從收藏庫選擇 'Rise of Eros'...")
+    wait_for_image("rise_of_eros_list.png", timeout=60.0)
+    if not find_and_click("rise_of_eros_list.png", custom_confidence=0.9):
+         print("   -> ❌ 錯誤：在收藏庫中找不到遊戲 'rise_of_eros_list.png'。")
+         return False
+    time.sleep(3)
+
+    # 8. 點擊「開始遊戲」
+    print("   -> 正在點擊「開始遊戲」按鈕...")
+    wait_for_image("steam_play_btn.png", timeout=60.0)
+    if not find_and_click("steam_play_btn.png", custom_confidence=1): # Use confidence=1 for higher accuracy
+        print("   -> ❌ 錯誤：找不到「開始遊戲」按鈕 'steam_play_btn.png'。")
+        return False
+    time.sleep(3)
+
+    print("✅ === 遊戲啟動指令已發送！ ===")
+    return True
+
+
 def find_set():
-    print(f"   -> 嘗試點擊: set.png")
+    time.sleep(2) 
+    print("   -> 嘗試點擊: set.png")
+    
+    # 第一次嘗試點擊
     if not find_and_click("set.png", custom_confidence=0.8):
-        print(f"   -> ❌ 錯誤：找不到 'set.png'。")
-        print("   -> 嘗試先點擊 ""main_page.png"" (主畫面) 再點選""set.png""看看")
+        print("   -> ❌ 錯誤：找不到 'set.png'。")
+        print("   -> 嘗試先點擊 'main_page.png' (主畫面) 再點選 'set.png' 看看")
+        
+        # 嘗試點擊主畫面
         if not find_and_click("main_page.png", custom_confidence=0.8):
             print("   -> ❌ 錯誤：找不到 'main_page.png'。")
             save_debug_screenshot("main_page_not_found")
             return False
+            
+        # 點擊主畫面後，等待 2 秒讓畫面轉場或載入
         time.sleep(2)
+        
+        # 第二次嘗試點擊 set.png
         if not find_and_click("set.png", custom_confidence=0.8):
             print("   -> ❌ 錯誤：找不到 'set.png'。")
             save_debug_screenshot("set_not_found")
             return False
 
+    # 只要第一次或第二次成功點到，就會來到這裡
     return True
 
-# def leave_game():
-#     """
-#     依序離開遊戲：
-#     set.png -> quit_game.png -> confirm.png -> steam_sign.png -> quit.png
-#     """
-#     print("\n🚪 === 開始執行離開遊戲流程 ===")
-
-#     steps = [
-#         find_set,
-#         ("quit_game.png", 0.85, 1),
-#         ("confirm.png", 0.88, 10),
-#         ("steam_sign.png", 0.85, 1),
-#         ("quit.png", 0.85, 0),
-#     ]
-
-#     for image_name, confidence, wait_after_click in steps:
-#         print(f"   -> 嘗試點擊: {image_name}")
-#         if not find_and_click(image_name, custom_confidence=confidence):
-#             print(f"   -> ❌ 錯誤：找不到 '{image_name}'。")
-#             save_debug_screenshot(f"leave_game_no_{os.path.splitext(image_name)[0]}")
-#             return False
-
-#         if wait_after_click > 0:
-#             if not wait_seconds_with_abort(wait_after_click, f"等待 {image_name} 操作完成"):
-#                 return False
-
-#     print("✅ 離開遊戲流程完成。")
-#     return True
+def try_click(x, y, width, height, clicks=1):
+    print(f"   -> 嘗試點擊區域: ({x}, {y}, {width}, {height})")
+    try:
+        # 在目標區域的內部隨機挑選一個點 (保留 20% 的邊界，避免點到按鈕外框沒反應)
+        safe_margin_x = int(width * 0.2)
+        safe_margin_y = int(height * 0.2)
+        
+        click_x = x + random.randint(safe_margin_x, width - safe_margin_x)
+        click_y = y + random.randint(safe_margin_y, height - safe_margin_y)
+        
+        human_click((click_x, click_y), clicks=clicks)
+        return True
+    except Exception as e:
+        print(f"   -> ⚠️ 點擊區域時發生錯誤: {e}")
+        return False
 
 def leave_game():
     """
@@ -756,26 +914,43 @@ def leave_game():
 
     steps = [
         find_set,
-        ("quit_game.png", 0.85, 1),
-        ("confirm.png", 0.88, 10),
+        ("quit_game.png", 0.85, 1, 1484,950,331,77),
+        ("confirm.png", 0.88, 10, 922,686,421,71),
         ("steam_sign.png", 0.85, 1),
         ("quit.png", 0.85, 0),
     ]
 
     for step in steps:
+        # 第一層判斷：是不是函式？
         if callable(step):
-            # 如果是函式，直接執行
+            # 如果是函式，直接執行 (這裡絕對不能用 len())
             print(f"   -> 執行函式: {step.__name__}")
             if not step():
                 print(f"   -> ❌ 錯誤：函式 '{step.__name__}' 執行失敗。")
                 save_debug_screenshot(f"leave_game_failed_{step.__name__}")
                 return False
+        
+        # 如果不是函式 (也就是 tuple)，才進入 else
         else:
-            # 否則，視為圖片點擊操作
-            image_name, confidence, wait_after_click = step
+            # 在這裡使用 len() 才是安全的
+            if len(step) == 7:
+                image_name, confidence, wait_after_click, x, y, width, height = step
+                has_coords = True
+            elif len(step) == 3:
+                image_name, confidence, wait_after_click = step
+                has_coords = False
+            else:
+                print(f"   -> ❌ 錯誤：步驟參數數量不正確 {step}")
+                return False
+
             print(f"   -> 嘗試點擊: {image_name}")
             if not find_and_click(image_name, custom_confidence=confidence):
                 print(f"   -> ❌ 錯誤：找不到 '{image_name}'。")
+                
+                # 只有當設定檔有給座標時，才嘗試用備用點擊
+                if has_coords:
+                    try_click(x, y, width, height)
+                    
                 save_debug_screenshot(f"leave_game_no_{os.path.splitext(image_name)[0]}")
                 return False
 
@@ -785,7 +960,6 @@ def leave_game():
 
     print("✅ 離開遊戲流程完成。")
     return True
-
 
 def consume_energy(battle):
     """
@@ -918,6 +1092,9 @@ def consume_energy(battle):
             # 9.3 點擊 "accept_all"
     if not find_and_click("accept_all.png", custom_confidence=0.8, clicks=2):
         print("   -> ❌ 錯誤：找不到 'accept_all.png'。")
+        if find_only("no_accept_all.png", custom_confidence=0.75):
+            find_and_click("main_page.png", custom_confidence=0.8)
+            return True
         save_debug_screenshot("accept_all_not_found")
         return False
                 # 9.4 點擊 "ok_03"
@@ -941,23 +1118,22 @@ def main():
 
     not_found_streak = 0
         
-    launch_game_from_steam("loopcraft001.png") # 首先啟動遊戲
-    time.sleep(5) # 等待遊戲啟動指令發送後的一些時間，讓 Steam 和遊戲有機會開始載入
-    wait_for_press_to_start(max_wait_seconds=120)# 啟動後，直接持續全螢幕找 Press to Start，直到成功
-    time.sleep(5) # 確保進入遊戲後的畫面穩
-    consume_energy(7)
-    time.sleep(10) # 等待一些時間，確保流程完成
-    leave_game() # 執行離開遊戲的流程
+    # launch_game_from_steam("loopcraft001.png") # 首先啟動遊戲
+    # time.sleep(5) # 等待遊戲啟動指令發送後的一些時間，讓 Steam 和遊戲有機會開始載入
+    # wait_for_press_to_start(max_wait_seconds=120)# 啟動後，直接持續全螢幕找 Press to Start，直到成功
+    # time.sleep(5) # 確保進入遊戲後的畫面穩
+    # consume_energy(7)
+    # time.sleep(10) # 等待一些時間，確保流程完成
+    # leave_game() # 執行離開遊戲的流程
 
     print("🔍 正在尋找遊戲畫面2...")
-
-    not_found_streak = 0
-        
-    launch_game_from_steam("e08s93.123.png") # 首先啟動遊戲
-    wait_for_press_to_start(max_wait_seconds=120)# 啟動後，直接持續全螢幕找 Press to Start，直到成功
     time.sleep(5)
-    consume_energy(7) # 執行消耗體力的流程
-    time.sleep(10) # 等待一些時間，確保流程完成
+    # not_found_streak = 0
+    # change_game_account_from_steam(name = "e08s93.123.png")    
+    # wait_for_press_to_start(max_wait_seconds=120)# 啟動後，直接持續全螢幕找 Press to Start，直到成功
+    # time.sleep(5)
+    # consume_energy(7) # 執行消耗體力的流程
+    # time.sleep(10) # 等待一些時間，確保流程完成
     leave_game() # 執行離開遊戲的流程
     
 
