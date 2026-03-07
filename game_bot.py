@@ -701,6 +701,52 @@ def launch_game_from_steam(name = "steam_icon.png"):
     print("✅ === 遊戲啟動指令已發送！ ===")
     return True
 
+def find_set():
+    print(f"   -> 嘗試點擊: set.png")
+    if not find_and_click("set.png", custom_confidence=0.8):
+        print(f"   -> ❌ 錯誤：找不到 'set.png'。")
+        print("   -> 嘗試先點擊 ""main_page.png"" (主畫面) 再點選""set.png""看看")
+        if not find_and_click("main_page.png", custom_confidence=0.8):
+            print("   -> ❌ 錯誤：找不到 'main_page.png'。")
+            save_debug_screenshot("main_page_not_found")
+            return False
+        time.sleep(2)
+        if not find_and_click("set.png", custom_confidence=0.8):
+            print("   -> ❌ 錯誤：找不到 'set.png'。")
+            save_debug_screenshot("set_not_found")
+            return False
+
+    return True
+
+# def leave_game():
+#     """
+#     依序離開遊戲：
+#     set.png -> quit_game.png -> confirm.png -> steam_sign.png -> quit.png
+#     """
+#     print("\n🚪 === 開始執行離開遊戲流程 ===")
+
+#     steps = [
+#         find_set,
+#         ("quit_game.png", 0.85, 1),
+#         ("confirm.png", 0.88, 10),
+#         ("steam_sign.png", 0.85, 1),
+#         ("quit.png", 0.85, 0),
+#     ]
+
+#     for image_name, confidence, wait_after_click in steps:
+#         print(f"   -> 嘗試點擊: {image_name}")
+#         if not find_and_click(image_name, custom_confidence=confidence):
+#             print(f"   -> ❌ 錯誤：找不到 '{image_name}'。")
+#             save_debug_screenshot(f"leave_game_no_{os.path.splitext(image_name)[0]}")
+#             return False
+
+#         if wait_after_click > 0:
+#             if not wait_seconds_with_abort(wait_after_click, f"等待 {image_name} 操作完成"):
+#                 return False
+
+#     print("✅ 離開遊戲流程完成。")
+#     return True
+
 def leave_game():
     """
     依序離開遊戲：
@@ -709,26 +755,37 @@ def leave_game():
     print("\n🚪 === 開始執行離開遊戲流程 ===")
 
     steps = [
-        ("set.png", 0.85, 2),
+        find_set,
         ("quit_game.png", 0.85, 1),
         ("confirm.png", 0.88, 10),
         ("steam_sign.png", 0.85, 1),
         ("quit.png", 0.85, 0),
     ]
 
-    for image_name, confidence, wait_after_click in steps:
-        print(f"   -> 嘗試點擊: {image_name}")
-        if not find_and_click(image_name, custom_confidence=confidence):
-            print(f"   -> ❌ 錯誤：找不到 '{image_name}'。")
-            save_debug_screenshot(f"leave_game_no_{os.path.splitext(image_name)[0]}")
-            return False
-
-        if wait_after_click > 0:
-            if not wait_seconds_with_abort(wait_after_click, f"等待 {image_name} 操作完成"):
+    for step in steps:
+        if callable(step):
+            # 如果是函式，直接執行
+            print(f"   -> 執行函式: {step.__name__}")
+            if not step():
+                print(f"   -> ❌ 錯誤：函式 '{step.__name__}' 執行失敗。")
+                save_debug_screenshot(f"leave_game_failed_{step.__name__}")
                 return False
+        else:
+            # 否則，視為圖片點擊操作
+            image_name, confidence, wait_after_click = step
+            print(f"   -> 嘗試點擊: {image_name}")
+            if not find_and_click(image_name, custom_confidence=confidence):
+                print(f"   -> ❌ 錯誤：找不到 '{image_name}'。")
+                save_debug_screenshot(f"leave_game_no_{os.path.splitext(image_name)[0]}")
+                return False
+
+            if wait_after_click > 0:
+                if not wait_seconds_with_abort(wait_after_click, f"等待 {image_name} 操作完成"):
+                    return False
 
     print("✅ 離開遊戲流程完成。")
     return True
+
 
 def consume_energy(battle):
     """
@@ -903,21 +960,6 @@ def main():
     time.sleep(10) # 等待一些時間，確保流程完成
     leave_game() # 執行離開遊戲的流程
     
-
-
-
-# #功能測試迴圈
-# while True:
-#     if find_and_click("ongoing_activity.png", custom_confidence=0.8):
-#         print("✅ 測試成功")
-#         break  # 找到目標了，打破迴圈往下執行
-#     else:
-#         print("⏳ 還沒看到畫面，等待 0.5 秒後重試...")
-#         time.sleep(0.5)  # 找不到就等 0.5 秒再找一次
-        
-
-       
-        
 
 
     # #刷關迴圈
