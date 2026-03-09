@@ -294,7 +294,7 @@ def handle_dialog_windows():
         return True
     return False
 
-def wait_for_press_to_start(max_wait_seconds=120, center_click_interval=3.0):
+def wait_for_press_to_start(max_wait_seconds=120, center_click_interval=60.0):
     """
     不做視窗定位，直接全螢幕偵測 press_to_start.png。
     若長時間找不到，會定期點擊螢幕中央嘗試推進流程。
@@ -317,7 +317,7 @@ def wait_for_press_to_start(max_wait_seconds=120, center_click_interval=3.0):
             print("✅ 偵測到遊戲內介面元素，視為已成功進入。")
             return True
 
-        if find_and_click("press_to_start.png", custom_confidence=0.85):
+        if find_and_click("press_to_start.png", custom_confidence=0.7):
             print("✅ 已點擊 'Press to Start'，確認是否成功進入...")
             verify_deadline = time.time() + 8
             while time.time() < verify_deadline:
@@ -712,6 +712,7 @@ def change_game_account_from_steam(name = "steam_icon.png"):
     print("   -> 正在尋找draw圖示...")
     if not find_and_click("draw.png", custom_confidence=0.8, clicks=1):
         print("   -> ❌ 錯誤：在桌面或工作列上找不到 'draw.png'。")
+        try_click(1677,12,25,31)
         return False
     # 1.1 點擊 change_account 圖示 
     print("   -> 正在尋找change_account圖示...")
@@ -915,7 +916,7 @@ def leave_game():
     steps = [
         find_set,
         ("quit_game.png", 0.85, 1, 1484,950,331,77),
-        ("confirm.png", 0.88, 10, 922,686,421,71),
+        ("confirm.png", 0.88, 10, 915,680,446,77),
         ("steam_sign.png", 0.85, 1),
         ("quit.png", 0.85, 0),
     ]
@@ -1118,22 +1119,22 @@ def main():
 
     not_found_streak = 0
         
-    # launch_game_from_steam("loopcraft001.png") # 首先啟動遊戲
-    # time.sleep(5) # 等待遊戲啟動指令發送後的一些時間，讓 Steam 和遊戲有機會開始載入
-    # wait_for_press_to_start(max_wait_seconds=120)# 啟動後，直接持續全螢幕找 Press to Start，直到成功
-    # time.sleep(5) # 確保進入遊戲後的畫面穩
-    # consume_energy(7)
-    # time.sleep(10) # 等待一些時間，確保流程完成
-    # leave_game() # 執行離開遊戲的流程
+    launch_game_from_steam("loopcraft001.png") # 首先啟動遊戲
+    time.sleep(5) # 等待遊戲啟動指令發送後的一些時間，讓 Steam 和遊戲有機會開始載入
+    wait_for_press_to_start(max_wait_seconds=120)# 啟動後，直接持續全螢幕找 Press to Start，直到成功
+    time.sleep(5) # 確保進入遊戲後的畫面穩
+    consume_energy(7)
+    time.sleep(10) # 等待一些時間，確保流程完成
+    leave_game() # 執行離開遊戲的流程
 
     print("🔍 正在尋找遊戲畫面2...")
     time.sleep(5)
-    # not_found_streak = 0
-    # change_game_account_from_steam(name = "e08s93.123.png")    
-    # wait_for_press_to_start(max_wait_seconds=120)# 啟動後，直接持續全螢幕找 Press to Start，直到成功
-    # time.sleep(5)
-    # consume_energy(7) # 執行消耗體力的流程
-    # time.sleep(10) # 等待一些時間，確保流程完成
+    not_found_streak = 0
+    change_game_account_from_steam(name = "e08s93.123.png")    
+    wait_for_press_to_start(max_wait_seconds=120)# 啟動後，直接持續全螢幕找 Press to Start，直到成功
+    time.sleep(5)
+    consume_energy(7) # 執行消耗體力的流程
+    time.sleep(10) # 等待一些時間，確保流程完成
     leave_game() # 執行離開遊戲的流程
     
 
