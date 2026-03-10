@@ -14,6 +14,7 @@ from tools import (
     wait_for_image,
     wait_for_press_to_start,
     wait_seconds_with_abort,
+    try_click,
 )
 
 
@@ -110,6 +111,28 @@ def consume_energy(battle):
         return False
     return True
 
+def if_upgrade():
+    if find_and_click("confirm.png", custom_confidence=0.8):
+        print("   -> 🆙 偵測到升級視窗！執行補掃蕩流程...")
+        wait_seconds_with_abort(2, "等待 OK 按鈕")
+        if not find_and_click("OK_02.png", custom_confidence=0.8):
+            print("   -> ⚠️ 升級後找不到 OK 按鈕，嘗試繼續...")
+
+        print("   -> 🔄 利用升級體力，重新設定掃蕩...")
+        wait_seconds_with_abort(2, "等待回到關卡畫面")
+        if find_and_click("swape.png", custom_confidence=0.8):
+            wait_seconds_with_abort(1, "等待 Max")
+            find_and_click("max.png", custom_confidence=0.8)
+            wait_seconds_with_abort(1, "等待確認")
+            find_and_click("confirm.png", custom_confidence=0.8)
+            print("   -> ✅ 補掃蕩設定完成，等待結算...")
+            wait_seconds_with_abort(3, "等待補掃蕩結算")
+        else:
+            print("   -> ❌ 找不到 swape 按鈕，無法執行補掃蕩。")
+            return True
+    else:
+        print("   -> 👌 未偵測到升級畫面，繼續正常流程。")
+        return True
 
 def dispatch():
     print("\n📦 === 開始派遣 ===")
@@ -196,8 +219,9 @@ def use_expiring_energy():
     wait_for_image("OK03.png", timeout=60)
     if not find_and_click("OK03.png", custom_confidence=0.85):
         print("   -> ❌ 錯誤：找不到 'OK03.png'。")
+        try_click(1519,55,62,57)
         save_debug_screenshot("leave_game_no_ok03")
-        return False
+        return True
 
     print("-> 嘗試點擊: confirm.png")
     wait_for_image("confirm.png", timeout=30)
@@ -205,7 +229,7 @@ def use_expiring_energy():
         print("   -> ❌ 錯誤：找不到 'confirm.png'。")
         find_and_click("cancel.png", custom_confidence=0.85)
         save_debug_screenshot("leave_game_no_confirm")
-        return False
+        return True
     return True
 
 
@@ -220,6 +244,7 @@ def swap_activity(battle=7):
         ("swap04.png", 0.8, 0),
         ("max.png", 0.8, 0),
         ("confirm.png", 0.8, 0),
+        if_upgrade,
         ("ok_03.png", 0.8, 0),
         ("home.png", 0.8, 0),
     ]
@@ -341,8 +366,8 @@ def daily_job(
     pvpspecial_round=2,
 ):
     print("🔍 正在尋找遊戲畫面...")
-    # time.sleep(5)
-    # launch_game_from_steam(accout_name)
+    time.sleep(5)
+    launch_game_from_steam(accout_name)
     time.sleep(5)
     wait_for_press_to_start(
         max_wait_seconds=120,
@@ -360,7 +385,7 @@ def daily_job(
     time.sleep(5)
     swap_pvp_normal(pvp_normal_round)
     swap_pvp_special(pvpspecial_round)
-    time.sleep(5)
+    time.sleep(8)
     get_daily_rewards()
     time.sleep(5)
     leave_game()
@@ -369,8 +394,8 @@ def daily_job(
 
 def main():
     daily_job(accout_name="e08s93.png", element="water", activity_battle=8, pvp_normal_round=1, pvpspecial_round=1)
-    # daily_job(accout_name="e08s93.123.png", element="thorns", activity_battle=7, pvp_normal_round=5, pvpspecial_round=1)
-    # daily_job(accout_name="loopcraft001.png", element="thorns", activity_battle=7, pvp_normal_round=5, pvpspecial_round=1)
+    daily_job(accout_name="e08s93.123.png", element="thorns", activity_battle=7, pvp_normal_round=5, pvpspecial_round=1)
+    daily_job(accout_name="loopcraft001.png", element="thorns", activity_battle=8, pvp_normal_round=5, pvpspecial_round=1)
 
 
 if __name__ == "__main__":
