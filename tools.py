@@ -577,8 +577,26 @@ def try_click(x, y, width, height, clicks=1):
         log(f"   -> ⚠️ 點擊區域時發生錯誤: {exc}")
         return False
 
-def run_image_steps(steps, wait_timeout=120, screenshot_prefix="step", success_message=None):
-    for step in steps:
+def run_image_steps(
+    steps, 
+    wait_timeout=120, 
+    screenshot_prefix="step", 
+    success_message=None,
+    max_retries=2,
+    retry_delay=1.0,
+):
+    """
+    執行一系列圖像識別和點擊步驟，支援自動重試機制。
+    
+    參數:
+    - steps: 步驟列表
+    - wait_timeout: 等待畫面的超時時間 (秒)
+    - screenshot_prefix: 截圖前綴
+    - success_message: 成功時的訊息
+    - max_retries: 每個步驟失敗時重試次數 (預設: 2)
+    - retry_delay: 重試前等待時間，會指數增長 (預設: 1.0 秒)
+    """
+    for step_index, step in enumerate(steps):
         if callable(step):
             log(f"   -> 執行函式: {step.__name__}")
             if not step():
@@ -598,20 +616,51 @@ def run_image_steps(steps, wait_timeout=120, screenshot_prefix="step", success_m
             log(f"   -> ❌ 錯誤：步驟參數數量不正確 {step}")
             return False
 
-        log(f"   -> 嘗試點擊: {image_name}")
-        wait_for_image(image_name, timeout=wait_timeout)
-        if not find_and_click(image_name, custom_confidence=confidence):
-            log(f"   -> ❌ 錯誤：找不到 '{image_name}'。")
-            if fallback_rect:
-                try_click(*fallback_rect)
-            if screenshot_prefix:
-                stem = os.path.splitext(os.path.basename(image_name))[0]
-                save_debug_screenshot(f"{screenshot_prefix}_no_{stem}")
-            return False
-
-        if wait_after_click > 0:
-            if not wait_seconds_with_abort(wait_after_click, f"等待 {image_name} 操作完成"):
-                return False
+        # 重試邏輯
+        for attempt in range(max_retries + 1):
+            log(f"   -> 嘗試點擊: {image_name} (嘗試 {attempt + 1}/{max_retries + 1})")
+            
+            if wait_for_image(image_name, timeout=wait_timeout):
+                if find_and_click(image_name, custom_confidence=confidence):
+                    log(f"   -> ✅ 成功點擊 '{image_name}'")
+                    
+                    if wait_after_click > 0:
+                        if not wait_seconds_with_abort(wait_after_click, f"等待 {image_name} 操作完成"):
+                            return False
+                    break
+                else:
+                    # 找到畫面但點擊失敗，嘗試備用位置
+                    if fallback_rect:
+                        log(f"   -> ⚠️ 無法點擊圖像，嘗試備用位置 {fallback_rect}")
+                        try_click(*fallback_rect)
+                        if wait_after_click > 0:
+                            if not wait_seconds_with_abort(wait_after_click, f"等待 {image_name} 操作完成"):
+                                return False
+                        break
+                    else:
+                        # 沒有備用位置，需要重試
+                        if attempt < max_retries:
+                            wait_delay = retry_delay * (2 ** attempt)  # 指數退避
+                            log(f"   -> 🔄 點擊失敗，{wait_delay:.1f} 秒後重試...")
+                            time.sleep(wait_delay)
+                        else:
+                            log(f"   -> ❌ 錯誤：找不到或無法點擊 '{image_name}' (已重試 {max_retries} 次)。")
+                            if screenshot_prefix:
+                                stem = os.path.splitext(os.path.basename(image_name))[0]
+                                save_debug_screenshot(f"{screenshot_prefix}_no_{stem}")
+                            return False
+            else:
+                # 畫面未出現（超時）
+                if attempt < max_retries:
+                    wait_delay = retry_delay * (2 ** attempt)  # 指數退避
+                    log(f"   -> 🔄 畫面未出現，{wait_delay:.1f} 秒後重試...")
+                    time.sleep(wait_delay)
+                else:
+                    log(f"   -> ❌ 錯誤：等待超時，找不到 '{image_name}' (已重試 {max_retries} 次)。")
+                    if screenshot_prefix:
+                        stem = os.path.splitext(os.path.basename(image_name))[0]
+                        save_debug_screenshot(f"{screenshot_prefix}_timeout_{stem}")
+                    return False
 
     if success_message:
         log(success_message)

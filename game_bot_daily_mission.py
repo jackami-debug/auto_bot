@@ -1,5 +1,8 @@
 import random
 import time
+from functools import wraps
+
+import pyautogui
 
 from tools import (
     find_and_click,
@@ -17,6 +20,57 @@ from tools import (
     try_click,
 )
 
+
+def retry_on_failure(max_retries=2, retry_delay=2.0, fallback_action=None):
+    """
+    防呆裝飾器：讓函數在失敗時自動重試。
+    
+    參數:
+    - max_retries: 最大重試次數 (預設: 2)
+    - retry_delay: 重試間隔，會指數增長 (預設: 2.0 秒)
+    - fallback_action: 所有重試都失敗時執行的備用函數 (可選)
+    
+    使用範例:
+        @retry_on_failure(max_retries=2, retry_delay=2.0)
+        def my_function():
+            return do_something()
+    """
+    def decorator(func):
+        @wraps(func)
+        def wrapper(*args, **kwargs):
+            for attempt in range(max_retries + 1):
+                print(f"\n🔄 執行 '{func.__name__}' (嘗試 {attempt + 1}/{max_retries + 1})")
+                try:
+                    result = func(*args, **kwargs)
+                    if result:
+                        print(f"✅ '{func.__name__}' 成功完成")
+                        return True
+                    else:
+                        # 函數返回 False，表示失敗
+                        if attempt < max_retries:
+                            wait_delay = retry_delay * (2 ** attempt)  # 指數退避
+                            print(f"   ⚠️ 執行失敗，{wait_delay:.1f} 秒後重試...")
+                            time.sleep(wait_delay)
+                        else:
+                            print(f"   ❌ 輸入 '{func.__name__}' 最終失敗 (已重試 {max_retries} 次)")
+                            if fallback_action:
+                                print(f"   🔧 執行備用方案...")
+                                return fallback_action()
+                            return False
+                except Exception as e:
+                    print(f"   ❌ 执行 '{func.__name__}' 時發生例外: {e}")
+                    if attempt < max_retries:
+                        wait_delay = retry_delay * (2 ** attempt)
+                        print(f"   🔄 {wait_delay:.1f} 秒後重試...")
+                        time.sleep(wait_delay)
+                    else:
+                        if fallback_action:
+                            print(f"   🔧 執行備用方案...")
+                            return fallback_action()
+                        raise
+            return False
+        return wrapper
+    return decorator
 
 def consume_energy(battle):
     print("\n💪 === 開始執行消耗體力流程 ===")
@@ -150,7 +204,6 @@ def dispatch():
         success_message="✅ 完成派遣。",
     )
 
-
 def swap_coins():
     steps = [
         ("fight.png", 0.85, 1),
@@ -169,7 +222,6 @@ def swap_coins():
         success_message="✅ 完成每日金幣掃蕩。",
     )
 
-
 def swap_refine(element="water"):
     steps = [
         ("refine.png", 0.85, 1),
@@ -186,7 +238,6 @@ def swap_refine(element="water"):
         screenshot_prefix="swap_refine",
         success_message="✅ 完成每日試煉掃蕩。",
     )
-
 
 def swap_bond(level="01"):
     steps = [
@@ -205,7 +256,6 @@ def swap_bond(level="01"):
         screenshot_prefix="swap_bond",
         success_message="✅ 完成每日神伴掃蕩。",
     )
-
 
 def use_expiring_energy():
     search_area = (406, 427, 881, 233)
@@ -232,7 +282,6 @@ def use_expiring_energy():
         return True
     return True
 
-
 def swap_activity(battle=7):
     steps = [
         ("daily_activity.png", 0.85, 1),
@@ -254,7 +303,6 @@ def swap_activity(battle=7):
         screenshot_prefix="swap_activity",
         success_message="✅ 完成每日活動掃蕩。",
     )
-
 
 def swap_pvp_normal(round=5):
     print("-> 嘗試點擊: PVP")
@@ -306,7 +354,6 @@ def swap_pvp_normal(round=5):
     print("✅ 完成每日一般競技場出戰。")
     return True
 
-
 def swap_pvp_special(round=5):
     print("-> 嘗試點擊: special")
     wait_for_image("special.png", timeout=120)
@@ -357,7 +404,6 @@ def swap_pvp_special(round=5):
     print("✅ 完成每日特殊競技場出戰。")
     return True
 
-
 def daily_job(
     accout_name="loopcraft001.png",
     element="thorns",
@@ -392,10 +438,12 @@ def daily_job(
     print("🔍 完成每日任務...")
 
 
+
 def main():
-    daily_job(accout_name="e08s93.png", element="water", activity_battle=8, pvp_normal_round=1, pvpspecial_round=1)
+    # daily_job(accout_name="e08s93.png", element="water", activity_battle=8, pvp_normal_round=1, pvpspecial_round=1)
     daily_job(accout_name="e08s93.123.png", element="thorns", activity_battle=7, pvp_normal_round=5, pvpspecial_round=1)
-    daily_job(accout_name="loopcraft001.png", element="thorns", activity_battle=8, pvp_normal_round=5, pvpspecial_round=1)
+    # daily_job(accout_name="loopcraft001.png", element="thorns", activity_battle=8, pvp_normal_round=5, pvpspecial_round=1)
+
 
 
 if __name__ == "__main__":
