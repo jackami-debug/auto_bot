@@ -292,9 +292,9 @@ def consume_energy(battle):
             return True
         save_debug_screenshot("accept_all_not_found")
         return False
-    if not find_and_click("ok_03.png", custom_confidence=0.8):
-        print("   -> ❌ 錯誤：找不到 'ok_03.png'。")
-        save_debug_screenshot("ok_03_not_found")
+    if not find_and_click("OK.png", custom_confidence=0.8):
+        print("   -> ❌ 錯誤：找不到 'OK.png'。")
+        save_debug_screenshot("OK_not_found")
         return False
     if not find_and_click("main_page.png", custom_confidence=0.8):
         print("   -> ❌ 錯誤：找不到 'main_page.png'。")

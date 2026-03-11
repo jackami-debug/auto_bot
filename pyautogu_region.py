@@ -29,10 +29,11 @@ class RegionPickerApp:
     def __init__(self, root: tk.Tk) -> None:
         self.root = root
         self.root.title("pyauto-region")
-        self.root.geometry("560x300")
+        self.root.geometry("560x600")
         self.root.resizable(False, False)
 
         self.region = None
+        self.point = None
         self.overlay = None
         self.canvas = None
         self.rect_id = None
@@ -61,10 +62,12 @@ class RegionPickerApp:
         self.resolution_var = tk.StringVar(value=self.resolution_options[0])
 
         self.region_var = tk.StringVar(value="(x, y, width, height)")
+        self.point_var = tk.StringVar(value="(x, y)")
         self.status_var = tk.StringVar(value="Press Enter to start selecting region.")
 
         self._build_ui()
         self.root.bind("<Return>", self._on_enter_pressed)
+        self.root.bind("0", self._on_point_hotkey)
         self.root.protocol("WM_DELETE_WINDOW", self._on_close)
         self.root.after(120, self.root.focus_force)
 
@@ -118,7 +121,7 @@ class RegionPickerApp:
 
         global_check = tk.Checkbutton(
             global_row,
-            text="Global Enter listen",
+            text="Global listen",
             variable=self.global_enabled,
             command=self._toggle_global_listener,
             font=("Segoe UI", 10),
@@ -164,6 +167,34 @@ class RegionPickerApp:
         )
         value.pack(side="left", fill="x", expand=True)
 
+        point_row = tk.Frame(container)
+        point_row.pack(fill="x", pady=(0, 6))
+
+        point_btn = tk.Button(
+            point_row,
+            text="point",
+            width=10,
+            font=("Consolas", 11, "bold"),
+            command=self.copy_point,
+        )
+        point_btn.pack(side="left")
+
+        point_equal = tk.Label(
+            point_row,
+            text=" = ",
+            font=("Consolas", 12, "bold"),
+            padx=8,
+        )
+        point_equal.pack(side="left")
+
+        point_value = tk.Label(
+            point_row,
+            textvariable=self.point_var,
+            font=("Consolas", 12),
+            anchor="w",
+        )
+        point_value.pack(side="left", fill="x", expand=True)
+
         status = tk.Label(
             container,
             textvariable=self.status_var,
@@ -187,6 +218,27 @@ class RegionPickerApp:
             self.start_selection()
         else:
             self._confirm_selection()
+
+    def _on_point_hotkey(self, _event=None) -> None:
+        self._record_point()
+
+    def _get_cursor_position(self) -> tuple[int, int]:
+        if sys.platform.startswith("win"):
+            class _POINT(ctypes.Structure):
+                _fields_ = [("x", ctypes.c_long), ("y", ctypes.c_long)]
+
+            pt = _POINT()
+            if ctypes.windll.user32.GetCursorPos(ctypes.byref(pt)):
+                return int(pt.x), int(pt.y)
+        return self.root.winfo_pointerx(), self.root.winfo_pointery()
+
+    def _record_point(self) -> None:
+        x, y = self._get_cursor_position()
+        self.point = (x, y)
+        self.point_var.set(f"({x}, {y})")
+        self.status_var.set(f"Point recorded: {x}, {y}. Click point button to copy.")
+        if self.overlay is not None:
+            self._close_overlay()
 
     def start_selection(self) -> None:
         if self.overlay is not None:
@@ -227,6 +279,7 @@ class RegionPickerApp:
         self.canvas.bind("<ButtonRelease-1>", self._on_canvas_release)
         self.canvas.bind("<Motion>", self._on_canvas_motion)
         self.overlay.bind("<Return>", self._on_enter_pressed)
+        self.overlay.bind("0", self._on_point_hotkey)
         self.overlay.bind("<Escape>", self._cancel_selection)
 
         self.overlay.deiconify()
@@ -557,19 +610,35 @@ class RegionPickerApp:
             return
 
         def on_press(key) -> None:
-            if key == pynput_keyboard.Key.enter:
-                self.root.after(0, self._trigger_enter_action)
+            self.root.after(0, self._handle_global_key, key)
 
         self.global_listener = pynput_keyboard.Listener(on_press=on_press)
         self.global_listener.daemon = True
         self.global_listener.start()
-        self.status_var.set("Global Enter listen is ON.")
+        self.status_var.set("Global listen is ON.")
 
     def _stop_global_listener(self) -> None:
         if self.global_listener is not None:
             self.global_listener.stop()
             self.global_listener = None
-        self.status_var.set("Global Enter listen is OFF.")
+        self.status_var.set("Global listen is OFF.")
+
+    def _handle_global_key(self, key) -> None:
+        if key == pynput_keyboard.Key.enter:
+            self._trigger_enter_action()
+            return
+        if key == pynput_keyboard.Key.esc:
+            if self.overlay is not None:
+                self._cancel_selection()
+            return
+        if isinstance(key, pynput_keyboard.KeyCode) and key.char:
+            if key.char == "0":
+                self._record_point()
+                return
+            try:
+                self.root.event_generate(f"<KeyPress-{key.char}>")
+            except tk.TclError:
+                pass
 
     def _on_close(self) -> None:
         self._stop_global_listener()
@@ -583,6 +652,17 @@ class RegionPickerApp:
             return
 
         value = f"{self.region[0]},{self.region[1]},{self.region[2]},{self.region[3]}"
+        self.root.clipboard_clear()
+        self.root.clipboard_append(value)
+        self.root.update()
+        self.status_var.set(f"Copied to clipboard: {value}")
+
+    def copy_point(self) -> None:
+        if self.point is None:
+            self.status_var.set("No point recorded. Press 0 to capture first.")
+            return
+
+        value = f"{self.point[0]},{self.point[1]}"
         self.root.clipboard_clear()
         self.root.clipboard_append(value)
         self.root.update()
