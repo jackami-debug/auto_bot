@@ -28,7 +28,7 @@ from tools import (
 
 SHOP_WHITELIST_FOLDER = os.path.join(IMAGE_FOLDER, "shop_whitelist")
 SHOP_PURCHASE_HISTORY_FILE = os.path.join(SHOP_WHITELIST_FOLDER, "_bought_once.json")
-REWARD_CODE_FILE = os.path.join(IMAGE_FOLDER, "reward_code.txt")
+REWARD_CODE_FILE = os.path.join(os.path.dirname(os.path.abspath(__file__)), "reward_code.txt")
 
 
 def normalize_shop_item_name(item_filename):
@@ -238,10 +238,10 @@ def consume_energy(battle):
     if not wait_seconds_with_abort(2, "等待掃蕩視窗"):
         return False
 
-    if not find_and_click("max.png", custom_confidence=0.8):
-        print("   -> ❌ 錯誤：找不到 'max.png'。")
-        save_debug_screenshot("max_not_found")
-        return False
+    # if not find_and_click("max.png", custom_confidence=0.8):
+    #     print("   -> ❌ 錯誤：找不到 'max.png'。")
+    #     save_debug_screenshot("max_not_found")
+    #     return False
     if not find_and_click("confirm.png", custom_confidence=0.8):
         print("   -> ❌ 錯誤：找不到 'confirm.png'。")
         save_debug_screenshot("confirm_not_found")
@@ -473,7 +473,7 @@ def main():
     time.sleep(5)
     wait_for_press_to_start(max_wait_seconds=120)
     time.sleep(5)
-    # consume_energy(8)
+    consume_energy(8)
     time.sleep(5)
     get_reward_flow("loopcraft001")
     leave_game()
@@ -483,11 +483,10 @@ def main():
     launch_game_from_steam("e08s93.123.png")
     wait_for_press_to_start(max_wait_seconds=120)
     time.sleep(5)
-    # consume_energy(8)
+    consume_energy(8)
     time.sleep(5)
     get_reward_flow("e08s93.123")
     leave_game()
 
 if __name__ == "__main__":
     main()
-

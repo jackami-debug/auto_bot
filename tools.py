@@ -42,10 +42,10 @@ except ImportError:
 pyautogui.FAILSAFE = True
 pyautogui.PAUSE = 0.05
 
-IMAGE_FOLDER = os.path.dirname(os.path.abspath(__file__))
+IMAGE_FOLDER = os.path.join(os.path.dirname(os.path.abspath(__file__)), "pictures")
 
 if not os.path.isdir(IMAGE_FOLDER):
-    raise RuntimeError(f"Script directory does not exist: {IMAGE_FOLDER}")
+    raise RuntimeError(f"Image folder does not exist: {IMAGE_FOLDER}")
 
 
 _LOGGER = None
