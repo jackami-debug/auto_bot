@@ -12,7 +12,7 @@ echo [!TS!] scheduled run start >> "!LOG_FILE!"
 set "PYTHONUTF8=1"
 set "PYTHONIOENCODING=utf-8"
 
-"C:\WINDOWS\py.exe" -3 -X utf8 "D:\New_world\auto_bot\game_bot.py" >> "!LOG_FILE!" 2>&1
+"C:\WINDOWS\py.exe" -3 -X utf8 "D:\New_world\auto_bot\consume_enegy.py" >> "!LOG_FILE!" 2>&1
 set "EXIT_CODE=%ERRORLEVEL%"
 
 for /f %%I in ('powershell -NoProfile -Command "Get-Date -Format yyyy-MM-dd_HH:mm:ss"') do set "TS=%%I"

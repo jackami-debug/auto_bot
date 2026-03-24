@@ -196,23 +196,20 @@ def consume_energy(battle):
         save_debug_screenshot("no_ongoing_activity")
         return False
 
-    wait_for_image("activity.png", timeout=60.0)
+    wait_for_image("activity.png", timeout=5.0,try_click_name="ongoing_activity.png")
     if not find_and_click("activity.png", custom_confidence=0.8, clicks=2):
         print("   -> ❌ 錯誤：找不到 'activity.png'。")
         save_debug_screenshot("no_activity_button")
         return False
 
-    wait_for_image("battle.png", timeout=60.0)
+    wait_for_image("battle.png", timeout=5.0,try_click_name="activity.png")
     if not find_and_click("battle.png", custom_confidence=0.85):
         print("   -> ❌ 錯誤：找不到 'battle.png'。")
         save_debug_screenshot("no_battle_button")
         return False
-
-    if not wait_seconds_with_abort(2, "等待關卡選擇畫面"):
-        return False
-
+    wait_for_image("battle7.png", timeout=15.0,try_click_name="battle.png")
     if battle == 8:
-        wait_for_image("battle7.png", timeout=60.0)
+        wait_for_image("battle7.png", timeout=5.0,try_click_name="battle.png")
         print("   -> 嘗試點擊 'battle7' 按鈕右方的關卡...")
         battle_location = find_only("battle7.png", custom_confidence=0.9)
         if not battle_location:
@@ -224,48 +221,44 @@ def consume_energy(battle):
         print(f"   -> 計算出的關卡座標: ({target_x}, {target_y})")
         human_click((target_x, target_y))
     elif battle == 7:
-        wait_for_image("battle7.png", timeout=60.0)
+        wait_for_image("battle7.png", timeout=5.0,try_click_name="battle.png")
         print("   -> 嘗試點擊 'battle7' 按鈕右方的關卡...")
         find_and_click("battle7.png", custom_confidence=0.9)
 
-    if not wait_seconds_with_abort(3, "等待關卡資訊載入"):
-        return False
-
+    wait_for_image("swape.png", timeout=10.0,try_click_name="battle8.png")
     if not find_and_click("swape.png", custom_confidence=0.8):
         print("   -> ⚠️ 警告：找不到 'swape.png'，腳本將繼續。")
         save_debug_screenshot("swape_not_found")
 
-    if not wait_seconds_with_abort(2, "等待掃蕩視窗"):
+    wait_for_image("max.png", timeout=10.0,try_click_name="swape.png")
+    if not find_and_click("max.png", custom_confidence=0.8):
+        print("   -> ❌ 錯誤：找不到 'max.png'。")
+        save_debug_screenshot("max_not_found")
         return False
-
-    # if not find_and_click("max.png", custom_confidence=0.8):
-    #     print("   -> ❌ 錯誤：找不到 'max.png'。")
-    #     save_debug_screenshot("max_not_found")
-    #     return False
     if not find_and_click("confirm.png", custom_confidence=0.8):
         print("   -> ❌ 錯誤：找不到 'confirm.png'。")
         save_debug_screenshot("confirm_not_found")
         return False
 
     print("   -> ⏳ 正在檢查是否有升級畫面...")
-    if not wait_seconds_with_abort(4, "等待升級判定"):
+    if not wait_seconds_with_abort(2, "等待升級判定"):
         return False
 
     if find_and_click("confirm.png", custom_confidence=0.8):
         print("   -> 🆙 偵測到升級視窗！執行補掃蕩流程...")
-        wait_seconds_with_abort(2, "等待 OK 按鈕")
+        wait_for_image("OK_02.png", timeout=10.0,try_click_name="confirm.png")
         if not find_and_click("OK_02.png", custom_confidence=0.8):
             print("   -> ⚠️ 升級後找不到 OK 按鈕，嘗試繼續...")
 
         print("   -> 🔄 利用升級體力，重新設定掃蕩...")
-        wait_seconds_with_abort(2, "等待回到關卡畫面")
+        wait_for_image("swape.png", timeout=10.0,try_click_name="OK_02.png")
         if find_and_click("swape.png", custom_confidence=0.8):
-            wait_seconds_with_abort(1, "等待 Max")
+            wait_for_image("max.png", timeout=10.0,try_click_name="swape.png")
             find_and_click("max.png", custom_confidence=0.8)
-            wait_seconds_with_abort(1, "等待確認")
+            wait_for_image("confirm.png", timeout=10.0,try_click_name="max.png")
             find_and_click("confirm.png", custom_confidence=0.8)
             print("   -> ✅ 補掃蕩設定完成，等待結算...")
-            wait_seconds_with_abort(3, "等待補掃蕩結算")
+            wait_seconds_with_abort(2, "等待補掃蕩結算")
         else:
             print("   -> ❌ 找不到 swape 按鈕，無法執行補掃蕩。")
     else:
@@ -276,15 +269,20 @@ def consume_energy(battle):
         try_click(735,869,447,80)
         save_debug_screenshot("ok_02_not_found")
         return False
-
+    
+    wait_for_image("mission_01.png", timeout=10.0,try_click_name="OK_02.png")
     if not find_and_click("mission_01.png", custom_confidence=0.8, clicks=2):
         print("   -> ❌ 錯誤：找不到 'mission_01.png'。")
         save_debug_screenshot("mission_01_not_found")
         return False
+    
+    wait_for_image("daily.png", timeout=10.0,try_click_name="mission_01.png")
     if not find_and_click("daily.png", custom_confidence=0.8, clicks=2):
         print("   -> ❌ 錯誤：找不到 'daily.png'。")
         save_debug_screenshot("daily_not_found")
         return False
+    
+    wait_for_image(["accept_all.png", "no_accept_all.png"], timeout=10.0,try_click_name="daily.png")
     if not find_and_click("accept_all.png", custom_confidence=0.8, clicks=2):
         print("   -> ❌ 錯誤：找不到 'accept_all.png'。")
         if find_only("no_accept_all.png", custom_confidence=0.75):
@@ -292,10 +290,12 @@ def consume_energy(battle):
             return True
         save_debug_screenshot("accept_all_not_found")
         return False
+    wait_for_image("OK.png", timeout=10.0,try_click_name="accept_all.png")
     if not find_and_click("OK.png", custom_confidence=0.8):
         print("   -> ❌ 錯誤：找不到 'OK.png'。")
         save_debug_screenshot("OK_not_found")
         return False
+    wait_for_image("main_page.png", timeout=10.0,try_click_name="OK.png")
     if not find_and_click("main_page.png", custom_confidence=0.8):
         print("   -> ❌ 錯誤：找不到 'main_page.png'。")
         save_debug_screenshot("main_page_not_found")
@@ -468,6 +468,16 @@ def input_code(account_name):
     return True
 
 def main():
+    print("== 啟動帳號 e08s93 ==")
+    time.sleep(5)
+    launch_game_from_steam("e08s93.png")
+    wait_for_press_to_start(max_wait_seconds=120)
+    time.sleep(5)
+    consume_energy(8)
+    time.sleep(5)
+    get_reward_flow("e08s93")
+    leave_game()
+    
     print("== 啟動帳號 loopcraft001 ==")
     launch_game_from_steam("loopcraft001.png")
     time.sleep(5)

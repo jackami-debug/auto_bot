@@ -307,7 +307,7 @@ def human_click(location, clicks=1):
         offset_x = min(screen_width - 1, max(0, offset_x))
         offset_y = min(screen_height - 1, max(0, offset_y))
 
-        pyautogui.moveTo(offset_x, offset_y, duration=random.uniform(0.1, 0.25))
+        pyautogui.moveTo(offset_x, offset_y, duration=random.uniform(0.01, 0.05))
         for _ in range(clicks):
             pyautogui.mouseDown(offset_x, offset_y)
             time.sleep(random.uniform(0.05, 0.15))
@@ -500,7 +500,7 @@ def wait_for_press_to_start(
 
 
         if handle_dialog_windows():
-            time.sleep(1.2)
+            time.sleep(0)
             continue
         if find_only("monthy_card_close.png",custom_confidence=0.9,region=(1804,96,93,100)):
             human_click((1804+93//2,96+100//2))
@@ -547,19 +547,27 @@ def wait_for_press_to_start(
     save_debug_screenshot("press_to_start_timeout")
     return False
 
-def wait_for_image(image_name, timeout=15.0, custom_confidence=None):
+def wait_for_image(image_name, timeout=15.0, custom_confidence=None, try_click_name=None,clicks=1):
     image_targets = [image_name] if isinstance(image_name, str) else list(image_name)
     target_names_str = ", ".join(image_targets)
     log(f"   ⏳ 等待畫面: {target_names_str} (最多等 {timeout} 秒)...")
 
     start_time = time.time()
     while time.time() - start_time < timeout:
+        # 1. 優先檢查要等待的目標圖片是否出現
         for img in image_targets:
             location = find_only(img, custom_confidence)
             if location:
                 elapsed = time.time() - start_time
                 log(f"   ✅ 畫面出現了！({img}) (耗時 {elapsed:.1f} 秒)")
                 return True
+        
+        # 2. 如果這一輪沒看到目標圖片，且有指定 try_click_name，就嘗試點擊它
+        if try_click_name is not None:
+            # 這裡假設 find_and_click 會自己尋找並點擊，如果找不到也不會讓程式崩潰
+            find_and_click(try_click_name, clicks=clicks)
+
+        # 3. 稍等一下再進行下一次尋找
         time.sleep(0.5)
 
     log(f"   ❌ 等待超時 ({timeout} 秒)，沒看到 {target_names_str}！")
@@ -653,7 +661,7 @@ def scroll_at_image(image_name, total_scroll, direction="down", custom_confidenc
     return True
 
 def _select_steam_account(target_account_images):
-    wait_for_image("who.png", timeout=60.0)
+    wait_for_image("who.png", timeout=60.0,try_click_name="steam_icon.png",clicks=2)
     log("   -> 開始尋找 Steam 帳號...")
 
     account_found_and_clicked = False
@@ -741,7 +749,7 @@ def _finish_steam_launch():
     log("   -> 正在嘗試關閉 Steam 彈出廣告...")
     if find_and_click("steam_close_ad.png", custom_confidence=0.85):
         log("   -> 已關閉廣告視窗。")
-        time.sleep(2)
+        time.sleep(0)
     else:
         log("   -> 未發現廣告視窗。")
 
@@ -750,21 +758,21 @@ def _finish_steam_launch():
     if not find_and_click("steam_library.png", custom_confidence=0.8):
         log("   -> ❌ 錯誤：找不到「收藏庫」按鈕 'steam_library.png'。")
         return False
-    time.sleep(3)
+    time.sleep(0)
 
     log("   -> 正在從收藏庫選擇 'Rise of Eros'...")
     wait_for_image("rise_of_eros_list.png", timeout=60.0)
     if not find_and_click("rise_of_eros_list.png", custom_confidence=0.9):
         log("   -> ❌ 錯誤：在收藏庫中找不到遊戲 'rise_of_eros_list.png'。")
         return False
-    time.sleep(3)
+    time.sleep(0)
 
     log("   -> 正在點擊「開始遊戲」按鈕...")
     wait_for_image("steam_play_btn.png", timeout=60.0)
     if not find_and_click("steam_play_btn.png", custom_confidence=1):
         log("   -> ❌ 錯誤：找不到「開始遊戲」按鈕 'steam_play_btn.png'。")
         return False
-    time.sleep(3)
+    time.sleep(0)
 
     log("✅ === 遊戲啟動指令已發送！ ===")
     return True
