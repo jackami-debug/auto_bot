@@ -414,9 +414,9 @@ def get_reward_flow(account_name):
 
     print("\n== 開始兌換序號流程 ==")
     steps = [
-        ("set.png", 0.85, 1, 1785, 16, 72, 71),
-        ("change_reward.png", 0.85, 1),
-        ("input_code.png", 0.88, 1, 869, 507, 203, 50),
+        ("set.png", 0.85, "home.png", 1785, 16, 72, 71),
+        ("change_reward.png", 0.85, "set.png"),
+        ("input_code.png", 0.88, "change_reward.png", 869, 507, 203, 50),
         lambda: input_code(account_name),
     ]
     if not run_image_steps(
@@ -467,36 +467,34 @@ def input_code(account_name):
     print("   -> 所有序號已處理完畢")
     return True
 
-def main():
-    print("== 啟動帳號 e08s93 ==")
-    time.sleep(5)
-    launch_game_from_steam("e08s93.png")
-    wait_for_press_to_start(max_wait_seconds=120)
-    time.sleep(5)
-    consume_energy(8)
-    time.sleep(5)
-    get_reward_flow("e08s93")
+def consume_flow(
+    accout_name="loopcraft001.png",
+    activity_battle=7,
+):
+    print("== 啟動帳號 " + accout_name + "==")
+    time.sleep(0.5)
+    launch_game_from_steam(accout_name)
+    time.sleep(1)
+    wait_for_press_to_start(
+        max_wait_seconds=120,
+        center_click_interval=120.0,
+        post_click_verify_seconds=90.0,
+    )
+    time.sleep(1)
+    handle_dialog_windows()
+    time.sleep(1)
+    consume_energy(activity_battle)
+    time.sleep(0.5)
+    get_reward_flow(accout_name)
+    time.sleep(0.5)
     leave_game()
-    
-    print("== 啟動帳號 loopcraft001 ==")
-    launch_game_from_steam("loopcraft001.png")
-    time.sleep(5)
-    wait_for_press_to_start(max_wait_seconds=120)
-    time.sleep(5)
-    consume_energy(8)
-    time.sleep(5)
-    get_reward_flow("loopcraft001")
-    leave_game()
+    print("🔍 完成每日消耗體力流程...")
 
-    print("== 啟動帳號 e08s93.123 ==")
-    time.sleep(5)
-    launch_game_from_steam("e08s93.123.png")
-    wait_for_press_to_start(max_wait_seconds=120)
-    time.sleep(5)
-    consume_energy(8)
-    time.sleep(5)
-    get_reward_flow("e08s93.123")
-    leave_game()
+
+def main():
+    consume_flow(accout_name="e08s93.png",activity_battle=7)
+    consume_flow(accout_name="e08s93.123.png",activity_battle=7)
+    consume_flow(accout_name="loopcraft001.png",activity_battle=7)
 
 if __name__ == "__main__":
     main()
