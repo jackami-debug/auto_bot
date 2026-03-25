@@ -550,7 +550,6 @@ def wait_for_press_to_start(
 def wait_for_image(image_name, timeout=15.0, custom_confidence=None, try_click_name=None,clicks=1):
     image_targets = [image_name] if isinstance(image_name, str) else list(image_name)
     target_names_str = ", ".join(image_targets)
-    log(f"   ⏳ 等待畫面: {target_names_str} (最多等 {timeout} 秒)...")
 
     start_time = time.time()
     while time.time() - start_time < timeout:
@@ -564,6 +563,7 @@ def wait_for_image(image_name, timeout=15.0, custom_confidence=None, try_click_n
         
         # 2. 如果這一輪沒看到目標圖片，且有指定 try_click_name，就嘗試點擊它
         if try_click_name is not None:
+            time.sleep(2)  # 等待一點時間，讓畫面有機會更新
             # 這裡假設 find_and_click 會自己尋找並點擊，如果找不到也不會讓程式崩潰
             find_and_click(try_click_name, clicks=clicks)
 
@@ -590,7 +590,7 @@ def run_image_steps(
     wait_timeout=120, 
     screenshot_prefix="step", 
     success_message=None,
-    max_retries=2,
+    max_retries=1,
     retry_delay=2.0,
 ):
     """
@@ -628,9 +628,10 @@ def run_image_steps(
         for attempt in range(max_retries + 1):
             log(f"   -> 嘗試點擊: {image_name} (嘗試 {attempt + 1}/{max_retries + 1})")
             
-            if wait_for_image(image_name, timeout=wait_timeout,try_click_name=try_click_name):
+            if wait_for_image(image_name, try_click_name=try_click_name):
                 if find_and_click(image_name, custom_confidence=confidence):
                     log(f"   -> ✅ 成功點擊 '{image_name}'")
+                    break  # 成功點擊，跳出重試循環
                    
 
                 else:
@@ -638,6 +639,7 @@ def run_image_steps(
                     if fallback_rect:
                         log(f"   -> ⚠️ 無法點擊圖像，嘗試備用位置 {fallback_rect}")
                         try_click(*fallback_rect)
+                        break  # 嘗試備用位置後不再重試
 
                     else:
                         # 沒有備用位置，需要重試
@@ -891,10 +893,10 @@ def leave_game():
     log("\n🚪 === 開始執行離開遊戲流程 ===")
     steps = [
         find_set,
-        ("quit_game.png", 0.85, 1, 1484, 950, 331, 77),
-        ("confirm.png", 0.88, 10, 915, 680, 446, 77),
-        ("steam_sign.png", 0.85, 1),
-        ("quit.png", 0.85, 0),
+        ("quit_game.png", 0.85, "set.png", 1484, 950, 331, 77),
+        ("confirm.png", 0.88, "quit_game.png", 915, 680, 446, 77),
+        ("steam_sign.png", 0.85, "confirm.png"),
+        ("quit.png", 0.85, "steam_sign.png"),
     ]
     return run_image_steps(
         steps,
@@ -906,10 +908,10 @@ def leave_game():
 def get_daily_rewards():
     log("\n🎁 === 開始領取獎勵流程 ===")
     steps = [
-        ("rewards.png", 0.85, 1),
-        ("get_all.png", 0.85, 1),
-        ("ok.png", 0.88, 10),
-        ("backward_02.png", 0.85, 1),
+        ("rewards.png", 0.85, "backward_05.png"),
+        ("get_all.png", 0.85, "rewards.png"),
+        ("get_all.png", 0.88, "rewards.png"),#原本要點擊"ok.png",改成點擊"get_all.png"比較穩定
+        ("backward_02.png", 0.85, "ok.png"),
     ]
     return run_image_steps(
         steps,
@@ -917,6 +919,28 @@ def get_daily_rewards():
         screenshot_prefix="daily_rewards",
         success_message="✅ 完成領獎流程。",
     )
+
+def sleep():
+    log("\n⏳ 等待 2 秒...")
+    time.sleep(2)
+
+def get_wish():
+    log("\n🎁 === 開始領取獎勵流程 ===")
+    steps = [
+        ("temple.png", 0.85, "backward_05.png"),
+        ("wish_place.png", 0.85, "temple.png"),
+        ("wish.png", 0.88, "wish_place.png"),#原本要點擊"ok.png",改成點擊"get_all.png"比較穩定
+        sleep,
+        ("wish.png", 0.85, "wish_place.png"),
+        ("home_black_background.png", 0.85, "OK.png"),
+    ]
+    return run_image_steps(
+        steps,
+        wait_timeout=120,
+        screenshot_prefix="get_wish",
+        success_message="✅ 完成許願流程。",
+    )
+
 
 
 __all__ = [

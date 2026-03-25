@@ -15,6 +15,8 @@ from tools import (
     wait_for_press_to_start,
     wait_seconds_with_abort,
     try_click,
+    get_wish,
+    sleep,
 )
 
 
@@ -116,7 +118,7 @@ def dispatch():
     steps = [
         ("dispatch.png", 0.85, "close.png"),
         ("all_accept.png", 0.85, "dispatch.png"),
-        ("ok.png", 0.88, "all_accept.png"),
+        ("all_accept.png", 0.88, None),#這裡原本是點擊OK，但是連續點兩次"all_accept.png"也可以。
         ("all_dispatch.png", 0.85, "ok.png"),
         ("backward_02.png", 0.8, "all_dispatch.png"),
     ]
@@ -201,11 +203,10 @@ def use_expiring_energy():
         return True
 
     print("-> 嘗試點擊: confirm.png")
-    wait_for_image("confirm.png", timeout=30)
+    wait_for_image("confirm.png", timeout=5)
     if not find_and_click("confirm.png", custom_confidence=0.85):
         print("   -> ❌ 錯誤：找不到 'confirm.png'。")
         find_and_click("cancel.png", custom_confidence=0.85)
-        save_debug_screenshot("leave_game_no_confirm")
         return True
     return True
 
@@ -216,9 +217,9 @@ def swap_activity(battle=7):
         ("activity.png", 0.85, "daily_activity.png"),
         ("battle.png", 0.85, "activity.png"),
         (f"battle{battle}.png", 0.85, "battle.png"),
-        ("plus.png", 0.85, "battle{battle}.png"),
+        ("plus.png", 0.85, f"battle{battle}.png"),
         use_expiring_energy,
-        ("swap04.png", 0.8, "plus.png"),
+        ("swap04.png", 0.8, f"battle{battle}.png"),
         ("max.png", 0.8, "swap04.png"),
         ("confirm.png", 0.8, "max.png"),
         if_upgrade,
@@ -251,9 +252,10 @@ def swap_pvp_normal(round=5):
             return False
 
         print("-> 嘗試點擊: skip")
-        wait_for_image("skip.png", timeout=12,try_click_name="fight_02.png")
+        wait_for_image("skip.png", timeout=12)
         if not find_and_click("skip.png", custom_confidence=0.85):
-            return False
+            try_click(74,849,360,71)
+            find_and_click("skip.png", custom_confidence=0.85)
 
         print("-> 等待戰鬥結果...")
         wait_for_image(["new_rank.png", "defeated.png"], timeout=120)
@@ -321,19 +323,19 @@ def daily_job(
     accout_name="loopcraft001.png",
     element="thorns",
     activity_battle=7,
-    pvp_normal_round=2,
-    pvpspecial_round=2,
+    pvp_normal_round=1,
+    pvpspecial_round=1,
 ):
     print("🔍 正在尋找遊戲畫面...")
-    time.sleep(2)
+    time.sleep(0.5)
     launch_game_from_steam(accout_name)
-    time.sleep(2)
+    time.sleep(1)
     wait_for_press_to_start(
         max_wait_seconds=120,
         center_click_interval=120.0,
         post_click_verify_seconds=90.0,
     )
-    time.sleep(2)
+    time.sleep(1)
     handle_dialog_windows()
     time.sleep(1)
     dispatch()
@@ -341,20 +343,23 @@ def daily_job(
     swap_refine(element)
     swap_bond(level="03")
     swap_activity(activity_battle)
-    time.sleep(2)
+    time.sleep(0.5)
     swap_pvp_normal(pvp_normal_round)
     swap_pvp_special(pvpspecial_round)
-    time.sleep(1)
+    time.sleep(0.5)
     get_daily_rewards()
-    time.sleep(1)
+    time.sleep(0.5)
+    get_wish()
+
+    time.sleep(0.5)
     leave_game()
     print("🔍 完成每日任務...")
 
 
 def main():
-    daily_job(accout_name="e08s93.png", element="water", activity_battle=8, pvp_normal_round=1, pvpspecial_round=1)
-    daily_job(accout_name="e08s93.123.png", element="thorns", activity_battle=8, pvp_normal_round=1, pvpspecial_round=1)
-    daily_job(accout_name="loopcraft001.png", element="thorns", activity_battle=8, pvp_normal_round=1, pvpspecial_round=1)
+    # daily_job(accout_name="e08s93.png", element="water", activity_battle=7, pvp_normal_round=1, pvpspecial_round=1)
+    # daily_job(accout_name="e08s93.123.png", element="thorns", activity_battle=7, pvp_normal_round=1, pvpspecial_round=1)
+    daily_job(accout_name="loopcraft001.png", element="thorns", activity_battle=7, pvp_normal_round=1, pvpspecial_round=1)
 
 
 if __name__ == "__main__":
