@@ -1,337 +1,123 @@
-﻿[2026-03-24_01:03:27] scheduled run start 
-== 啟動帳號 e08s93 ==
+﻿[2026-03-26_01:00:39] scheduled run start 
+== 啟動帳號 e08s93.png==
 
 🚀 === 開始從 Steam 啟動遊戲 ===
    -> 正在點擊右下角以顯示桌面...
    -> 正在尋找並雙擊 Steam 圖示...
 🎯 發現: steam_icon.png @ Point(x=np.int64(167), y=np.int64(56))
-   ⏳ 等待畫面: who.png (最多等 60.0 秒)...
 🎯 發現: steam_icon.png @ Point(x=np.int64(167), y=np.int64(56))
 🎯 發現: steam_icon.png @ Point(x=np.int64(167), y=np.int64(56))
 🎯 發現: steam_icon.png @ Point(x=np.int64(167), y=np.int64(56))
-🎯 發現: steam_icon.png @ Point(x=np.int64(167), y=np.int64(56))
-🎯 發現: steam_icon.png @ Point(x=np.int64(167), y=np.int64(56))
-   ✅ 畫面出現了！(who.png) (耗時 10.1 秒)
+   ✅ 畫面出現了！(who.png) (耗時 13.6 秒)
    -> 開始尋找 Steam 帳號...
    -> 找到 3 個潛在帳號，開始從左到右檢查...
    -> 帳號比對 strict_color: hits=0/2, conf=0.97, gray=False
    -> 帳號比對 balanced_color: hits=0/2, conf=0.94, gray=False
-   -> 帳號比對 balanced_gray: hits=0/2, conf=0.92, gray=True
-   -> 帳號比對 strict_color: hits=0/2, conf=0.97, gray=False
-   -> 帳號比對 balanced_color: hits=0/2, conf=0.94, gray=False
-   -> 帳號比對 balanced_gray: hits=0/2, conf=0.92, gray=True
-   -> 帳號比對 strict_color: hits=0/2, conf=0.97, gray=False
-   -> 帳號比對 balanced_color: hits=0/2, conf=0.94, gray=False
    -> 帳號比對 balanced_gray: hits=2/2, conf=0.92, gray=True
-   -> 找到目標帳號！正在點擊位於 (1099, 536) 的按鈕...
+   -> 找到目標帳號！正在點擊位於 (739, 536) 的按鈕...
    -> 等待 Steam 登入與載入主介面...
-   ⏳ 等待畫面: steam_library.png (最多等 60.0 秒)...
-   ✅ 畫面出現了！(steam_library.png) (耗時 14.8 秒)
-   -> 正在嘗試關閉 Steam 彈出廣告...
-   -> 未發現廣告視窗。
-   -> 正在點擊「收藏庫」...
-   ⏳ 等待畫面: steam_library.png (最多等 60.0 秒)...
-   ✅ 畫面出現了！(steam_library.png) (耗時 0.1 秒)
-🎯 發現: steam_library.png @ Point(x=np.int64(239), y=np.int64(69))
-   -> 正在從收藏庫選擇 'Rise of Eros'...
-   ⏳ 等待畫面: rise_of_eros_list.png (最多等 60.0 秒)...
-   ✅ 畫面出現了！(rise_of_eros_list.png) (耗時 0.7 秒)
-🎯 發現: rise_of_eros_list.png @ Point(x=np.int64(153), y=np.int64(680))
-   -> 正在點擊「開始遊戲」按鈕...
-   ⏳ 等待畫面: steam_play_btn.png (最多等 60.0 秒)...
-   ✅ 畫面出現了！(steam_play_btn.png) (耗時 0.4 秒)
-🎯 發現: steam_play_btn.png @ Point(x=np.int64(564), y=np.int64(647))
-✅ === 遊戲啟動指令已發送！ ===
-
-⏳ 全螢幕持續偵測 'press_to_start.png'（含中央點擊備援）...
-   👉 未找到 'Press to Start'，點擊螢幕中央嘗試喚醒流程...
-   -> 尚未找到 'Press to Start'，持續偵測中... (剩餘 80 秒)
-🎯 發現: press_to_start.png @ Point(x=np.int64(960), y=np.int64(540))
-✅ 已點擊 'Press to Start'，確認是否成功進入...
-   -> 已點擊但尚未進入，繼續偵測...
-   -> 尚未找到 'Press to Start'，持續偵測中... (剩餘 53 秒)
-✅ 偵測到遊戲內介面元素，視為已成功進入。
-
-💪 === 開始執行消耗體力流程 ===
-   ⏳ 等待畫面: ongoing_activity.png (最多等 60.0 秒)...
-   ✅ 畫面出現了！(ongoing_activity.png) (耗時 0.2 秒)
-🎯 發現: ongoing_activity.png @ Point(x=np.int64(224), y=np.int64(756))
-   ⏳ 等待畫面: activity.png (最多等 5.0 秒)...
-   ✅ 畫面出現了！(activity.png) (耗時 2.9 秒)
-🎯 發現: activity.png @ Point(x=np.int64(788), y=np.int64(607))
-   ⏳ 等待畫面: battle.png (最多等 5.0 秒)...
-   ✅ 畫面出現了！(battle.png) (耗時 0.6 秒)
-🎯 發現: battle.png @ Point(x=np.int64(196), y=np.int64(623))
-   ⏳ 等待畫面: battle7.png (最多等 15.0 秒)...
-🎯 發現: battle.png @ Point(x=np.int64(1387), y=np.int64(663))
-   ✅ 畫面出現了！(battle7.png) (耗時 2.2 秒)
-   ⏳ 等待畫面: battle7.png (最多等 5.0 秒)...
-   ✅ 畫面出現了！(battle7.png) (耗時 0.2 秒)
-   -> 嘗試點擊 'battle7' 按鈕右方的關卡...
-   -> 計算出的關卡座標: (816, 490)
-   ⏳ 等待畫面: swape.png (最多等 10.0 秒)...
-   ✅ 畫面出現了！(swape.png) (耗時 0.4 秒)
-🎯 發現: swape.png @ Point(x=np.int64(1314), y=np.int64(978))
-   ⏳ 等待畫面: max.png (最多等 10.0 秒)...
-   ✅ 畫面出現了！(max.png) (耗時 0.4 秒)
-🎯 發現: max.png @ Point(x=np.int64(1310), y=np.int64(464))
-🎯 發現: confirm.png @ Point(x=np.int64(1138), y=np.int64(798))
-   -> ⏳ 正在檢查是否有升級畫面...
-
-⏳ 等待升級判定 (2 秒)...
-   -> 倒數 2 秒
-   -> 倒數 1 秒
-   -> 👌 未偵測到升級畫面，繼續正常流程。
-🎯 發現: OK_02.png @ Point(x=np.int64(958), y=np.int64(908))
-   ⏳ 等待畫面: mission_01.png (最多等 10.0 秒)...
-   ✅ 畫面出現了！(mission_01.png) (耗時 0.2 秒)
-🎯 發現: mission_01.png @ Point(x=np.int64(348), y=np.int64(993))
-   ⏳ 等待畫面: daily.png (最多等 10.0 秒)...
-   ✅ 畫面出現了！(daily.png) (耗時 0.3 秒)
-🎯 發現: daily.png @ Point(x=np.int64(182), y=np.int64(398))
-   ⏳ 等待畫面: accept_all.png, no_accept_all.png (最多等 10.0 秒)...
-   ✅ 畫面出現了！(no_accept_all.png) (耗時 0.9 秒)
-   -> ❌ 錯誤：找不到 'accept_all.png'。
-🎯 發現: main_page.png @ Point(x=np.int64(1825), y=np.int64(48))
-   -> 沒有可用的序號，跳過兌換流程
-
-🚪 === 開始執行離開遊戲流程 ===
-   -> 執行函式: find_set
-   -> 嘗試點擊: set.png
-🎯 發現: set.png @ Point(x=np.int64(1820), y=np.int64(49))
-   -> 嘗試點擊: quit_game.png
-   ⏳ 等待畫面: quit_game.png (最多等 120 秒)...
-   ✅ 畫面出現了！(quit_game.png) (耗時 1.3 秒)
-🎯 發現: quit_game.png @ Point(x=np.int64(1660), y=np.int64(988))
-
-⏳ 等待 quit_game.png 操作完成 (1 秒)...
-   -> 倒數 1 秒
-   -> 嘗試點擊: confirm.png
-   ⏳ 等待畫面: confirm.png (最多等 120 秒)...
-   ✅ 畫面出現了！(confirm.png) (耗時 0.2 秒)
-🎯 發現: confirm.png @ Point(x=np.int64(1139), y=np.int64(719))
-
-⏳ 等待 confirm.png 操作完成 (10 秒)...
-   -> 倒數 10 秒
-   -> 倒數 5 秒
-   -> 倒數 4 秒
-   -> 倒數 3 秒
-   -> 倒數 2 秒
-   -> 倒數 1 秒
-   -> 嘗試點擊: steam_sign.png
-   ⏳ 等待畫面: steam_sign.png (最多等 120 秒)...
-   ✅ 畫面出現了！(steam_sign.png) (耗時 0.1 秒)
-🎯 發現: steam_sign.png @ Point(x=np.int64(65), y=np.int64(26))
-
-⏳ 等待 steam_sign.png 操作完成 (1 秒)...
-   -> 倒數 1 秒
-   -> 嘗試點擊: quit.png
-   ⏳ 等待畫面: quit.png (最多等 120 秒)...
-   ✅ 畫面出現了！(quit.png) (耗時 0.1 秒)
-🎯 發現: quit.png @ Point(x=np.int64(65), y=np.int64(373))
-✅ 離開遊戲流程完成。
-== 啟動帳號 loopcraft001 ==
-
-🚀 === 開始從 Steam 啟動遊戲 ===
-   -> 正在點擊右下角以顯示桌面...
-   -> 正在尋找並雙擊 Steam 圖示...
-🎯 發現: steam_icon.png @ Point(x=np.int64(167), y=np.int64(56))
-   ⏳ 等待畫面: who.png (最多等 60.0 秒)...
-🎯 發現: steam_icon.png @ Point(x=np.int64(167), y=np.int64(56))
-🎯 發現: steam_icon.png @ Point(x=np.int64(167), y=np.int64(56))
-🎯 發現: steam_icon.png @ Point(x=np.int64(167), y=np.int64(56))
-   ✅ 畫面出現了！(who.png) (耗時 6.1 秒)
-   -> 開始尋找 Steam 帳號...
-   -> 找到 3 個潛在帳號，開始從左到右檢查...
-   -> 帳號比對 strict_color: hits=0/2, conf=0.97, gray=False
-   -> 帳號比對 balanced_color: hits=0/2, conf=0.94, gray=False
-   -> 帳號比對 balanced_gray: hits=0/2, conf=0.92, gray=True
-   -> 帳號比對 strict_color: hits=0/2, conf=0.97, gray=False
-   -> 帳號比對 balanced_color: hits=0/2, conf=0.94, gray=False
-   -> 帳號比對 balanced_gray: hits=0/2, conf=0.92, gray=True
-   -> 帳號比對 strict_color: hits=0/2, conf=0.97, gray=False
-   -> 帳號比對 balanced_color: hits=0/2, conf=0.94, gray=False
-   -> 帳號比對 balanced_gray: hits=2/2, conf=0.92, gray=True
-   -> 找到目標帳號！正在點擊位於 (1099, 536) 的按鈕...
-   -> 等待 Steam 登入與載入主介面...
-   ⏳ 等待畫面: steam_library.png (最多等 60.0 秒)...
-   ✅ 畫面出現了！(steam_library.png) (耗時 15.0 秒)
-   -> 正在嘗試關閉 Steam 彈出廣告...
-   -> 未發現廣告視窗。
-   -> 正在點擊「收藏庫」...
-   ⏳ 等待畫面: steam_library.png (最多等 60.0 秒)...
-   ✅ 畫面出現了！(steam_library.png) (耗時 0.1 秒)
-🎯 發現: steam_library.png @ Point(x=np.int64(241), y=np.int64(70))
-   -> 正在從收藏庫選擇 'Rise of Eros'...
-   ⏳ 等待畫面: rise_of_eros_list.png (最多等 60.0 秒)...
-   ✅ 畫面出現了！(rise_of_eros_list.png) (耗時 0.5 秒)
-🎯 發現: rise_of_eros_list.png @ Point(x=np.int64(155), y=np.int64(369))
-   -> 正在點擊「開始遊戲」按鈕...
-   ⏳ 等待畫面: steam_play_btn.png (最多等 60.0 秒)...
-   ✅ 畫面出現了！(steam_play_btn.png) (耗時 0.4 秒)
-🎯 發現: steam_play_btn.png @ Point(x=np.int64(566), y=np.int64(648))
-✅ === 遊戲啟動指令已發送！ ===
-
-⏳ 全螢幕持續偵測 'press_to_start.png'（含中央點擊備援）...
-   👉 未找到 'Press to Start'，點擊螢幕中央嘗試喚醒流程...
-🎯 發現: press_to_start.png @ Point(x=np.int64(960), y=np.int64(540))
-✅ 已點擊 'Press to Start'，確認是否成功進入...
-   -> 已點擊但尚未進入，繼續偵測...
-   -> 尚未找到 'Press to Start'，持續偵測中... (剩餘 67 秒)
-🎯 發現: press_to_start.png @ Point(x=np.int64(960), y=np.int64(540))
-✅ 已點擊 'Press to Start'，確認是否成功進入...
-   -> 已點擊但尚未進入，繼續偵測...
-   👉 未找到 'Press to Start'，點擊螢幕中央嘗試喚醒流程...
-✅ 偵測到遊戲內介面元素，視為已成功進入。
-
-💪 === 開始執行消耗體力流程 ===
-   ⏳ 等待畫面: ongoing_activity.png (最多等 60.0 秒)...
-   ✅ 畫面出現了！(ongoing_activity.png) (耗時 0.2 秒)
-🎯 發現: ongoing_activity.png @ Point(x=np.int64(224), y=np.int64(756))
-   ⏳ 等待畫面: activity.png (最多等 5.0 秒)...
-   ✅ 畫面出現了！(activity.png) (耗時 2.7 秒)
-🎯 發現: activity.png @ Point(x=np.int64(788), y=np.int64(607))
-   ⏳ 等待畫面: battle.png (最多等 5.0 秒)...
-   ✅ 畫面出現了！(battle.png) (耗時 0.5 秒)
-🎯 發現: battle.png @ Point(x=np.int64(196), y=np.int64(623))
-   ⏳ 等待畫面: battle7.png (最多等 15.0 秒)...
-🎯 發現: battle.png @ Point(x=np.int64(1387), y=np.int64(663))
-   ✅ 畫面出現了！(battle7.png) (耗時 2.2 秒)
-   ⏳ 等待畫面: battle7.png (最多等 5.0 秒)...
-   ✅ 畫面出現了！(battle7.png) (耗時 0.2 秒)
-   -> 嘗試點擊 'battle7' 按鈕右方的關卡...
-   -> 計算出的關卡座標: (759, 490)
-   ⏳ 等待畫面: swape.png (最多等 10.0 秒)...
-   ✅ 畫面出現了！(swape.png) (耗時 0.3 秒)
-🎯 發現: swape.png @ Point(x=np.int64(1314), y=np.int64(978))
-   ⏳ 等待畫面: max.png (最多等 10.0 秒)...
-   ✅ 畫面出現了！(max.png) (耗時 0.3 秒)
-🎯 發現: max.png @ Point(x=np.int64(1310), y=np.int64(464))
-🎯 發現: confirm.png @ Point(x=np.int64(1138), y=np.int64(798))
-   -> ⏳ 正在檢查是否有升級畫面...
-
-⏳ 等待升級判定 (2 秒)...
-   -> 倒數 2 秒
-   -> 倒數 1 秒
-   -> 👌 未偵測到升級畫面，繼續正常流程。
-🎯 發現: OK_02.png @ Point(x=np.int64(958), y=np.int64(908))
-   ⏳ 等待畫面: mission_01.png (最多等 10.0 秒)...
-   ✅ 畫面出現了！(mission_01.png) (耗時 0.2 秒)
-🎯 發現: mission_01.png @ Point(x=np.int64(348), y=np.int64(993))
-   ⏳ 等待畫面: daily.png (最多等 10.0 秒)...
-   ✅ 畫面出現了！(daily.png) (耗時 0.3 秒)
-🎯 發現: daily.png @ Point(x=np.int64(182), y=np.int64(398))
-   ⏳ 等待畫面: accept_all.png, no_accept_all.png (最多等 10.0 秒)...
-   ✅ 畫面出現了！(no_accept_all.png) (耗時 0.9 秒)
-   -> ❌ 錯誤：找不到 'accept_all.png'。
-🎯 發現: main_page.png @ Point(x=np.int64(1825), y=np.int64(48))
-   -> 沒有可用的序號，跳過兌換流程
-
-🚪 === 開始執行離開遊戲流程 ===
-   -> 執行函式: find_set
-   -> 嘗試點擊: set.png
-🎯 發現: set.png @ Point(x=np.int64(1820), y=np.int64(49))
-   -> 嘗試點擊: quit_game.png
-   ⏳ 等待畫面: quit_game.png (最多等 120 秒)...
-   ✅ 畫面出現了！(quit_game.png) (耗時 1.3 秒)
-🎯 發現: quit_game.png @ Point(x=np.int64(1660), y=np.int64(988))
-
-⏳ 等待 quit_game.png 操作完成 (1 秒)...
-   -> 倒數 1 秒
-   -> 嘗試點擊: confirm.png
-   ⏳ 等待畫面: confirm.png (最多等 120 秒)...
-   ✅ 畫面出現了！(confirm.png) (耗時 0.2 秒)
-🎯 發現: confirm.png @ Point(x=np.int64(1139), y=np.int64(719))
-
-⏳ 等待 confirm.png 操作完成 (10 秒)...
-   -> 倒數 10 秒
-   -> 倒數 5 秒
-   -> 倒數 4 秒
-   -> 倒數 3 秒
-   -> 倒數 2 秒
-   -> 倒數 1 秒
-   -> 嘗試點擊: steam_sign.png
-   ⏳ 等待畫面: steam_sign.png (最多等 120 秒)...
-   ✅ 畫面出現了！(steam_sign.png) (耗時 0.1 秒)
-🎯 發現: steam_sign.png @ Point(x=np.int64(67), y=np.int64(27))
-
-⏳ 等待 steam_sign.png 操作完成 (1 秒)...
-   -> 倒數 1 秒
-   -> 嘗試點擊: quit.png
-   ⏳ 等待畫面: quit.png (最多等 120 秒)...
-   ✅ 畫面出現了！(quit.png) (耗時 0.1 秒)
-🎯 發現: quit.png @ Point(x=np.int64(67), y=np.int64(374))
-✅ 離開遊戲流程完成。
-== 啟動帳號 e08s93.123 ==
-
-🚀 === 開始從 Steam 啟動遊戲 ===
-   -> 正在點擊右下角以顯示桌面...
-   -> 正在尋找並雙擊 Steam 圖示...
-🎯 發現: steam_icon.png @ Point(x=np.int64(167), y=np.int64(56))
-   ⏳ 等待畫面: who.png (最多等 60.0 秒)...
-🎯 發現: steam_icon.png @ Point(x=np.int64(167), y=np.int64(56))
-🎯 發現: steam_icon.png @ Point(x=np.int64(167), y=np.int64(56))
-   ✅ 畫面出現了！(who.png) (耗時 4.2 秒)
-   -> 開始尋找 Steam 帳號...
-   -> 找到 3 個潛在帳號，開始從左到右檢查...
-   -> 帳號比對 strict_color: hits=0/2, conf=0.97, gray=False
-   -> 帳號比對 balanced_color: hits=0/2, conf=0.94, gray=False
-   -> 帳號比對 balanced_gray: hits=0/2, conf=0.92, gray=True
-   -> 帳號比對 strict_color: hits=0/2, conf=0.97, gray=False
-   -> 帳號比對 balanced_color: hits=0/2, conf=0.94, gray=False
-   -> 帳號比對 balanced_gray: hits=0/2, conf=0.92, gray=True
-   -> 帳號比對 strict_color: hits=0/2, conf=0.97, gray=False
-   -> 帳號比對 balanced_color: hits=0/2, conf=0.94, gray=False
-   -> 帳號比對 balanced_gray: hits=2/2, conf=0.92, gray=True
-   -> 找到目標帳號！正在點擊位於 (1099, 536) 的按鈕...
-   -> 等待 Steam 登入與載入主介面...
-   ⏳ 等待畫面: steam_library.png (最多等 60.0 秒)...
    ✅ 畫面出現了！(steam_library.png) (耗時 15.1 秒)
    -> 正在嘗試關閉 Steam 彈出廣告...
    -> 未發現廣告視窗。
    -> 正在點擊「收藏庫」...
-   ⏳ 等待畫面: steam_library.png (最多等 60.0 秒)...
    ✅ 畫面出現了！(steam_library.png) (耗時 0.1 秒)
 🎯 發現: steam_library.png @ Point(x=np.int64(239), y=np.int64(69))
    -> 正在從收藏庫選擇 'Rise of Eros'...
-   ⏳ 等待畫面: rise_of_eros_list.png (最多等 60.0 秒)...
    ✅ 畫面出現了！(rise_of_eros_list.png) (耗時 0.5 秒)
-🎯 發現: rise_of_eros_list.png @ Point(x=np.int64(153), y=np.int64(368))
+🎯 發現: rise_of_eros_list.png @ Point(x=np.int64(153), y=np.int64(680))
    -> 正在點擊「開始遊戲」按鈕...
-   ⏳ 等待畫面: steam_play_btn.png (最多等 60.0 秒)...
-   ✅ 畫面出現了！(steam_play_btn.png) (耗時 0.6 秒)
+   ✅ 畫面出現了！(steam_play_btn.png) (耗時 0.5 秒)
 🎯 發現: steam_play_btn.png @ Point(x=np.int64(564), y=np.int64(647))
 ✅ === 遊戲啟動指令已發送！ ===
 
 ⏳ 全螢幕持續偵測 'press_to_start.png'（含中央點擊備援）...
    👉 未找到 'Press to Start'，點擊螢幕中央嘗試喚醒流程...
-🎯 發現: press_to_start.png @ Point(x=np.int64(960), y=np.int64(540))
-✅ 已點擊 'Press to Start'，確認是否成功進入...
-   -> 已點擊但尚未進入，繼續偵測...
-   -> 尚未找到 'Press to Start'，持續偵測中... (剩餘 67 秒)
+   -> 偵測到 'game_sign_02.png'，先點擊一次。
+   -> 尚未找到 'Press to Start'，持續偵測中... (剩餘 75 秒)
+   -> 尚未找到 'Press to Start'，持續偵測中... (剩餘 57 秒)
+   -> 尚未找到 'Press to Start'，持續偵測中... (剩餘 38 秒)
+   -> 尚未找到 'Press to Start'，持續偵測中... (剩餘 19 秒)
+   -> 尚未找到 'Press to Start'，持續偵測中... (剩餘 -2 秒)
+❌ 等待 'Press to Start' 超時。
+
+💪 === 開始執行消耗體力流程 ===
+   ✅ 畫面出現了！(ongoing_activity.png) (耗時 0.6 秒)
+🎯 發現: ongoing_activity.png @ Point(x=np.int64(791), y=np.int64(44))
+🎯 發現: ongoing_activity.png @ Point(x=np.int64(791), y=np.int64(44))
+🎯 發現: ongoing_activity.png @ Point(x=np.int64(791), y=np.int64(44))
+   ❌ 等待超時 (5.0 秒)，沒看到 activity.png！
+   -> ❌ 錯誤：找不到 'activity.png'。
+
+🚪 === 開始執行離開遊戲流程 ===
+   -> 執行函式: find_set
+   -> 嘗試點擊: set.png
+   -> ❌ 錯誤：找不到 'set.png'。
+   -> 嘗試先點擊 'main_page.png' 再點選 'set.png'
+   -> ❌ 錯誤：找不到 'main_page.png'。
+   -> ❌ 錯誤：函式 'find_set' 執行失敗。
+🔍 完成每日消耗體力流程...
+== 啟動帳號 e08s93.123.png==
+
+🚀 === 開始從 Steam 啟動遊戲 ===
+   -> 正在點擊右下角以顯示桌面...
+   -> 正在尋找並雙擊 Steam 圖示...
+   -> ❌ 錯誤：在桌面或工作列上找不到 'steam_icon.png'。
+
+⏳ 全螢幕持續偵測 'press_to_start.png'（含中央點擊備援）...
+   👉 未找到 'Press to Start'，點擊螢幕中央嘗試喚醒流程...
+   -> 尚未找到 'Press to Start'，持續偵測中... (剩餘 64 秒)
+   -> 尚未找到 'Press to Start'，持續偵測中... (剩餘 45 秒)
+   -> 尚未找到 'Press to Start'，持續偵測中... (剩餘 28 秒)
+   -> 尚未找到 'Press to Start'，持續偵測中... (剩餘 11 秒)
+   -> 尚未找到 'Press to Start'，持續偵測中... (剩餘 -6 秒)
+❌ 等待 'Press to Start' 超時。
+
+💪 === 開始執行消耗體力流程 ===
+   ✅ 畫面出現了！(ongoing_activity.png) (耗時 0.9 秒)
+🎯 發現: ongoing_activity.png @ Point(x=np.int64(792), y=np.int64(44))
+🎯 發現: ongoing_activity.png @ Point(x=np.int64(792), y=np.int64(44))
+   ❌ 等待超時 (5.0 秒)，沒看到 activity.png！
+   -> ❌ 錯誤：找不到 'activity.png'。
+
+🚪 === 開始執行離開遊戲流程 ===
+   -> 執行函式: find_set
+   -> 嘗試點擊: set.png
+   -> ❌ 錯誤：找不到 'set.png'。
+   -> 嘗試先點擊 'main_page.png' 再點選 'set.png'
+   -> ❌ 錯誤：找不到 'main_page.png'。
+   -> ❌ 錯誤：函式 'find_set' 執行失敗。
+🔍 完成每日消耗體力流程...
+== 啟動帳號 loopcraft001.png==
+
+🚀 === 開始從 Steam 啟動遊戲 ===
+   -> 正在點擊右下角以顯示桌面...
+   -> 正在尋找並雙擊 Steam 圖示...
+   -> ❌ 錯誤：在桌面或工作列上找不到 'steam_icon.png'。
+
+⏳ 全螢幕持續偵測 'press_to_start.png'（含中央點擊備援）...
+   👉 未找到 'Press to Start'，點擊螢幕中央嘗試喚醒流程...
+   -> 偵測到 'game_sign_02.png'，先點擊一次。
+   -> 尚未找到 'Press to Start'，持續偵測中... (剩餘 76 秒)
+🎯 發現: close_02.png @ Point(x=np.int64(1581), y=np.int64(167))
+   -> 已處理對話框: close_02.png
+🎯 發現: close_06.png @ Point(x=np.int64(813), y=np.int64(195))
+   -> 已處理對話框: close_06.png
 ✅ 偵測到遊戲內介面元素，視為已成功進入。
 
 💪 === 開始執行消耗體力流程 ===
-   ⏳ 等待畫面: ongoing_activity.png (最多等 60.0 秒)...
    ✅ 畫面出現了！(ongoing_activity.png) (耗時 0.2 秒)
-🎯 發現: ongoing_activity.png @ Point(x=np.int64(224), y=np.int64(756))
-   ⏳ 等待畫面: activity.png (最多等 5.0 秒)...
-   ✅ 畫面出現了！(activity.png) (耗時 2.3 秒)
-🎯 發現: activity.png @ Point(x=np.int64(788), y=np.int64(607))
-   ⏳ 等待畫面: battle.png (最多等 5.0 秒)...
+🎯 發現: ongoing_activity.png @ Point(x=np.int64(224), y=np.int64(778))
+   ✅ 畫面出現了！(activity.png) (耗時 5.2 秒)
+🎯 發現: activity.png @ Point(x=np.int64(290), y=np.int64(588))
    ✅ 畫面出現了！(battle.png) (耗時 0.5 秒)
 🎯 發現: battle.png @ Point(x=np.int64(196), y=np.int64(623))
-   ⏳ 等待畫面: battle7.png (最多等 15.0 秒)...
-🎯 發現: battle.png @ Point(x=np.int64(1387), y=np.int64(663))
-   ✅ 畫面出現了！(battle7.png) (耗時 2.2 秒)
-   ⏳ 等待畫面: battle7.png (最多等 5.0 秒)...
+🎯 發現: battle.png @ Point(x=np.int64(361), y=np.int64(316))
+   ✅ 畫面出現了！(battle7.png) (耗時 4.2 秒)
    ✅ 畫面出現了！(battle7.png) (耗時 0.2 秒)
    -> 嘗試點擊 'battle7' 按鈕右方的關卡...
-   -> 計算出的關卡座標: (784, 490)
-   ⏳ 等待畫面: swape.png (最多等 10.0 秒)...
-   ✅ 畫面出現了！(swape.png) (耗時 0.3 秒)
-🎯 發現: swape.png @ Point(x=np.int64(1314), y=np.int64(978))
-   ⏳ 等待畫面: max.png (最多等 10.0 秒)...
+🎯 發現: battle7.png @ Point(x=np.int64(303), y=np.int64(490))
+   ✅ 畫面出現了！(swape.png) (耗時 0.2 秒)
+🎯 發現: swape.png @ Point(x=np.int64(1385), y=np.int64(978))
    ✅ 畫面出現了！(max.png) (耗時 0.3 秒)
 🎯 發現: max.png @ Point(x=np.int64(1310), y=np.int64(464))
 🎯 發現: confirm.png @ Point(x=np.int64(1138), y=np.int64(798))
@@ -342,51 +128,37 @@
    -> 倒數 1 秒
    -> 👌 未偵測到升級畫面，繼續正常流程。
 🎯 發現: OK_02.png @ Point(x=np.int64(958), y=np.int64(908))
-   ⏳ 等待畫面: mission_01.png (最多等 10.0 秒)...
    ✅ 畫面出現了！(mission_01.png) (耗時 0.2 秒)
 🎯 發現: mission_01.png @ Point(x=np.int64(348), y=np.int64(993))
-   ⏳ 等待畫面: daily.png (最多等 10.0 秒)...
    ✅ 畫面出現了！(daily.png) (耗時 0.3 秒)
-🎯 發現: daily.png @ Point(x=np.int64(182), y=np.int64(398))
-   ⏳ 等待畫面: accept_all.png, no_accept_all.png (最多等 10.0 秒)...
-   ✅ 畫面出現了！(no_accept_all.png) (耗時 0.8 秒)
-   -> ❌ 錯誤：找不到 'accept_all.png'。
-🎯 發現: main_page.png @ Point(x=np.int64(1825), y=np.int64(48))
-   -> 沒有可用的序號，跳過兌換流程
+🎯 發現: daily.png @ Point(x=np.int64(181), y=np.int64(399))
+   ✅ 畫面出現了！(accept_all.png) (耗時 0.6 秒)
+🎯 發現: accept_all.png @ Point(x=np.int64(1643), y=np.int64(1010))
+   ✅ 畫面出現了！(OK.png) (耗時 3.8 秒)
+🎯 發現: OK.png @ Point(x=np.int64(962), y=np.int64(908))
+   ✅ 畫面出現了！(main_page.png) (耗時 0.3 秒)
+🎯 發現: main_page.png @ Point(x=np.int64(1826), y=np.int64(49))
 
 🚪 === 開始執行離開遊戲流程 ===
    -> 執行函式: find_set
    -> 嘗試點擊: set.png
 🎯 發現: set.png @ Point(x=np.int64(1820), y=np.int64(49))
-   -> 嘗試點擊: quit_game.png
-   ⏳ 等待畫面: quit_game.png (最多等 120 秒)...
-   ✅ 畫面出現了！(quit_game.png) (耗時 1.3 秒)
-🎯 發現: quit_game.png @ Point(x=np.int64(1660), y=np.int64(988))
-
-⏳ 等待 quit_game.png 操作完成 (1 秒)...
-   -> 倒數 1 秒
-   -> 嘗試點擊: confirm.png
-   ⏳ 等待畫面: confirm.png (最多等 120 秒)...
-   ✅ 畫面出現了！(confirm.png) (耗時 0.2 秒)
+   -> 嘗試點擊: quit_game.png (嘗試 1/2)
+   ✅ 畫面出現了！(quit_game.png) (耗時 3.9 秒)
+🎯 發現: quit_game.png @ Point(x=np.int64(1712), y=np.int64(980))
+   -> ✅ 成功點擊 'quit_game.png'
+   -> 嘗試點擊: confirm.png (嘗試 1/2)
+   ✅ 畫面出現了！(confirm.png) (耗時 0.3 秒)
 🎯 發現: confirm.png @ Point(x=np.int64(1139), y=np.int64(719))
-
-⏳ 等待 confirm.png 操作完成 (10 秒)...
-   -> 倒數 10 秒
-   -> 倒數 5 秒
-   -> 倒數 4 秒
-   -> 倒數 3 秒
-   -> 倒數 2 秒
-   -> 倒數 1 秒
-   -> 嘗試點擊: steam_sign.png
-   ⏳ 等待畫面: steam_sign.png (最多等 120 秒)...
-   ✅ 畫面出現了！(steam_sign.png) (耗時 0.1 秒)
+   -> ✅ 成功點擊 'confirm.png'
+   -> 嘗試點擊: steam_sign.png (嘗試 1/2)
+   ✅ 畫面出現了！(steam_sign.png) (耗時 3.8 秒)
 🎯 發現: steam_sign.png @ Point(x=np.int64(65), y=np.int64(26))
-
-⏳ 等待 steam_sign.png 操作完成 (1 秒)...
-   -> 倒數 1 秒
-   -> 嘗試點擊: quit.png
-   ⏳ 等待畫面: quit.png (最多等 120 秒)...
+   -> ✅ 成功點擊 'steam_sign.png'
+   -> 嘗試點擊: quit.png (嘗試 1/2)
    ✅ 畫面出現了！(quit.png) (耗時 0.1 秒)
 🎯 發現: quit.png @ Point(x=np.int64(65), y=np.int64(373))
+   -> ✅ 成功點擊 'quit.png'
 ✅ 離開遊戲流程完成。
-[2026-03-24_01:11:53] scheduled run end (exit=0) 
+🔍 完成每日消耗體力流程...
+[2026-03-26_01:08:50] scheduled run end (exit=0) 

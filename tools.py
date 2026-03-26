@@ -73,7 +73,6 @@ def log(message):
     except Exception:
         pass
 
-
 def _get_foreground_window():
     if not sys.platform.startswith("win"):
         return None
@@ -81,7 +80,6 @@ def _get_foreground_window():
         return ctypes.windll.user32.GetForegroundWindow()
     except Exception:
         return None
-
 
 def get_current_keyboard_layout():
     if not sys.platform.startswith("win"):
@@ -94,14 +92,12 @@ def get_current_keyboard_layout():
     except Exception:
         return None
 
-
 def is_english_input():
     layout = get_current_keyboard_layout()
     if layout is None:
         return False
     language_id = layout & 0xFFFF
     return language_id == 0x0409
-
 
 def switch_to_english_input():
     if not sys.platform.startswith("win"):
@@ -124,7 +120,6 @@ def switch_to_english_input():
     except Exception:
         return False
 
-
 def ensure_english_input(max_attempts=3):
     if is_english_input():
         return True
@@ -137,7 +132,6 @@ def ensure_english_input(max_attempts=3):
 
     log("   -> ⚠️ 無法確認已切換成英文輸入法，序號輸入可能失敗。")
     return False
-
 
 def get_clipboard_text():
     # always return a string (empty on failure) so callers don't have to
@@ -165,7 +159,6 @@ def get_clipboard_text():
             kernel32.GlobalUnlock(handle)
     finally:
         user32.CloseClipboard()
-
 
 def set_clipboard_text(text):
     if not sys.platform.startswith("win"):
@@ -203,7 +196,6 @@ def set_clipboard_text(text):
         return True
     finally:
         user32.CloseClipboard()
-
 
 def type_text_with_verification(text, max_attempts=3, use_paste=True):
     original_clipboard = get_clipboard_text()
@@ -605,9 +597,23 @@ def run_image_steps(
     - retry_delay: 重試前等待時間，會指數增長 (預設: 2.0 秒)
     """
     for step_index, step in enumerate(steps):
+        
+        # 🟢 新增：如果 step 是一個元組，且第一個元素是函式 (例如: (sleep, 5))
+        if isinstance(step, tuple) and callable(step[0]):
+            func = step[0]
+            args = step[1:] # 把後面的元素當作參數
+            log(f"   -> 執行函式: {func.__name__} 帶參數 {args}")
+            if func(*args) is False:  # 記得用 is False 避免 None 誤判
+                log(f"   -> ❌ 錯誤：函式 '{func.__name__}' 執行失敗。")
+                if screenshot_prefix:
+                    save_debug_screenshot(f"{screenshot_prefix}_failed_{func.__name__}")
+                return False
+            continue
+
+        # 🟡 原本的：如果 step 是一個單純的函式 (例如: sleep)
         if callable(step):
             log(f"   -> 執行函式: {step.__name__}")
-            if not step():
+            if step() is False:
                 log(f"   -> ❌ 錯誤：函式 '{step.__name__}' 執行失敗。")
                 if screenshot_prefix:
                     save_debug_screenshot(f"{screenshot_prefix}_failed_{step.__name__}")
@@ -805,6 +811,11 @@ def _finish_steam_launch():
         return False
     time.sleep(0)
 
+    if find_only("window_up.png", custom_confidence=0.9):
+        find_and_click("window_up.png", custom_confidence=0.9)
+        time.sleep(1)
+
+
     log("   -> 正在從收藏庫選擇 'Rise of Eros'...")
     wait_for_image("rise_of_eros_list.png", timeout=60.0)
     if not find_and_click("rise_of_eros_list.png", custom_confidence=0.9):
@@ -875,10 +886,14 @@ def find_set():
         return True
 
     log("   -> ❌ 錯誤：找不到 'set.png'。")
-    log("   -> 嘗試先點擊 'main_page.png' 再點選 'set.png'")
+    log("   -> 嘗試先點擊 'home_black_background.png' 或 'main_page.png' 再點選 'set.png'")
 
-    if not find_and_click("main_page.png", custom_confidence=0.8):
-        log("   -> ❌ 錯誤：找不到 'main_page.png'。")
+    # 使用 or 來分開執行：先找 A，找不到再找 B
+    clicked_home = find_and_click("home_black_background.png", custom_confidence=0.8) or \
+                   find_and_click("main_page.png", custom_confidence=0.8)
+
+    if not clicked_home:
+        log("   -> ❌ 錯誤：找不到 'main_page.png' 也不見 'home_black_background'。")
         save_debug_screenshot("main_page_not_found")
         return False
 
@@ -887,6 +902,7 @@ def find_set():
         log("   -> ❌ 錯誤：找不到 'set.png'。")
         save_debug_screenshot("set_not_found")
         return False
+        
     return True
 
 def leave_game():
@@ -920,14 +936,15 @@ def get_daily_rewards():
         success_message="✅ 完成領獎流程。",
     )
 
-def sleep():
-    log("\n⏳ 等待 2 秒...")
-    time.sleep(2)
+def sleep(seconds = 2):
+    log(f"\n⏳ 等待 {seconds} 秒...")
+    time.sleep(seconds)
+    return True
 
 def get_wish():
     log("\n🎁 === 開始領取獎勵流程 ===")
     steps = [
-        ("temple.png", 0.85, "backward_05.png"),
+        ("temple.png", 0.99, "backward_06.png"),
         ("wish_place.png", 0.85, "temple.png"),
         ("wish.png", 0.88, "wish_place.png"),#原本要點擊"ok.png",改成點擊"get_all.png"比較穩定
         sleep,
@@ -941,7 +958,41 @@ def get_wish():
         success_message="✅ 完成許願流程。",
     )
 
+def click_till_see(image_name, click_location=(1000, 500), max_attempts=15):
+    """
+    不斷點擊指定座標，直到畫面上出現目標圖片為止。
+    """
+    log(f"\n👉 開始點擊直到看到 {image_name}...")
+    attempts = 0
+    
+    while attempts < max_attempts:
+        if find_only(image_name, custom_confidence=0.85):
+            log(f"✅ 已看到 {image_name}，停止點擊。")
+            return True
+            
+        log(f"   -> 尚未看到 {image_name}，點擊 {click_location} (第 {attempts + 1} 次)")
+        human_click(click_location)  # 👈 現在這裡有座標可以點了
+        time.sleep(1)
+        attempts += 1
 
+    log(f"❌ 錯誤：已點擊 {max_attempts} 次，仍未看到 '{image_name}'。")
+    return False
+
+def ensure_pass_tutorial():
+        print("   -> 檢查是否有活動教學或多頁面需要切換...")
+        max_clicks = 6  # 設定最大嘗試次數，防止無限迴圈
+        click_count = 0
+
+        while find_only("right_arrow.png", custom_confidence=0.99,region=(1075, 955, 94, 83)) and click_count < max_clicks:
+            print(f"   -> 發現右箭頭，嘗試點擊以切換活動頁面... (第 {click_count + 1} 次)")
+            find_and_click("right_arrow.png", custom_confidence=0.8)
+            time.sleep(1.0)  # 加上短暫等待，讓遊戲播放翻頁動畫
+            click_count += 1
+
+        if click_count >= max_clicks:
+            print("   -> ⚠️ 警告：點擊右箭頭次數達上限，可能卡在教學畫面或發生異常！")
+            # 這裡可以視情況決定是否要 return False 或是截圖存檔
+            # save_debug_screenshot("stuck_at_tutorial")
 
 __all__ = [
     "IMAGE_FOLDER",

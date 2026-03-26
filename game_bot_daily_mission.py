@@ -17,6 +17,8 @@ from tools import (
     try_click,
     get_wish,
     sleep,
+    click_till_see,
+    ensure_pass_tutorial,
 )
 
 
@@ -119,7 +121,9 @@ def dispatch():
         ("dispatch.png", 0.85, "close.png"),
         ("all_accept.png", 0.85, "dispatch.png"),
         ("all_accept.png", 0.88, None),#這裡原本是點擊OK，但是連續點兩次"all_accept.png"也可以。
+        (sleep, 3),
         ("all_dispatch.png", 0.85, "ok.png"),
+        (click_till_see, "speed_up.png",(1220,1006)),
         ("backward_02.png", 0.8, "all_dispatch.png"),
     ]
     return run_image_steps(
@@ -135,8 +139,8 @@ def swap_coins():
         ("fight.png", 0.85, "backward_02.png"),
         ("resource.png", 0.85, "fight.png"),
         ("coins.png", 0.88, "resource.png"),
-        ("level_5.png", 0.9, "coins.png"),
-        ("swap04.png", 0.8, "level_5.png"),
+        ("level_05.png", 0.96, "coins.png"),
+        ("swap04.png", 0.8, "level_05.png"),
         ("confirm.png", 0.8, "swap04.png"),
         ("OK.png", 0.8, "confirm.png"),
         ("backward_03.png", 0.8, "OK.png"),
@@ -153,6 +157,7 @@ def swap_refine(element="water"):
     steps = [
         ("refine.png", 0.85, "backward_03.png"),
         (f"{element}_refine.png", 0.85, "refine.png"),
+        sleep,
         ("level_04.png", 0.88, "level_04.png"),
         ("swap04.png", 0.85, "level_04.png"),
         ("confirm.png", 0.8, "swap04.png"),
@@ -170,6 +175,7 @@ def swap_refine(element="water"):
 def swap_bond(level="01"):
     steps = [
         ("bond.png", 0.85, "backward_03.png"),
+        sleep,
         (f"bond_level_{level}.png", 0.85, "bond.png"),
         (f"{level}_level.png", 0.85, f"bond_level_{level}.png"),
         ("swap04.png", 0.85, f"{level}_level.png"),
@@ -216,7 +222,9 @@ def swap_activity(battle=7):
         ("daily_activity.png", 0.85, "backward_03.png"),
         ("activity.png", 0.85, "daily_activity.png"),
         ("battle.png", 0.85, "activity.png"),
-        (f"battle{battle}.png", 0.85, "battle.png"),
+        (sleep, 3),
+        ensure_pass_tutorial,
+        (f"battle{battle}.png", 0.95, "battle.png"),
         ("plus.png", 0.85, f"battle{battle}.png"),
         use_expiring_energy,
         ("swap04.png", 0.8, f"battle{battle}.png"),
@@ -252,6 +260,7 @@ def swap_pvp_normal(round=5):
             return False
 
         print("-> 嘗試點擊: skip")
+        sleep()
         wait_for_image("skip.png", timeout=12)
         if not find_and_click("skip.png", custom_confidence=0.85):
             try_click(74,849,360,71)
@@ -290,6 +299,7 @@ def swap_pvp_special(round=5):
             return False
 
         print("-> 嘗試點擊: skip")
+        sleep()
         wait_for_image("skip.png", timeout=12,try_click_name="fight_02.png")
         if not find_and_click("skip.png", custom_confidence=0.85):
             return False
@@ -338,6 +348,7 @@ def daily_job(
     time.sleep(1)
     handle_dialog_windows()
     time.sleep(1)
+    sleep()
     dispatch()
     swap_coins()
     swap_refine(element)
@@ -357,8 +368,8 @@ def daily_job(
 
 
 def main():
-    # daily_job(accout_name="e08s93.png", element="water", activity_battle=7, pvp_normal_round=1, pvpspecial_round=1)
-    # daily_job(accout_name="e08s93.123.png", element="thorns", activity_battle=7, pvp_normal_round=1, pvpspecial_round=1)
+    daily_job(accout_name="e08s93.png", element="water", activity_battle=7, pvp_normal_round=1, pvpspecial_round=1)
+    daily_job(accout_name="e08s93.123.png", element="thorns", activity_battle=7, pvp_normal_round=1, pvpspecial_round=1)
     daily_job(accout_name="loopcraft001.png", element="thorns", activity_battle=7, pvp_normal_round=1, pvpspecial_round=1)
 
 
