@@ -252,6 +252,22 @@ def swap_pvp_normal(round=5):
     wait_for_image("normal.png", timeout=12,try_click_name="pvp.png")
     if not find_and_click("normal.png", custom_confidence=0.85):
         return False
+    
+    wait_for_image("get_reward.png", timeout=12,try_click_name="normal.png")
+    if not find_and_click("get_reward.png", custom_confidence=0.85):
+        return False
+
+    wait_for_image("accumulate_rewards.png", timeout=12,try_click_name="get_reward.png")
+    if not find_and_click("accumulate_rewards.png", custom_confidence=0.85):
+        return False
+
+    wait_for_image(["confirm_08.png","OK.png"], timeout=12,try_click_name="accumulate_rewards.png")
+    if not find_and_click(["confirm_08.png","OK.png"], custom_confidence=0.85):
+        return False
+
+    wait_for_image("backward_08.png", timeout=12,try_click_name=["confirm_08.png","OK.png"])
+    if not find_and_click("backward_08.png", custom_confidence=0.85):
+        return False
 
     for _ in range(round):
         print("-> 嘗試點擊: 出戰")
@@ -291,6 +307,23 @@ def swap_pvp_special(round=5):
     wait_for_image("special.png", timeout=12,try_click_name="backward_04.png")
     if not find_and_click("special.png", custom_confidence=0.85):
         return False
+    
+    wait_for_image("get_reward.png", timeout=12,try_click_name="normal.png")
+    if not find_and_click("get_reward.png", custom_confidence=0.85):
+        return False
+
+    wait_for_image("accumulate_rewards.png", timeout=12,try_click_name="get_reward.png")
+    if not find_and_click("accumulate_rewards.png", custom_confidence=0.85):
+        return False
+
+    wait_for_image(["confirm_08.png","OK.png"], timeout=12,try_click_name="accumulate_rewards.png")
+    if not find_and_click(["confirm_08.png","OK.png"], custom_confidence=0.85):
+        return False
+
+    wait_for_image("backward_08.png", timeout=12,try_click_name=["confirm_08.png","OK.png"])
+    if not find_and_click("backward_08.png", custom_confidence=0.85):
+        return False
+
 
     for _ in range(round):
         print("-> 嘗試點擊: 出戰")

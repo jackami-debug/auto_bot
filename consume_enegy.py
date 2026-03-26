@@ -206,9 +206,9 @@ def consume_energy(battle):
     max_clicks = 6  # 設定最大嘗試次數，防止無限迴圈
     click_count = 0
 
-    while find_only("right_arrow.png", custom_confidence=0.8) and click_count < max_clicks:
+    while find_only("right_arrow.png", custom_confidence=0.8,region=(1078,963,70,70)) and click_count < max_clicks:
         print(f"   -> 發現右箭頭，嘗試點擊以切換活動頁面... (第 {click_count + 1} 次)")
-        find_and_click("right_arrow.png", custom_confidence=0.8)
+        find_and_click("right_arrow.png", custom_confidence=0.8,region=(1078,963,70,70))
         time.sleep(1.0)  # 加上短暫等待，讓遊戲播放翻頁動畫
         click_count += 1
 
@@ -316,6 +316,7 @@ def consume_energy(battle):
         save_debug_screenshot("main_page_not_found")
         return False
     return True
+
 def parse_reward_code_file():
     try:
         with open(REWARD_CODE_FILE, "r", encoding="utf-8") as file:
@@ -500,16 +501,16 @@ def consume_flow(
     time.sleep(1)
     consume_energy(activity_battle)
     time.sleep(0.5)
-    # get_reward_flow(accout_name)
+    get_reward_flow(accout_name)
     time.sleep(0.5)
     leave_game()
     print("🔍 完成每日消耗體力流程...")
 
 
 def main():
-    # consume_flow(accout_name="e08s93.png",activity_battle=7)
+    consume_flow(accout_name="e08s93.png",activity_battle=7)
     consume_flow(accout_name="e08s93.123.png",activity_battle=7)
-    # consume_flow(accout_name="loopcraft001.png",activity_battle=7)
+    consume_flow(accout_name="loopcraft001.png",activity_battle=7)
 
 if __name__ == "__main__":
     main()
