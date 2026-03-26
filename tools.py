@@ -16,16 +16,20 @@ def install_requirements():
         "pillow": "PIL",
         "opencv-python": "cv2",
         "numpy": "numpy",
+        "easyocr": "easyocr", # 已經幫你加入這行
     }
     needs_install = False
     for package_name, import_name in required.items():
         if importlib.util.find_spec(import_name) is None:
             try:
+                print(f"正在安裝 {package_name}...") # 加個小提示讓你知道進度
                 subprocess.check_call([sys.executable, "-m", "pip", "install", package_name])
                 needs_install = True
-            except Exception:
+            except Exception as e:
+                print(f"安裝 {package_name} 失敗: {e}")
                 pass
     if needs_install:
+        print("套件安裝完成，正在重新啟動腳本...")
         os.execv(sys.executable, [sys.executable, *sys.argv])
 
 
@@ -376,10 +380,19 @@ def find_only_strict(image_name, confidence=0.97, region=None, grayscale=False):
         return None
 
 def find_and_click(image_name, custom_confidence=None, clicks=1, region=None):
-    location = find_only(image_name, custom_confidence=custom_confidence, region=region)
-    if location:
-        log(f"🎯 發現: {image_name} @ {location}")
-        return human_click(location, clicks=clicks)
+    # 判斷傳入的是字串還是列表。如果是字串，就包進列表裡統一處理
+    images_to_find = [image_name] if isinstance(image_name, str) else image_name
+    
+    # 依序尋找列表中的每一張圖片
+    for img in images_to_find:
+        location = find_only(img, custom_confidence=custom_confidence, region=region)
+        
+        if location:
+            log(f"🎯 發現: {img} @ {location}")
+            # 一旦找到其中一張並點擊，就直接回傳結果並結束函式
+            return human_click(location, clicks=clicks)
+            
+    # 如果整個列表的圖片都找過一輪了還是沒找到，就回傳 False
     return False
 
 def get_center_region(width_ratio=0.8, height_ratio=0.8):
