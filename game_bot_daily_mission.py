@@ -253,15 +253,15 @@ def swap_pvp_normal(round=5):
     if not find_and_click("normal.png", custom_confidence=0.85):
         return False
     
-    wait_for_image("get_reward.png", timeout=12,try_click_name="normal.png")
-    if not find_and_click("get_reward.png", custom_confidence=0.85):
-        return False
-
-    wait_for_image("accumulate_rewards.png", timeout=12,try_click_name="get_reward.png")
+    wait_for_image("accumulate_rewards.png", timeout=12,try_click_name="normal.png")
     if not find_and_click("accumulate_rewards.png", custom_confidence=0.85):
         return False
+    
+    wait_for_image("get_rewards.png", timeout=12,try_click_name="accumulate_rewards.png")
+    if not find_and_click("get_rewards.png", custom_confidence=0.85):
+        return False
 
-    wait_for_image(["confirm_08.png","OK.png"], timeout=12,try_click_name="accumulate_rewards.png")
+    wait_for_image(["confirm_08.png","OK.png"], timeout=12,try_click_name="get_rewards.png")
     if not find_and_click(["confirm_08.png","OK.png"], custom_confidence=0.85):
         return False
 
@@ -281,6 +281,10 @@ def swap_pvp_normal(round=5):
         if not find_and_click("skip.png", custom_confidence=0.85):
             try_click(74,849,360,71)
             find_and_click("skip.png", custom_confidence=0.85)
+
+        if find_only("warn_01.png", custom_confidence=0.85):
+            print("-> 發現眷族技能配置警告！")
+            find_and_click("yes_01.png", custom_confidence=0.85)
 
         print("-> 等待戰鬥結果...")
         wait_for_image(["new_rank.png", "defeated.png"], timeout=120)
@@ -308,15 +312,15 @@ def swap_pvp_special(round=5):
     if not find_and_click("special.png", custom_confidence=0.85):
         return False
     
-    wait_for_image("get_reward.png", timeout=12,try_click_name="normal.png")
-    if not find_and_click("get_reward.png", custom_confidence=0.85):
-        return False
-
-    wait_for_image("accumulate_rewards.png", timeout=12,try_click_name="get_reward.png")
+    wait_for_image("accumulate_rewards.png", timeout=12,try_click_name="normal.png")
     if not find_and_click("accumulate_rewards.png", custom_confidence=0.85):
         return False
+    
+    wait_for_image("get_rewards.png", timeout=12,try_click_name="accumulate_rewards.png")
+    if not find_and_click("get_rewards.png", custom_confidence=0.85):
+        return False
 
-    wait_for_image(["confirm_08.png","OK.png"], timeout=12,try_click_name="accumulate_rewards.png")
+    wait_for_image(["confirm_08.png","OK.png"], timeout=12,try_click_name="get_rewards.png")
     if not find_and_click(["confirm_08.png","OK.png"], custom_confidence=0.85):
         return False
 
@@ -336,6 +340,9 @@ def swap_pvp_special(round=5):
         wait_for_image("skip.png", timeout=12,try_click_name="fight_02.png")
         if not find_and_click("skip.png", custom_confidence=0.85):
             return False
+        if find_only("warn_01.png", custom_confidence=0.85):
+            print("-> 發現眷族技能配置警告！")
+            find_and_click("yes_01.png", custom_confidence=0.85)
 
         print("-> 等待戰鬥結果...")
         wait_for_image(["new_rank.png", "defeated.png"], timeout=120)

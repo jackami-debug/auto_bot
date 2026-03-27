@@ -98,7 +98,7 @@ def auto_story_mode():
                         time.sleep(0.1) # 點擊後短暫冷卻
                         action_taken = True         
             elif find_only("leave_01.png", custom_confidence=0.8,region=(1681,929,238,150)):
-                log("🚪 發現離開按鈕，點擊它")
+                log("🚪 發現離開按鈕，完成故事劇情，跳出迴圈。")
                 break
         # 這裡補上了漏掉的 except 區塊，防止語法崩潰！
         except Exception as e:
