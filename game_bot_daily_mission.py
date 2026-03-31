@@ -433,8 +433,8 @@ def daily_job(
 
 def main():
     # daily_job(accout_name="e08s93.png", element="water", activity_battle=7, pvp_normal_round=1, pvpspecial_round=1)
-    daily_job(accout_name="e08s93.123.png", element="thorns", activity_battle=7, pvp_normal_round=1, pvpspecial_round=1)
-    # daily_job(accout_name="loopcraft001.png", element="thorns", activity_battle=7, pvp_normal_round=1, pvpspecial_round=1)
+    # daily_job(accout_name="e08s93.123.png", element="thorns", activity_battle=7, pvp_normal_round=1, pvpspecial_round=1)
+    daily_job(accout_name="loopcraft001.png", element="thorns", activity_battle=7, pvp_normal_round=1, pvpspecial_round=1)
 
 
 if __name__ == "__main__":
