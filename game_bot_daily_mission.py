@@ -1,5 +1,6 @@
 import random
 import time
+from datetime import date
 
 from tools import (
     find_and_click,
@@ -19,7 +20,12 @@ from tools import (
     sleep,
     click_till_see,
     ensure_pass_tutorial,
+    get_bond_level_by_date,
+    swipe_screen,
+    log,
 )
+
+
 
 
 def consume_energy(battle):
@@ -173,9 +179,24 @@ def swap_refine(element="water"):
 
 
 def swap_bond(level="01"):
+    # 1. 先放入共通的開頭步驟（點擊進入神伴介面並等待）
     steps = [
         ("bond.png", 0.85, "backward_03.png"),
         sleep,
+    ]
+    
+    # 2. 加入判斷：如果 level 是 "04" 或 "05"，就執行向左滑動
+    if level in ["04", "05"]:
+        log(f"   -> 偵測到關卡為 {level}，執行向左滑動尋找關卡...")
+        # 利用你 run_image_steps 支援的 (函式, 參數1, 參數2...) 格式
+        # 對應 swipe_screen 的位置參數: direction, distance, start_location, duration
+        steps.append((swipe_screen, "left", 1400, (1503, 596), 0.2))
+        
+        # 強烈建議滑動完再加一個 sleep，讓畫面停穩了再開始找關卡圖片，避免殘影導致找不到
+        steps.append(sleep) 
+        
+    # 3. 接著補上後續的點擊與掃蕩步驟
+    steps.extend([
         (f"bond_level_{level}.png", 0.85, "bond.png"),
         (f"{level}_level.png", 0.85, f"bond_level_{level}.png"),
         ("swap04.png", 0.85, f"{level}_level.png"),
@@ -183,14 +204,15 @@ def swap_bond(level="01"):
         ("confirm.png", 0.8, "max.png"),
         ("OK.png", 0.8, "confirm.png"),
         ("backward_03.png", 0.8, "OK.png"),
-    ]
+    ])
+    
+    # 4. 丟給 run_image_steps 執行
     return run_image_steps(
         steps,
         wait_timeout=120,
         screenshot_prefix="swap_bond",
-        success_message="✅ 完成每日神伴掃蕩。",
+        success_message=f"✅ 完成每日神伴掃蕩 (Level {level})。",
     )
-
 
 def use_expiring_energy():
     search_area = (406, 427, 881, 233)
@@ -392,7 +414,9 @@ def daily_job(
     dispatch()
     swap_coins()
     swap_refine(element)
-    swap_bond(level="03")
+    today_level = get_bond_level_by_date()
+    print(f"🎯 依據今日日期，神伴掃蕩關卡為: Level {today_level}")
+    swap_bond(today_level)
     swap_activity(activity_battle)
     time.sleep(0.5)
     swap_pvp_normal(pvp_normal_round)
@@ -408,9 +432,9 @@ def daily_job(
 
 
 def main():
-    daily_job(accout_name="e08s93.png", element="water", activity_battle=7, pvp_normal_round=1, pvpspecial_round=1)
+    # daily_job(accout_name="e08s93.png", element="water", activity_battle=7, pvp_normal_round=1, pvpspecial_round=1)
     daily_job(accout_name="e08s93.123.png", element="thorns", activity_battle=7, pvp_normal_round=1, pvpspecial_round=1)
-    daily_job(accout_name="loopcraft001.png", element="thorns", activity_battle=7, pvp_normal_round=1, pvpspecial_round=1)
+    # daily_job(accout_name="loopcraft001.png", element="thorns", activity_battle=7, pvp_normal_round=1, pvpspecial_round=1)
 
 
 if __name__ == "__main__":

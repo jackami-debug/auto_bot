@@ -1,4 +1,3 @@
-import datetime
 import importlib.util
 import os
 import random
@@ -7,7 +6,7 @@ import sys
 import time
 import ctypes
 import ctypes.wintypes
-
+from datetime import date
 
 def install_requirements():
     required = {
@@ -712,6 +711,98 @@ def human_scroll(target_x, target_y, total_scroll, direction="down"):
     time.sleep(random.uniform(0.2, 0.5))
     log("   ✅ 滾動完成！")
 
+def human_drag(start_location, end_location, duration=0.35):
+    """
+    極致擬真版：模擬真人甩動滑鼠，在中途提早放開左鍵並帶有慣性跟隨。
+    """
+    start_point = _coerce_point(start_location)
+    end_point = _coerce_point(end_location)
+    
+    if start_point is None or end_point is None:
+        log("   -> ❌ 錯誤：拖曳的起點或終點無效。")
+        return False
+
+    original_failsafe_state = pyautogui.FAILSAFE
+    try:
+        pyautogui.FAILSAFE = False
+        sx, sy = start_point
+        ex, ey = end_point
+
+        log(f"👉 準備從 ({sx}, {sy}) 甩動至 ({ex}, {ey})...")
+
+        # 1. 決定要在哪裡「提早放開」 (設定在總距離的 80% ~ 90% 處放開)
+        release_ratio = random.uniform(0.80, 0.90)
+        release_x = sx + (ex - sx) * release_ratio
+        release_y = sy + (ey - sy) * release_ratio
+
+        # 2. 移動到起始位置並確實按下
+        pyautogui.moveTo(sx, sy)
+        time.sleep(0.05)
+        pyautogui.mouseDown(sx, sy)
+        time.sleep(0.1) # 給遊戲引擎一點點時間確認點擊生效
+
+        # 3. 【拖曳段】按住左鍵，快速移動到「釋放點」
+        # 時間按比例縮短，確保整體速度一致
+        pyautogui.moveTo(release_x, release_y, duration=duration * release_ratio)
+        
+        # 4. 【瞬間釋放】到達釋放點，毫無停頓瞬間放開左鍵！
+        pyautogui.mouseUp()
+        
+        # 5. 【慣性跟隨】左鍵已經放開了，但滑鼠手部還會因為慣性繼續滑到終點
+        # 使用 easeOutQuad 模擬手部停下來的減速感
+        pyautogui.moveTo(ex, ey, duration=duration * (1 - release_ratio), tween=pyautogui.easeOutQuad)
+        
+        log("   ✅ 拖曳完成！(具備慣性釋放)")
+        return True
+        
+    except Exception as exc:
+        log(f"   -> ⚠️ human_drag 發生錯誤: {exc}")
+        pyautogui.mouseUp()
+        return False
+    finally:
+        pyautogui.FAILSAFE = original_failsafe_state
+def swipe_screen(direction="left", distance=400, start_location=None, duration=0.5):
+    """
+    根據方向滑動畫面。適用於切換關卡或滑動選單。
+    :param direction: "left" (向左拉), "right" (向右拉), "up" (向上拉), "down" (向下拉)
+    :param distance: 拖曳的像素距離
+    :param start_location: 起始座標，若為 None 則預設從畫面正中央開始滑動
+    """
+    screen_width, screen_height = pyautogui.size()
+    
+    # 如果沒有指定起始位置，預設從畫面中央稍微偏下的地方開始（避免點到上面選單）
+    if start_location is None:
+        start_x = screen_width // 2 + random.randint(-50, 50)
+        start_y = screen_height // 2 + random.randint(50, 150)
+    else:
+        start_point = _coerce_point(start_location)
+        if start_point is None:
+            return False
+        start_x, start_y = start_point
+
+    end_x, end_y = start_x, start_y
+
+    # 根據方向計算終點座標
+    # 注意：如果要在遊戲中「往右看」，通常滑鼠是要「向左拉」
+    if direction.lower() == "left":
+        end_x = start_x - distance
+    elif direction.lower() == "right":
+        end_x = start_x + distance
+    elif direction.lower() == "up":
+        end_y = start_y - distance
+    elif direction.lower() == "down":
+        end_y = start_y + distance
+    else:
+        log(f"   -> ❌ 錯誤：未知的滑動方向 '{direction}'")
+        return False
+
+    # 確保終點不會超出螢幕邊界
+    end_x = max(10, min(screen_width - 10, end_x))
+    end_y = max(10, min(screen_height - 10, end_y))
+
+    log(f"🔄 準備執行畫面滑動 (方向: {direction}, 距離: {distance})...")
+    return human_drag((start_x, start_y), (end_x, end_y), duration=duration)
+
 def scroll_at_image(image_name, total_scroll, direction="down", custom_confidence=None, region=None):
     log(f"🔍 尋找目標: {image_name} 以執行滾動...")
     location = find_only(image_name, custom_confidence, region)
@@ -1006,6 +1097,17 @@ def ensure_pass_tutorial():
             print("   -> ⚠️ 警告：點擊右箭頭次數達上限，可能卡在教學畫面或發生異常！")
             # 這裡可以視情況決定是否要 return False 或是截圖存檔
             # save_debug_screenshot("stuck_at_tutorial")
+
+def get_bond_level_by_date():
+    # 取得今天距離公元 1 年 1 月 1 日的總天數
+    today_ordinal = date.today().toordinal()
+    
+    # 總天數除以 5 取餘數 (會得到 0, 1, 2, 3, 4)
+    # 我們將它 + 1，就會變成永遠在 1 ~ 5 之間循環
+    level_int = (today_ordinal % 5) + 1
+    
+    # 轉換成 "01", "02" 這種格式
+    return f"{level_int:02d}"
 
 __all__ = [
     "IMAGE_FOLDER",
