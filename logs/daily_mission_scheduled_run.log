@@ -2021,3 +2021,1144 @@
 ✅ 離開遊戲流程完成。
 🔍 完成每日任務...
 [2026-04-02_11:24:19] daily mission scheduled run end (exit=0) 
+[2026-04-03_11:02:39] daily mission scheduled run start 
+🔍 正在尋找遊戲畫面...
+
+🚀 === 開始從 Steam 啟動遊戲 ===
+   -> 正在點擊右下角以顯示桌面...
+   -> 正在尋找並雙擊 Steam 圖示...
+🎯 發現: steam_icon.png @ Point(x=np.int64(167), y=np.int64(56))
+🎯 發現: steam_icon.png @ Point(x=np.int64(167), y=np.int64(57))
+🎯 發現: steam_icon.png @ Point(x=np.int64(167), y=np.int64(56))
+🎯 發現: steam_icon.png @ Point(x=np.int64(167), y=np.int64(56))
+   ✅ 畫面出現了！(who.png) (耗時 12.5 秒)
+   -> 開始尋找 Steam 帳號...
+   -> 找到 3 個潛在帳號，開始從左到右檢查...
+   -> 帳號比對 strict_color: hits=0/2, conf=0.97, gray=False
+   -> 帳號比對 balanced_color: hits=0/2, conf=0.94, gray=False
+   -> 帳號比對 balanced_gray: hits=0/2, conf=0.92, gray=True
+   -> 帳號比對 strict_color: hits=0/2, conf=0.97, gray=False
+   -> 帳號比對 balanced_color: hits=0/2, conf=0.94, gray=False
+   -> 帳號比對 balanced_gray: hits=2/2, conf=0.92, gray=True
+   -> 找到目標帳號！正在點擊位於 (919, 536) 的按鈕...
+   -> 等待 Steam 登入與載入主介面...
+   ✅ 畫面出現了！(steam_library.png) (耗時 14.7 秒)
+   -> 正在嘗試關閉 Steam 彈出廣告...
+   -> 未發現廣告視窗。
+   -> 正在點擊「收藏庫」...
+   ✅ 畫面出現了！(steam_library.png) (耗時 0.1 秒)
+🎯 發現: steam_library.png @ Point(x=np.int64(256), y=np.int64(69))
+🎯 發現: window_up.png @ Point(x=np.int64(1455), y=np.int64(23))
+   -> 正在從收藏庫選擇 'Rise of Eros'...
+   ✅ 畫面出現了！(rise_of_eros_list.png) (耗時 0.2 秒)
+🎯 發現: rise_of_eros_list.png @ Point(x=np.int64(153), y=np.int64(680))
+   -> 正在點擊「開始遊戲」按鈕...
+   ✅ 畫面出現了！(steam_play_btn.png) (耗時 0.4 秒)
+🎯 發現: steam_play_btn.png @ Point(x=np.int64(564), y=np.int64(647))
+✅ === 遊戲啟動指令已發送！ ===
+
+⏳ 全螢幕持續偵測 'press_to_start.png'（含中央點擊備援）...
+   👉 未找到 'Press to Start'，點擊螢幕中央嘗試喚醒流程...
+   -> 尚未找到 'Press to Start'，持續偵測中... (剩餘 80 秒)
+🎯 發現: press_to_start.png @ Point(x=np.int64(960), y=np.int64(540))
+✅ 已點擊 'Press to Start'，確認是否成功進入...
+🎯 發現: ok.png @ Point(x=np.int64(962), y=np.int64(909))
+   -> 已處理對話框: ok.png
+✅ 按下後已進入遊戲。
+🎯 發現: close.png @ Point(x=np.int64(1584), y=np.int64(166))
+   -> 已處理對話框: close.png
+
+⏳ 等待 2 秒...
+
+📦 === 開始派遣 ===
+   -> 嘗試點擊: dispatch.png (嘗試 1/2)
+   ✅ 畫面出現了！(dispatch.png) (耗時 0.2 秒)
+🎯 發現: dispatch.png @ Point(x=np.int64(1442), y=np.int64(987))
+   -> ✅ 成功點擊 'dispatch.png'
+   -> 嘗試點擊: all_accept.png (嘗試 1/2)
+   ✅ 畫面出現了！(all_accept.png) (耗時 4.0 秒)
+🎯 發現: all_accept.png @ Point(x=np.int64(1644), y=np.int64(1006))
+   -> ✅ 成功點擊 'all_accept.png'
+   -> 嘗試點擊: all_accept.png (嘗試 1/2)
+   ✅ 畫面出現了！(all_accept.png) (耗時 0.2 秒)
+🎯 發現: all_accept.png @ Point(x=np.int64(1643), y=np.int64(1007))
+   -> ✅ 成功點擊 'all_accept.png'
+   -> 執行函式: sleep 帶參數 (3,)
+
+⏳ 等待 3 秒...
+   -> 嘗試點擊: all_dispatch.png (嘗試 1/2)
+   ✅ 畫面出現了！(all_dispatch.png) (耗時 0.2 秒)
+🎯 發現: all_dispatch.png @ Point(x=np.int64(1199), y=np.int64(1006))
+   -> ✅ 成功點擊 'all_dispatch.png'
+   -> 執行函式: click_till_see 帶參數 ('speed_up.png', (1220, 1006))
+
+👉 開始點擊直到看到 speed_up.png...
+   -> 尚未看到 speed_up.png，點擊 (1220, 1006) (第 1 次)
+✅ 已看到 speed_up.png，停止點擊。
+   -> 嘗試點擊: backward_02.png (嘗試 1/2)
+   ✅ 畫面出現了！(backward_02.png) (耗時 0.2 秒)
+🎯 發現: backward_02.png @ Point(x=np.int64(79), y=np.int64(48))
+   -> ✅ 成功點擊 'backward_02.png'
+✅ 完成派遣。
+   -> 嘗試點擊: fight.png (嘗試 1/2)
+   ✅ 畫面出現了！(fight.png) (耗時 0.7 秒)
+🎯 發現: fight.png @ Point(x=np.int64(1511), y=np.int64(394))
+   -> ✅ 成功點擊 'fight.png'
+   -> 嘗試點擊: resource.png (嘗試 1/2)
+   ✅ 畫面出現了！(resource.png) (耗時 4.3 秒)
+🎯 發現: resource.png @ Point(x=np.int64(171), y=np.int64(410))
+   -> ✅ 成功點擊 'resource.png'
+   -> 嘗試點擊: coins.png (嘗試 1/2)
+   ✅ 畫面出現了！(coins.png) (耗時 0.4 秒)
+🎯 發現: coins.png @ Point(x=np.int64(671), y=np.int64(620))
+   -> ✅ 成功點擊 'coins.png'
+   -> 嘗試點擊: level_05.png (嘗試 1/2)
+   ✅ 畫面出現了！(level_05.png) (耗時 4.1 秒)
+🎯 發現: level_05.png @ Point(x=np.int64(682), y=np.int64(452))
+   -> ✅ 成功點擊 'level_05.png'
+   -> 嘗試點擊: swap04.png (嘗試 1/2)
+   ✅ 畫面出現了！(swap04.png) (耗時 0.3 秒)
+🎯 發現: swap04.png @ Point(x=np.int64(1315), y=np.int64(977))
+   -> ✅ 成功點擊 'swap04.png'
+   -> 嘗試點擊: confirm.png (嘗試 1/2)
+   ✅ 畫面出現了！(confirm.png) (耗時 0.3 秒)
+🎯 發現: confirm.png @ Point(x=np.int64(1138), y=np.int64(798))
+   -> ✅ 成功點擊 'confirm.png'
+   -> 嘗試點擊: OK.png (嘗試 1/2)
+   ✅ 畫面出現了！(OK.png) (耗時 3.8 秒)
+🎯 發現: OK.png @ Point(x=np.int64(962), y=np.int64(908))
+   -> ✅ 成功點擊 'OK.png'
+   -> 嘗試點擊: backward_03.png (嘗試 1/2)
+   ✅ 畫面出現了！(backward_03.png) (耗時 0.2 秒)
+🎯 發現: backward_03.png @ Point(x=np.int64(83), y=np.int64(51))
+   -> ✅ 成功點擊 'backward_03.png'
+✅ 完成每日金幣掃蕩。
+   -> 嘗試點擊: refine.png (嘗試 1/2)
+   ✅ 畫面出現了！(refine.png) (耗時 0.3 秒)
+🎯 發現: refine.png @ Point(x=np.int64(175), y=np.int64(539))
+   -> ✅ 成功點擊 'refine.png'
+   -> 嘗試點擊: water_refine.png (嘗試 1/2)
+   ✅ 畫面出現了！(water_refine.png) (耗時 0.4 秒)
+🎯 發現: water_refine.png @ Point(x=np.int64(1172), y=np.int64(624))
+   -> ✅ 成功點擊 'water_refine.png'
+   -> 執行函式: sleep
+
+⏳ 等待 2 秒...
+   -> 嘗試點擊: level_04.png (嘗試 1/2)
+   ✅ 畫面出現了！(level_04.png) (耗時 0.2 秒)
+🎯 發現: level_04.png @ Point(x=np.int64(821), y=np.int64(499))
+   -> ✅ 成功點擊 'level_04.png'
+   -> 嘗試點擊: swap04.png (嘗試 1/2)
+   ✅ 畫面出現了！(swap04.png) (耗時 0.3 秒)
+🎯 發現: swap04.png @ Point(x=np.int64(1315), y=np.int64(977))
+   -> ✅ 成功點擊 'swap04.png'
+   -> 嘗試點擊: confirm.png (嘗試 1/2)
+   ✅ 畫面出現了！(confirm.png) (耗時 0.3 秒)
+🎯 發現: confirm.png @ Point(x=np.int64(1138), y=np.int64(798))
+   -> ✅ 成功點擊 'confirm.png'
+   -> 嘗試點擊: OK.png (嘗試 1/2)
+   ✅ 畫面出現了！(OK.png) (耗時 3.9 秒)
+🎯 發現: OK.png @ Point(x=np.int64(962), y=np.int64(908))
+   -> ✅ 成功點擊 'OK.png'
+   -> 嘗試點擊: backward_03.png (嘗試 1/2)
+   ✅ 畫面出現了！(backward_03.png) (耗時 0.1 秒)
+🎯 發現: backward_03.png @ Point(x=np.int64(83), y=np.int64(51))
+   -> ✅ 成功點擊 'backward_03.png'
+✅ 完成每日試煉掃蕩。
+🎯 依據今日日期，神伴掃蕩關卡為: Level 05
+   -> 偵測到關卡為 05，執行向左滑動尋找關卡...
+   -> 嘗試點擊: bond.png (嘗試 1/2)
+   ✅ 畫面出現了！(bond.png) (耗時 0.3 秒)
+🎯 發現: bond.png @ Point(x=np.int64(890), y=np.int64(160))
+   -> ✅ 成功點擊 'bond.png'
+   -> 執行函式: sleep
+
+⏳ 等待 2 秒...
+   -> 執行函式: swipe_screen 帶參數 ('left', 1400, (1503, 596), 0.2)
+🔄 準備執行畫面滑動 (方向: left, 距離: 1400)...
+👉 準備從 (1503, 596) 甩動至 (103, 596)...
+   ✅ 拖曳完成！(具備慣性釋放)
+   -> 執行函式: sleep
+
+⏳ 等待 2 秒...
+   -> 嘗試點擊: bond_level_05.png (嘗試 1/2)
+   ✅ 畫面出現了！(bond_level_05.png) (耗時 0.2 秒)
+🎯 發現: bond_level_05.png @ Point(x=np.int64(1462), y=np.int64(643))
+   -> ✅ 成功點擊 'bond_level_05.png'
+   -> 嘗試點擊: 05_level.png (嘗試 1/2)
+   ✅ 畫面出現了！(05_level.png) (耗時 0.4 秒)
+🎯 發現: 05_level.png @ Point(x=np.int64(1110), y=np.int64(444))
+   -> ✅ 成功點擊 '05_level.png'
+   -> 嘗試點擊: swap04.png (嘗試 1/2)
+🎯 發現: 05_level.png @ Point(x=np.int64(821), y=np.int64(444))
+   ✅ 畫面出現了！(swap04.png) (耗時 3.7 秒)
+🎯 發現: swap04.png @ Point(x=np.int64(1314), y=np.int64(977))
+   -> ✅ 成功點擊 'swap04.png'
+   -> 嘗試點擊: max.png (嘗試 1/2)
+   ✅ 畫面出現了！(max.png) (耗時 0.2 秒)
+🎯 發現: max.png @ Point(x=np.int64(1310), y=np.int64(464))
+   -> ✅ 成功點擊 'max.png'
+   -> 嘗試點擊: confirm.png (嘗試 1/2)
+   ✅ 畫面出現了！(confirm.png) (耗時 0.2 秒)
+🎯 發現: confirm.png @ Point(x=np.int64(1138), y=np.int64(798))
+   -> ✅ 成功點擊 'confirm.png'
+   -> 嘗試點擊: OK.png (嘗試 1/2)
+   ✅ 畫面出現了！(OK.png) (耗時 3.9 秒)
+🎯 發現: OK.png @ Point(x=np.int64(962), y=np.int64(908))
+   -> ✅ 成功點擊 'OK.png'
+   -> 嘗試點擊: backward_03.png (嘗試 1/2)
+   ✅ 畫面出現了！(backward_03.png) (耗時 0.2 秒)
+🎯 發現: backward_03.png @ Point(x=np.int64(83), y=np.int64(51))
+   -> ✅ 成功點擊 'backward_03.png'
+✅ 完成每日神伴掃蕩 (Level 05)。
+   -> 嘗試點擊: daily_activity.png (嘗試 1/2)
+   ✅ 畫面出現了！(daily_activity.png) (耗時 0.3 秒)
+🎯 發現: daily_activity.png @ Point(x=np.int64(174), y=np.int64(671))
+   -> ✅ 成功點擊 'daily_activity.png'
+   -> 嘗試點擊: activity.png (嘗試 1/2)
+   ✅ 畫面出現了！(activity.png) (耗時 0.4 秒)
+🎯 發現: activity.png @ Point(x=np.int64(671), y=np.int64(596))
+   -> ✅ 成功點擊 'activity.png'
+   -> 嘗試點擊: battle.png (嘗試 1/2)
+   ✅ 畫面出現了！(battle.png) (耗時 0.7 秒)
+🎯 發現: battle.png @ Point(x=np.int64(182), y=np.int64(623))
+   -> ✅ 成功點擊 'battle.png'
+   -> 執行函式: sleep 帶參數 (3,)
+
+⏳ 等待 3 秒...
+   -> 執行函式: ensure_pass_tutorial
+   -> 檢查是否有活動教學或多頁面需要切換...
+   -> 嘗試點擊: battle8.png (嘗試 1/2)
+   ✅ 畫面出現了！(battle8.png) (耗時 0.2 秒)
+🎯 發現: battle8.png @ Point(x=np.int64(820), y=np.int64(498))
+   -> ✅ 成功點擊 'battle8.png'
+   -> 嘗試點擊: plus.png (嘗試 1/2)
+   ✅ 畫面出現了！(plus.png) (耗時 0.2 秒)
+🎯 發現: plus.png @ Point(x=np.int64(1059), y=np.int64(48))
+   -> ✅ 成功點擊 'plus.png'
+   -> 執行函式: use_expiring_energy
+-> 嘗試點擊: OK03.png
+   ✅ 畫面出現了！(OK03.png) (耗時 0.2 秒)
+🎯 發現: OK03.png @ Point(x=np.int64(1137), y=np.int64(878))
+-> 嘗試點擊: confirm.png
+   ✅ 畫面出現了！(confirm.png) (耗時 1.2 秒)
+🎯 發現: confirm.png @ Point(x=np.int64(958), y=np.int64(719))
+   -> 嘗試點擊: swap04.png (嘗試 1/2)
+   ✅ 畫面出現了！(swap04.png) (耗時 0.2 秒)
+🎯 發現: swap04.png @ Point(x=np.int64(1314), y=np.int64(977))
+   -> ✅ 成功點擊 'swap04.png'
+   -> 嘗試點擊: max.png (嘗試 1/2)
+   ✅ 畫面出現了！(max.png) (耗時 0.1 秒)
+🎯 發現: max.png @ Point(x=np.int64(1310), y=np.int64(464))
+   -> ✅ 成功點擊 'max.png'
+   -> 嘗試點擊: confirm.png (嘗試 1/2)
+   ✅ 畫面出現了！(confirm.png) (耗時 0.2 秒)
+🎯 發現: confirm.png @ Point(x=np.int64(1138), y=np.int64(798))
+   -> ✅ 成功點擊 'confirm.png'
+   -> 執行函式: if_upgrade
+   -> 👌 未偵測到升級畫面，繼續正常流程。
+   -> 嘗試點擊: ok_03.png (嘗試 1/2)
+   ✅ 畫面出現了！(ok_03.png) (耗時 3.8 秒)
+🎯 發現: ok_03.png @ Point(x=np.int64(958), y=np.int64(907))
+   -> ✅ 成功點擊 'ok_03.png'
+   -> 嘗試點擊: home.png (嘗試 1/2)
+   ✅ 畫面出現了！(home.png) (耗時 0.2 秒)
+🎯 發現: home.png @ Point(x=np.int64(1826), y=np.int64(47))
+   -> ✅ 成功點擊 'home.png'
+✅ 完成每日活動掃蕩。
+-> 嘗試點擊: PVP
+   ✅ 畫面出現了！(pvp.png) (耗時 0.2 秒)
+🎯 發現: pvp.png @ Point(x=np.int64(1294), y=np.int64(235))
+-> 嘗試點擊: 一般
+🎯 發現: pvp.png @ Point(x=np.int64(1294), y=np.int64(235))
+🎯 發現: pvp.png @ Point(x=np.int64(1294), y=np.int64(235))
+   ✅ 畫面出現了！(normal.png) (耗時 7.6 秒)
+🎯 發現: normal.png @ Point(x=np.int64(671), y=np.int64(468))
+   ✅ 畫面出現了！(accumulate_rewards.png) (耗時 0.6 秒)
+🎯 發現: accumulate_rewards.png @ Point(x=np.int64(1344), y=np.int64(174))
+   ✅ 畫面出現了！(get_rewards.png) (耗時 0.6 秒)
+🎯 發現: get_rewards.png @ Point(x=np.int64(882), y=np.int64(1011))
+   ✅ 畫面出現了！(OK.png) (耗時 1.1 秒)
+🎯 發現: OK.png @ Point(x=np.int64(962), y=np.int64(909))
+   ✅ 畫面出現了！(backward_08.png) (耗時 0.2 秒)
+🎯 發現: backward_08.png @ Point(x=np.int64(81), y=np.int64(51))
+-> 嘗試點擊: 出戰
+   ✅ 畫面出現了！(fight_02.png) (耗時 0.3 秒)
+🎯 發現: fight_02.png @ Point(x=np.int64(369), y=np.int64(882))
+-> 嘗試點擊: skip
+
+⏳ 等待 2 秒...
+   ✅ 畫面出現了！(skip.png) (耗時 0.5 秒)
+🎯 發現: skip.png @ Point(x=np.int64(1368), y=np.int64(1010))
+-> 等待戰鬥結果...
+   ✅ 畫面出現了！(defeated.png) (耗時 14.8 秒)
+-> 本輪 PVP 失敗...
+🎯 發現: back.png @ Point(x=np.int64(1783), y=np.int64(984))
+-> 嘗試點擊: backward_04
+   ✅ 畫面出現了！(backward_04.png) (耗時 0.3 秒)
+🎯 發現: backward_04.png @ Point(x=np.int64(82), y=np.int64(50))
+✅ 完成每日一般競技場出戰。
+-> 嘗試點擊: special
+   ✅ 畫面出現了！(special.png) (耗時 0.6 秒)
+🎯 發現: special.png @ Point(x=np.int64(1196), y=np.int64(639))
+   ✅ 畫面出現了！(accumulate_rewards.png) (耗時 0.2 秒)
+🎯 發現: accumulate_rewards.png @ Point(x=np.int64(1344), y=np.int64(174))
+🎯 發現: accumulate_rewards.png @ Point(x=np.int64(1344), y=np.int64(174))
+   ✅ 畫面出現了！(get_rewards.png) (耗時 3.8 秒)
+🎯 發現: get_rewards.png @ Point(x=np.int64(757), y=np.int64(1010))
+🎯 發現: get_rewards.png @ Point(x=np.int64(757), y=np.int64(1010))
+🎯 發現: get_rewards.png @ Point(x=np.int64(757), y=np.int64(1010))
+   ✅ 畫面出現了！(confirm_08.png) (耗時 8.3 秒)
+🎯 發現: confirm_08.png @ Point(x=np.int64(956), y=np.int64(718))
+   ✅ 畫面出現了！(backward_08.png) (耗時 0.2 秒)
+🎯 發現: backward_08.png @ Point(x=np.int64(81), y=np.int64(51))
+-> 嘗試點擊: 出戰
+   ✅ 畫面出現了！(fight_02.png) (耗時 0.3 秒)
+🎯 發現: fight_02.png @ Point(x=np.int64(369), y=np.int64(882))
+-> 嘗試點擊: skip
+
+⏳ 等待 2 秒...
+   ✅ 畫面出現了！(skip.png) (耗時 0.2 秒)
+🎯 發現: skip.png @ Point(x=np.int64(1368), y=np.int64(1010))
+-> 等待戰鬥結果...
+   ✅ 畫面出現了！(defeated.png) (耗時 52.3 秒)
+-> 本輪 PVP 失敗...
+🎯 發現: back.png @ Point(x=np.int64(1783), y=np.int64(984))
+-> 嘗試點擊: backward_05
+   ✅ 畫面出現了！(backward_05.png) (耗時 0.3 秒)
+🎯 發現: backward_05.png @ Point(x=np.int64(81), y=np.int64(52))
+-> 嘗試點擊: backward_05
+   ✅ 畫面出現了！(backward_05.png) (耗時 0.2 秒)
+🎯 發現: backward_05.png @ Point(x=np.int64(81), y=np.int64(52))
+✅ 完成每日特殊競技場出戰。
+
+🎁 === 開始領取獎勵流程 ===
+   -> 嘗試點擊: rewards.png (嘗試 1/2)
+   ✅ 畫面出現了！(rewards.png) (耗時 0.1 秒)
+🎯 發現: rewards.png @ Point(x=np.int64(354), y=np.int64(167))
+   -> ✅ 成功點擊 'rewards.png'
+   -> 嘗試點擊: get_all.png (嘗試 1/2)
+🎯 發現: rewards.png @ Point(x=np.int64(354), y=np.int64(167))
+   ✅ 畫面出現了！(get_all.png) (耗時 3.7 秒)
+🎯 發現: get_all.png @ Point(x=np.int64(1609), y=np.int64(988))
+   -> ✅ 成功點擊 'get_all.png'
+   -> 嘗試點擊: get_all.png (嘗試 1/2)
+   ✅ 畫面出現了！(get_all.png) (耗時 0.2 秒)
+🎯 發現: get_all.png @ Point(x=np.int64(1609), y=np.int64(988))
+   -> ✅ 成功點擊 'get_all.png'
+   -> 嘗試點擊: backward_02.png (嘗試 1/2)
+   ✅ 畫面出現了！(backward_02.png) (耗時 0.1 秒)
+🎯 發現: backward_02.png @ Point(x=np.int64(80), y=np.int64(48))
+   -> ✅ 成功點擊 'backward_02.png'
+✅ 完成領獎流程。
+
+🎁 === 開始領取獎勵流程 ===
+   -> 嘗試點擊: temple.png (嘗試 1/2)
+🎯 發現: backward_06.png @ Point(x=np.int64(82), y=np.int64(47))
+🎯 發現: backward_06.png @ Point(x=np.int64(82), y=np.int64(47))
+   ✅ 畫面出現了！(temple.png) (耗時 7.4 秒)
+🎯 發現: temple.png @ Point(x=np.int64(1278), y=np.int64(984))
+   -> ✅ 成功點擊 'temple.png'
+   -> 嘗試點擊: wish_place.png (嘗試 1/2)
+🎯 發現: temple.png @ Point(x=np.int64(1276), y=np.int64(982))
+   ✅ 畫面出現了！(wish_place.png) (耗時 3.8 秒)
+🎯 發現: wish_place.png @ Point(x=np.int64(452), y=np.int64(418))
+   -> ✅ 成功點擊 'wish_place.png'
+   -> 嘗試點擊: wish.png (嘗試 1/2)
+   ✅ 畫面出現了！(wish.png) (耗時 0.9 秒)
+🎯 發現: wish.png @ Point(x=np.int64(1452), y=np.int64(975))
+   -> ✅ 成功點擊 'wish.png'
+   -> 執行函式: sleep
+
+⏳ 等待 2 秒...
+   -> 嘗試點擊: wish.png (嘗試 1/2)
+   ✅ 畫面出現了！(wish.png) (耗時 0.2 秒)
+🎯 發現: wish.png @ Point(x=np.int64(1452), y=np.int64(975))
+   -> ✅ 成功點擊 'wish.png'
+   -> 嘗試點擊: home_black_background.png (嘗試 1/2)
+   ✅ 畫面出現了！(home_black_background.png) (耗時 0.2 秒)
+🎯 發現: home_black_background.png @ Point(x=np.int64(1829), y=np.int64(50))
+   -> ✅ 成功點擊 'home_black_background.png'
+✅ 完成許願流程。
+
+🚪 === 開始執行離開遊戲流程 ===
+   -> 執行函式: find_set
+   -> 嘗試點擊: set.png
+🎯 發現: set.png @ Point(x=np.int64(1820), y=np.int64(49))
+   -> 嘗試點擊: quit_game.png (嘗試 1/2)
+   ✅ 畫面出現了！(quit_game.png) (耗時 4.2 秒)
+🎯 發現: quit_game.png @ Point(x=np.int64(1712), y=np.int64(980))
+   -> ✅ 成功點擊 'quit_game.png'
+   -> 嘗試點擊: confirm.png (嘗試 1/2)
+   ✅ 畫面出現了！(confirm.png) (耗時 0.3 秒)
+🎯 發現: confirm.png @ Point(x=np.int64(1139), y=np.int64(719))
+   -> ✅ 成功點擊 'confirm.png'
+   -> 嘗試點擊: steam_sign.png (嘗試 1/2)
+   ✅ 畫面出現了！(steam_sign.png) (耗時 3.7 秒)
+🎯 發現: steam_sign.png @ Point(x=np.int64(65), y=np.int64(26))
+   -> ✅ 成功點擊 'steam_sign.png'
+   -> 嘗試點擊: quit.png (嘗試 1/2)
+   ✅ 畫面出現了！(quit.png) (耗時 0.1 秒)
+🎯 發現: quit.png @ Point(x=np.int64(65), y=np.int64(373))
+   -> ✅ 成功點擊 'quit.png'
+✅ 離開遊戲流程完成。
+🔍 完成每日任務...
+🔍 正在尋找遊戲畫面...
+
+🚀 === 開始從 Steam 啟動遊戲 ===
+   -> 正在點擊右下角以顯示桌面...
+   -> 正在尋找並雙擊 Steam 圖示...
+🎯 發現: steam_icon.png @ Point(x=np.int64(167), y=np.int64(56))
+🎯 發現: steam_icon.png @ Point(x=np.int64(167), y=np.int64(56))
+🎯 發現: steam_icon.png @ Point(x=np.int64(167), y=np.int64(56))
+🎯 發現: steam_icon.png @ Point(x=np.int64(167), y=np.int64(56))
+   ✅ 畫面出現了！(who.png) (耗時 11.9 秒)
+   -> 開始尋找 Steam 帳號...
+   -> 找到 3 個潛在帳號，開始從左到右檢查...
+   -> 帳號比對 strict_color: hits=0/2, conf=0.97, gray=False
+   -> 帳號比對 balanced_color: hits=0/2, conf=0.94, gray=False
+   -> 帳號比對 balanced_gray: hits=0/2, conf=0.92, gray=True
+   -> 帳號比對 strict_color: hits=0/2, conf=0.97, gray=False
+   -> 帳號比對 balanced_color: hits=0/2, conf=0.94, gray=False
+   -> 帳號比對 balanced_gray: hits=2/2, conf=0.92, gray=True
+   -> 找到目標帳號！正在點擊位於 (919, 536) 的按鈕...
+   -> 等待 Steam 登入與載入主介面...
+   ✅ 畫面出現了！(steam_library.png) (耗時 14.3 秒)
+   -> 正在嘗試關閉 Steam 彈出廣告...
+   -> 未發現廣告視窗。
+   -> 正在點擊「收藏庫」...
+   ✅ 畫面出現了！(steam_library.png) (耗時 0.2 秒)
+🎯 發現: steam_library.png @ Point(x=np.int64(239), y=np.int64(69))
+🎯 發現: window_up.png @ Point(x=np.int64(1845), y=np.int64(23))
+   -> 正在從收藏庫選擇 'Rise of Eros'...
+   ✅ 畫面出現了！(rise_of_eros_list.png) (耗時 0.1 秒)
+🎯 發現: rise_of_eros_list.png @ Point(x=np.int64(155), y=np.int64(369))
+   -> 正在點擊「開始遊戲」按鈕...
+   ✅ 畫面出現了！(steam_play_btn.png) (耗時 0.3 秒)
+🎯 發現: steam_play_btn.png @ Point(x=np.int64(566), y=np.int64(648))
+✅ === 遊戲啟動指令已發送！ ===
+
+⏳ 全螢幕持續偵測 'press_to_start.png'（含中央點擊備援）...
+   👉 未找到 'Press to Start'，點擊螢幕中央嘗試喚醒流程...
+🎯 發現: press_to_start.png @ Point(x=np.int64(960), y=np.int64(540))
+✅ 已點擊 'Press to Start'，確認是否成功進入...
+🎯 發現: OK03.png @ Point(x=np.int64(958), y=np.int64(909))
+   -> 已處理對話框: OK03.png
+✅ 按下後已進入遊戲。
+🎯 發現: close.png @ Point(x=np.int64(1584), y=np.int64(166))
+   -> 已處理對話框: close.png
+
+⏳ 等待 2 秒...
+
+📦 === 開始派遣 ===
+   -> 嘗試點擊: dispatch.png (嘗試 1/2)
+   ✅ 畫面出現了！(dispatch.png) (耗時 0.1 秒)
+🎯 發現: dispatch.png @ Point(x=np.int64(1442), y=np.int64(987))
+   -> ✅ 成功點擊 'dispatch.png'
+   -> 嘗試點擊: all_accept.png (嘗試 1/2)
+   ✅ 畫面出現了！(all_accept.png) (耗時 3.9 秒)
+🎯 發現: all_accept.png @ Point(x=np.int64(1644), y=np.int64(1006))
+   -> ✅ 成功點擊 'all_accept.png'
+   -> 嘗試點擊: all_accept.png (嘗試 1/2)
+   ✅ 畫面出現了！(all_accept.png) (耗時 0.1 秒)
+🎯 發現: all_accept.png @ Point(x=np.int64(1643), y=np.int64(1007))
+   -> ✅ 成功點擊 'all_accept.png'
+   -> 執行函式: sleep 帶參數 (3,)
+
+⏳ 等待 3 秒...
+   -> 嘗試點擊: all_dispatch.png (嘗試 1/2)
+   ✅ 畫面出現了！(all_dispatch.png) (耗時 0.1 秒)
+🎯 發現: all_dispatch.png @ Point(x=np.int64(1199), y=np.int64(1006))
+   -> ✅ 成功點擊 'all_dispatch.png'
+   -> 執行函式: click_till_see 帶參數 ('speed_up.png', (1220, 1006))
+
+👉 開始點擊直到看到 speed_up.png...
+✅ 已看到 speed_up.png，停止點擊。
+   -> 嘗試點擊: backward_02.png (嘗試 1/2)
+   ✅ 畫面出現了！(backward_02.png) (耗時 0.2 秒)
+🎯 發現: backward_02.png @ Point(x=np.int64(79), y=np.int64(48))
+   -> ✅ 成功點擊 'backward_02.png'
+✅ 完成派遣。
+   -> 嘗試點擊: fight.png (嘗試 1/2)
+   ✅ 畫面出現了！(fight.png) (耗時 0.4 秒)
+🎯 發現: fight.png @ Point(x=np.int64(1510), y=np.int64(395))
+   -> ✅ 成功點擊 'fight.png'
+   -> 嘗試點擊: resource.png (嘗試 1/2)
+🎯 發現: fight.png @ Point(x=np.int64(1511), y=np.int64(394))
+   ✅ 畫面出現了！(resource.png) (耗時 3.7 秒)
+🎯 發現: resource.png @ Point(x=np.int64(172), y=np.int64(410))
+   -> ✅ 成功點擊 'resource.png'
+   -> 嘗試點擊: coins.png (嘗試 1/2)
+   ✅ 畫面出現了！(coins.png) (耗時 0.5 秒)
+🎯 發現: coins.png @ Point(x=np.int64(671), y=np.int64(620))
+   -> ✅ 成功點擊 'coins.png'
+   -> 嘗試點擊: level_05.png (嘗試 1/2)
+   ✅ 畫面出現了！(level_05.png) (耗時 4.1 秒)
+🎯 發現: level_05.png @ Point(x=np.int64(682), y=np.int64(452))
+   -> ✅ 成功點擊 'level_05.png'
+   -> 嘗試點擊: swap04.png (嘗試 1/2)
+   ✅ 畫面出現了！(swap04.png) (耗時 0.3 秒)
+🎯 發現: swap04.png @ Point(x=np.int64(1325), y=np.int64(977))
+   -> ✅ 成功點擊 'swap04.png'
+   -> 嘗試點擊: confirm.png (嘗試 1/2)
+   ✅ 畫面出現了！(confirm.png) (耗時 0.3 秒)
+🎯 發現: confirm.png @ Point(x=np.int64(1138), y=np.int64(798))
+   -> ✅ 成功點擊 'confirm.png'
+   -> 嘗試點擊: OK.png (嘗試 1/2)
+   ✅ 畫面出現了！(OK.png) (耗時 3.8 秒)
+🎯 發現: OK.png @ Point(x=np.int64(962), y=np.int64(908))
+   -> ✅ 成功點擊 'OK.png'
+   -> 嘗試點擊: backward_03.png (嘗試 1/2)
+   ✅ 畫面出現了！(backward_03.png) (耗時 0.2 秒)
+🎯 發現: backward_03.png @ Point(x=np.int64(83), y=np.int64(51))
+   -> ✅ 成功點擊 'backward_03.png'
+✅ 完成每日金幣掃蕩。
+   -> 嘗試點擊: refine.png (嘗試 1/2)
+   ✅ 畫面出現了！(refine.png) (耗時 0.3 秒)
+🎯 發現: refine.png @ Point(x=np.int64(175), y=np.int64(539))
+   -> ✅ 成功點擊 'refine.png'
+   -> 嘗試點擊: thorns_refine.png (嘗試 1/2)
+   ✅ 畫面出現了！(thorns_refine.png) (耗時 0.4 秒)
+🎯 發現: thorns_refine.png @ Point(x=np.int64(1632), y=np.int64(624))
+   -> ✅ 成功點擊 'thorns_refine.png'
+   -> 執行函式: sleep
+
+⏳ 等待 2 秒...
+   -> 嘗試點擊: level_04.png (嘗試 1/2)
+   ✅ 畫面出現了！(level_04.png) (耗時 0.2 秒)
+🎯 發現: level_04.png @ Point(x=np.int64(821), y=np.int64(499))
+   -> ✅ 成功點擊 'level_04.png'
+   -> 嘗試點擊: swap04.png (嘗試 1/2)
+   ✅ 畫面出現了！(swap04.png) (耗時 0.3 秒)
+🎯 發現: swap04.png @ Point(x=np.int64(1319), y=np.int64(977))
+   -> ✅ 成功點擊 'swap04.png'
+   -> 嘗試點擊: confirm.png (嘗試 1/2)
+   ✅ 畫面出現了！(confirm.png) (耗時 0.3 秒)
+🎯 發現: confirm.png @ Point(x=np.int64(1138), y=np.int64(798))
+   -> ✅ 成功點擊 'confirm.png'
+   -> 嘗試點擊: OK.png (嘗試 1/2)
+   ✅ 畫面出現了！(OK.png) (耗時 3.8 秒)
+🎯 發現: OK.png @ Point(x=np.int64(962), y=np.int64(908))
+   -> ✅ 成功點擊 'OK.png'
+   -> 嘗試點擊: backward_03.png (嘗試 1/2)
+   ✅ 畫面出現了！(backward_03.png) (耗時 0.1 秒)
+🎯 發現: backward_03.png @ Point(x=np.int64(83), y=np.int64(51))
+   -> ✅ 成功點擊 'backward_03.png'
+✅ 完成每日試煉掃蕩。
+🎯 依據今日日期，神伴掃蕩關卡為: Level 05
+   -> 偵測到關卡為 05，執行向左滑動尋找關卡...
+   -> 嘗試點擊: bond.png (嘗試 1/2)
+   ✅ 畫面出現了！(bond.png) (耗時 0.3 秒)
+🎯 發現: bond.png @ Point(x=np.int64(890), y=np.int64(160))
+   -> ✅ 成功點擊 'bond.png'
+   -> 執行函式: sleep
+
+⏳ 等待 2 秒...
+   -> 執行函式: swipe_screen 帶參數 ('left', 1400, (1503, 596), 0.2)
+🔄 準備執行畫面滑動 (方向: left, 距離: 1400)...
+👉 準備從 (1503, 596) 甩動至 (103, 596)...
+   ✅ 拖曳完成！(具備慣性釋放)
+   -> 執行函式: sleep
+
+⏳ 等待 2 秒...
+   -> 嘗試點擊: bond_level_05.png (嘗試 1/2)
+   ✅ 畫面出現了！(bond_level_05.png) (耗時 0.2 秒)
+🎯 發現: bond_level_05.png @ Point(x=np.int64(1462), y=np.int64(643))
+   -> ✅ 成功點擊 'bond_level_05.png'
+   -> 嘗試點擊: 05_level.png (嘗試 1/2)
+   ✅ 畫面出現了！(05_level.png) (耗時 0.4 秒)
+🎯 發現: 05_level.png @ Point(x=np.int64(1073), y=np.int64(444))
+   -> ✅ 成功點擊 '05_level.png'
+   -> 嘗試點擊: swap04.png (嘗試 1/2)
+🎯 發現: 05_level.png @ Point(x=np.int64(821), y=np.int64(444))
+   ✅ 畫面出現了！(swap04.png) (耗時 3.7 秒)
+🎯 發現: swap04.png @ Point(x=np.int64(1314), y=np.int64(977))
+   -> ✅ 成功點擊 'swap04.png'
+   -> 嘗試點擊: max.png (嘗試 1/2)
+   ✅ 畫面出現了！(max.png) (耗時 0.3 秒)
+🎯 發現: max.png @ Point(x=np.int64(1310), y=np.int64(464))
+   -> ✅ 成功點擊 'max.png'
+   -> 嘗試點擊: confirm.png (嘗試 1/2)
+   ✅ 畫面出現了！(confirm.png) (耗時 0.1 秒)
+🎯 發現: confirm.png @ Point(x=np.int64(1138), y=np.int64(798))
+   -> ✅ 成功點擊 'confirm.png'
+   -> 嘗試點擊: OK.png (嘗試 1/2)
+   ✅ 畫面出現了！(OK.png) (耗時 3.9 秒)
+🎯 發現: OK.png @ Point(x=np.int64(962), y=np.int64(908))
+   -> ✅ 成功點擊 'OK.png'
+   -> 嘗試點擊: backward_03.png (嘗試 1/2)
+   ✅ 畫面出現了！(backward_03.png) (耗時 0.1 秒)
+🎯 發現: backward_03.png @ Point(x=np.int64(83), y=np.int64(51))
+   -> ✅ 成功點擊 'backward_03.png'
+✅ 完成每日神伴掃蕩 (Level 05)。
+   -> 嘗試點擊: daily_activity.png (嘗試 1/2)
+   ✅ 畫面出現了！(daily_activity.png) (耗時 0.3 秒)
+🎯 發現: daily_activity.png @ Point(x=np.int64(175), y=np.int64(671))
+   -> ✅ 成功點擊 'daily_activity.png'
+   -> 嘗試點擊: activity.png (嘗試 1/2)
+   ✅ 畫面出現了！(activity.png) (耗時 0.4 秒)
+🎯 發現: activity.png @ Point(x=np.int64(672), y=np.int64(596))
+   -> ✅ 成功點擊 'activity.png'
+   -> 嘗試點擊: battle.png (嘗試 1/2)
+   ✅ 畫面出現了！(battle.png) (耗時 0.6 秒)
+🎯 發現: battle.png @ Point(x=np.int64(176), y=np.int64(623))
+   -> ✅ 成功點擊 'battle.png'
+   -> 執行函式: sleep 帶參數 (3,)
+
+⏳ 等待 3 秒...
+   -> 執行函式: ensure_pass_tutorial
+   -> 檢查是否有活動教學或多頁面需要切換...
+   -> 嘗試點擊: battle7.png (嘗試 1/2)
+   ✅ 畫面出現了！(battle7.png) (耗時 0.2 秒)
+🎯 發現: battle7.png @ Point(x=np.int64(303), y=np.int64(491))
+   -> ✅ 成功點擊 'battle7.png'
+   -> 嘗試點擊: plus.png (嘗試 1/2)
+   ✅ 畫面出現了！(plus.png) (耗時 0.1 秒)
+🎯 發現: plus.png @ Point(x=np.int64(1075), y=np.int64(48))
+   -> ✅ 成功點擊 'plus.png'
+   -> 執行函式: use_expiring_energy
+-> 嘗試點擊: OK03.png
+   ✅ 畫面出現了！(OK03.png) (耗時 0.2 秒)
+🎯 發現: OK03.png @ Point(x=np.int64(1137), y=np.int64(878))
+-> 嘗試點擊: confirm.png
+   ✅ 畫面出現了！(confirm.png) (耗時 1.2 秒)
+🎯 發現: confirm.png @ Point(x=np.int64(958), y=np.int64(719))
+   -> 嘗試點擊: swap04.png (嘗試 1/2)
+   ✅ 畫面出現了！(swap04.png) (耗時 0.2 秒)
+🎯 發現: swap04.png @ Point(x=np.int64(1314), y=np.int64(977))
+   -> ✅ 成功點擊 'swap04.png'
+   -> 嘗試點擊: max.png (嘗試 1/2)
+   ✅ 畫面出現了！(max.png) (耗時 0.3 秒)
+🎯 發現: max.png @ Point(x=np.int64(1310), y=np.int64(464))
+   -> ✅ 成功點擊 'max.png'
+   -> 嘗試點擊: confirm.png (嘗試 1/2)
+   ✅ 畫面出現了！(confirm.png) (耗時 0.1 秒)
+🎯 發現: confirm.png @ Point(x=np.int64(1138), y=np.int64(798))
+   -> ✅ 成功點擊 'confirm.png'
+   -> 執行函式: if_upgrade
+   -> 👌 未偵測到升級畫面，繼續正常流程。
+   -> 嘗試點擊: ok_03.png (嘗試 1/2)
+   ✅ 畫面出現了！(ok_03.png) (耗時 0.3 秒)
+🎯 發現: ok_03.png @ Point(x=np.int64(958), y=np.int64(907))
+   -> ✅ 成功點擊 'ok_03.png'
+   -> 嘗試點擊: home.png (嘗試 1/2)
+   ✅ 畫面出現了！(home.png) (耗時 0.2 秒)
+🎯 發現: home.png @ Point(x=np.int64(1826), y=np.int64(47))
+   -> ✅ 成功點擊 'home.png'
+✅ 完成每日活動掃蕩。
+-> 嘗試點擊: PVP
+   ✅ 畫面出現了！(pvp.png) (耗時 0.1 秒)
+🎯 發現: pvp.png @ Point(x=np.int64(1294), y=np.int64(240))
+-> 嘗試點擊: 一般
+🎯 發現: pvp.png @ Point(x=np.int64(1531), y=np.int64(161))
+   ✅ 畫面出現了！(normal.png) (耗時 4.3 秒)
+🎯 發現: normal.png @ Point(x=np.int64(673), y=np.int64(467))
+   ✅ 畫面出現了！(accumulate_rewards.png) (耗時 0.6 秒)
+🎯 發現: accumulate_rewards.png @ Point(x=np.int64(1344), y=np.int64(174))
+   ✅ 畫面出現了！(get_rewards.png) (耗時 0.6 秒)
+🎯 發現: get_rewards.png @ Point(x=np.int64(879), y=np.int64(1010))
+   ✅ 畫面出現了！(OK.png) (耗時 0.9 秒)
+🎯 發現: OK.png @ Point(x=np.int64(962), y=np.int64(909))
+   ✅ 畫面出現了！(backward_08.png) (耗時 0.1 秒)
+🎯 發現: backward_08.png @ Point(x=np.int64(81), y=np.int64(51))
+-> 嘗試點擊: 出戰
+   ✅ 畫面出現了！(fight_02.png) (耗時 0.3 秒)
+🎯 發現: fight_02.png @ Point(x=np.int64(369), y=np.int64(882))
+-> 嘗試點擊: skip
+
+⏳ 等待 2 秒...
+   ✅ 畫面出現了！(skip.png) (耗時 0.2 秒)
+🎯 發現: skip.png @ Point(x=np.int64(1368), y=np.int64(1010))
+-> 等待戰鬥結果...
+   ✅ 畫面出現了！(defeated.png) (耗時 24.3 秒)
+-> 本輪 PVP 失敗...
+🎯 發現: back.png @ Point(x=np.int64(1783), y=np.int64(984))
+-> 嘗試點擊: backward_04
+   ✅ 畫面出現了！(backward_04.png) (耗時 0.4 秒)
+🎯 發現: backward_04.png @ Point(x=np.int64(82), y=np.int64(50))
+✅ 完成每日一般競技場出戰。
+-> 嘗試點擊: special
+   ✅ 畫面出現了！(special.png) (耗時 0.7 秒)
+🎯 發現: special.png @ Point(x=np.int64(1196), y=np.int64(639))
+   ✅ 畫面出現了！(accumulate_rewards.png) (耗時 0.2 秒)
+🎯 發現: accumulate_rewards.png @ Point(x=np.int64(1344), y=np.int64(174))
+   ✅ 畫面出現了！(get_rewards.png) (耗時 0.3 秒)
+🎯 發現: get_rewards.png @ Point(x=np.int64(925), y=np.int64(1010))
+   ✅ 畫面出現了！(OK.png) (耗時 0.7 秒)
+🎯 發現: OK.png @ Point(x=np.int64(962), y=np.int64(909))
+   ✅ 畫面出現了！(backward_08.png) (耗時 0.1 秒)
+🎯 發現: backward_08.png @ Point(x=np.int64(81), y=np.int64(51))
+-> 嘗試點擊: 出戰
+   ✅ 畫面出現了！(fight_02.png) (耗時 0.3 秒)
+🎯 發現: fight_02.png @ Point(x=np.int64(369), y=np.int64(882))
+-> 嘗試點擊: skip
+
+⏳ 等待 2 秒...
+   ✅ 畫面出現了！(skip.png) (耗時 0.2 秒)
+🎯 發現: skip.png @ Point(x=np.int64(1368), y=np.int64(1010))
+-> 發現眷族技能配置警告！
+🎯 發現: yes_01.png @ Point(x=np.int64(1139), y=np.int64(719))
+-> 等待戰鬥結果...
+   ✅ 畫面出現了！(new_rank.png) (耗時 41.4 秒)
+-> 本輪 PVP 勝利！
+🎯 發現: ok.png @ Point(x=np.int64(962), y=np.int64(914))
+   ✅ 畫面出現了！(back.png) (耗時 0.2 秒)
+🎯 發現: back.png @ Point(x=np.int64(1783), y=np.int64(984))
+-> 嘗試點擊: backward_05
+   ✅ 畫面出現了！(backward_05.png) (耗時 0.3 秒)
+🎯 發現: backward_05.png @ Point(x=np.int64(81), y=np.int64(52))
+-> 嘗試點擊: backward_05
+   ✅ 畫面出現了！(backward_05.png) (耗時 0.2 秒)
+🎯 發現: backward_05.png @ Point(x=np.int64(81), y=np.int64(52))
+✅ 完成每日特殊競技場出戰。
+
+🎁 === 開始領取獎勵流程 ===
+   -> 嘗試點擊: rewards.png (嘗試 1/2)
+   ✅ 畫面出現了！(rewards.png) (耗時 0.1 秒)
+🎯 發現: rewards.png @ Point(x=np.int64(354), y=np.int64(167))
+   -> ✅ 成功點擊 'rewards.png'
+   -> 嘗試點擊: get_all.png (嘗試 1/2)
+🎯 發現: rewards.png @ Point(x=np.int64(354), y=np.int64(167))
+   ✅ 畫面出現了！(get_all.png) (耗時 3.6 秒)
+🎯 發現: get_all.png @ Point(x=np.int64(1609), y=np.int64(988))
+   -> ✅ 成功點擊 'get_all.png'
+   -> 嘗試點擊: get_all.png (嘗試 1/2)
+   ✅ 畫面出現了！(get_all.png) (耗時 0.2 秒)
+🎯 發現: get_all.png @ Point(x=np.int64(1609), y=np.int64(988))
+   -> ✅ 成功點擊 'get_all.png'
+   -> 嘗試點擊: backward_02.png (嘗試 1/2)
+   ✅ 畫面出現了！(backward_02.png) (耗時 0.1 秒)
+🎯 發現: backward_02.png @ Point(x=np.int64(80), y=np.int64(48))
+   -> ✅ 成功點擊 'backward_02.png'
+✅ 完成領獎流程。
+
+🎁 === 開始領取獎勵流程 ===
+   -> 嘗試點擊: temple.png (嘗試 1/2)
+   ✅ 畫面出現了！(temple.png) (耗時 0.2 秒)
+🎯 發現: temple.png @ Point(x=np.int64(1278), y=np.int64(984))
+   -> ✅ 成功點擊 'temple.png'
+   -> 嘗試點擊: wish_place.png (嘗試 1/2)
+   ✅ 畫面出現了！(wish_place.png) (耗時 0.6 秒)
+🎯 發現: wish_place.png @ Point(x=np.int64(452), y=np.int64(419))
+   -> ✅ 成功點擊 'wish_place.png'
+   -> 嘗試點擊: wish.png (嘗試 1/2)
+   ✅ 畫面出現了！(wish.png) (耗時 0.7 秒)
+🎯 發現: wish.png @ Point(x=np.int64(1452), y=np.int64(978))
+   -> ✅ 成功點擊 'wish.png'
+   -> 執行函式: sleep
+
+⏳ 等待 2 秒...
+   -> 嘗試點擊: wish.png (嘗試 1/2)
+   ✅ 畫面出現了！(wish.png) (耗時 0.1 秒)
+🎯 發現: wish.png @ Point(x=np.int64(1452), y=np.int64(975))
+   -> ✅ 成功點擊 'wish.png'
+   -> 嘗試點擊: home_black_background.png (嘗試 1/2)
+   ✅ 畫面出現了！(home_black_background.png) (耗時 0.1 秒)
+🎯 發現: home_black_background.png @ Point(x=np.int64(1829), y=np.int64(50))
+   -> ✅ 成功點擊 'home_black_background.png'
+✅ 完成許願流程。
+
+🚪 === 開始執行離開遊戲流程 ===
+   -> 執行函式: find_set
+   -> 嘗試點擊: set.png
+🎯 發現: set.png @ Point(x=np.int64(1820), y=np.int64(49))
+   -> 嘗試點擊: quit_game.png (嘗試 1/2)
+   ✅ 畫面出現了！(quit_game.png) (耗時 3.8 秒)
+🎯 發現: quit_game.png @ Point(x=np.int64(1712), y=np.int64(980))
+   -> ✅ 成功點擊 'quit_game.png'
+   -> 嘗試點擊: confirm.png (嘗試 1/2)
+   ✅ 畫面出現了！(confirm.png) (耗時 0.3 秒)
+🎯 發現: confirm.png @ Point(x=np.int64(1139), y=np.int64(719))
+   -> ✅ 成功點擊 'confirm.png'
+   -> 嘗試點擊: steam_sign.png (嘗試 1/2)
+   ✅ 畫面出現了！(steam_sign.png) (耗時 3.8 秒)
+🎯 發現: steam_sign.png @ Point(x=np.int64(67), y=np.int64(27))
+   -> ✅ 成功點擊 'steam_sign.png'
+   -> 嘗試點擊: quit.png (嘗試 1/2)
+   ✅ 畫面出現了！(quit.png) (耗時 0.2 秒)
+🎯 發現: quit.png @ Point(x=np.int64(67), y=np.int64(374))
+   -> ✅ 成功點擊 'quit.png'
+✅ 離開遊戲流程完成。
+🔍 完成每日任務...
+🔍 正在尋找遊戲畫面...
+
+🚀 === 開始從 Steam 啟動遊戲 ===
+   -> 正在點擊右下角以顯示桌面...
+   -> 正在尋找並雙擊 Steam 圖示...
+🎯 發現: steam_icon.png @ Point(x=np.int64(167), y=np.int64(56))
+🎯 發現: steam_icon.png @ Point(x=np.int64(167), y=np.int64(56))
+   ✅ 畫面出現了！(who.png) (耗時 4.3 秒)
+   -> 開始尋找 Steam 帳號...
+   -> 找到 3 個潛在帳號，開始從左到右檢查...
+   -> 帳號比對 strict_color: hits=0/2, conf=0.97, gray=False
+   -> 帳號比對 balanced_color: hits=0/2, conf=0.94, gray=False
+   -> 帳號比對 balanced_gray: hits=0/2, conf=0.92, gray=True
+   -> 帳號比對 strict_color: hits=0/2, conf=0.97, gray=False
+   -> 帳號比對 balanced_color: hits=0/2, conf=0.94, gray=False
+   -> 帳號比對 balanced_gray: hits=0/2, conf=0.92, gray=True
+   -> 帳號比對 strict_color: hits=0/2, conf=0.97, gray=False
+   -> 帳號比對 balanced_color: hits=0/2, conf=0.94, gray=False
+   -> 帳號比對 balanced_gray: hits=2/2, conf=0.92, gray=True
+   -> 找到目標帳號！正在點擊位於 (1099, 536) 的按鈕...
+   -> 等待 Steam 登入與載入主介面...
+   ✅ 畫面出現了！(steam_library.png) (耗時 14.6 秒)
+   -> 正在嘗試關閉 Steam 彈出廣告...
+   -> 未發現廣告視窗。
+   -> 正在點擊「收藏庫」...
+   ✅ 畫面出現了！(steam_library.png) (耗時 0.2 秒)
+🎯 發現: steam_library.png @ Point(x=np.int64(239), y=np.int64(69))
+🎯 發現: window_up.png @ Point(x=np.int64(1845), y=np.int64(23))
+   -> 正在從收藏庫選擇 'Rise of Eros'...
+   ✅ 畫面出現了！(rise_of_eros_list.png) (耗時 0.1 秒)
+🎯 發現: rise_of_eros_list.png @ Point(x=np.int64(155), y=np.int64(369))
+   -> 正在點擊「開始遊戲」按鈕...
+   ✅ 畫面出現了！(steam_play_btn.png) (耗時 0.4 秒)
+🎯 發現: steam_play_btn.png @ Point(x=np.int64(566), y=np.int64(648))
+✅ === 遊戲啟動指令已發送！ ===
+
+⏳ 全螢幕持續偵測 'press_to_start.png'（含中央點擊備援）...
+   👉 未找到 'Press to Start'，點擊螢幕中央嘗試喚醒流程...
+🎯 發現: press_to_start.png @ Point(x=np.int64(960), y=np.int64(540))
+✅ 已點擊 'Press to Start'，確認是否成功進入...
+🎯 發現: ok.png @ Point(x=np.int64(962), y=np.int64(909))
+   -> 已處理對話框: ok.png
+✅ 按下後已進入遊戲。
+🎯 發現: close.png @ Point(x=np.int64(1584), y=np.int64(166))
+   -> 已處理對話框: close.png
+
+⏳ 等待 2 秒...
+
+📦 === 開始派遣 ===
+   -> 嘗試點擊: dispatch.png (嘗試 1/2)
+   ✅ 畫面出現了！(dispatch.png) (耗時 0.1 秒)
+🎯 發現: dispatch.png @ Point(x=np.int64(1442), y=np.int64(987))
+   -> ✅ 成功點擊 'dispatch.png'
+   -> 嘗試點擊: all_accept.png (嘗試 1/2)
+   ✅ 畫面出現了！(all_accept.png) (耗時 3.9 秒)
+🎯 發現: all_accept.png @ Point(x=np.int64(1644), y=np.int64(1006))
+   -> ✅ 成功點擊 'all_accept.png'
+   -> 嘗試點擊: all_accept.png (嘗試 1/2)
+   ✅ 畫面出現了！(all_accept.png) (耗時 0.2 秒)
+🎯 發現: all_accept.png @ Point(x=np.int64(1643), y=np.int64(1007))
+   -> ✅ 成功點擊 'all_accept.png'
+   -> 執行函式: sleep 帶參數 (3,)
+
+⏳ 等待 3 秒...
+   -> 嘗試點擊: all_dispatch.png (嘗試 1/2)
+   ✅ 畫面出現了！(all_dispatch.png) (耗時 0.2 秒)
+🎯 發現: all_dispatch.png @ Point(x=np.int64(1199), y=np.int64(1006))
+   -> ✅ 成功點擊 'all_dispatch.png'
+   -> 執行函式: click_till_see 帶參數 ('speed_up.png', (1220, 1006))
+
+👉 開始點擊直到看到 speed_up.png...
+   -> 尚未看到 speed_up.png，點擊 (1220, 1006) (第 1 次)
+✅ 已看到 speed_up.png，停止點擊。
+   -> 嘗試點擊: backward_02.png (嘗試 1/2)
+   ✅ 畫面出現了！(backward_02.png) (耗時 0.2 秒)
+🎯 發現: backward_02.png @ Point(x=np.int64(79), y=np.int64(48))
+   -> ✅ 成功點擊 'backward_02.png'
+✅ 完成派遣。
+   -> 嘗試點擊: fight.png (嘗試 1/2)
+   ✅ 畫面出現了！(fight.png) (耗時 0.5 秒)
+🎯 發現: fight.png @ Point(x=np.int64(1511), y=np.int64(394))
+   -> ✅ 成功點擊 'fight.png'
+   -> 嘗試點擊: resource.png (嘗試 1/2)
+🎯 發現: fight.png @ Point(x=np.int64(1511), y=np.int64(394))
+   ✅ 畫面出現了！(resource.png) (耗時 3.9 秒)
+🎯 發現: resource.png @ Point(x=np.int64(172), y=np.int64(410))
+   -> ✅ 成功點擊 'resource.png'
+   -> 嘗試點擊: coins.png (嘗試 1/2)
+   ✅ 畫面出現了！(coins.png) (耗時 0.4 秒)
+🎯 發現: coins.png @ Point(x=np.int64(671), y=np.int64(620))
+   -> ✅ 成功點擊 'coins.png'
+   -> 嘗試點擊: level_05.png (嘗試 1/2)
+   ✅ 畫面出現了！(level_05.png) (耗時 4.0 秒)
+🎯 發現: level_05.png @ Point(x=np.int64(682), y=np.int64(452))
+   -> ✅ 成功點擊 'level_05.png'
+   -> 嘗試點擊: swap04.png (嘗試 1/2)
+   ✅ 畫面出現了！(swap04.png) (耗時 0.3 秒)
+🎯 發現: swap04.png @ Point(x=np.int64(1319), y=np.int64(977))
+   -> ✅ 成功點擊 'swap04.png'
+   -> 嘗試點擊: confirm.png (嘗試 1/2)
+   ✅ 畫面出現了！(confirm.png) (耗時 0.3 秒)
+🎯 發現: confirm.png @ Point(x=np.int64(1138), y=np.int64(798))
+   -> ✅ 成功點擊 'confirm.png'
+   -> 嘗試點擊: OK.png (嘗試 1/2)
+   ✅ 畫面出現了！(OK.png) (耗時 3.8 秒)
+🎯 發現: OK.png @ Point(x=np.int64(962), y=np.int64(908))
+   -> ✅ 成功點擊 'OK.png'
+   -> 嘗試點擊: backward_03.png (嘗試 1/2)
+   ✅ 畫面出現了！(backward_03.png) (耗時 0.2 秒)
+🎯 發現: backward_03.png @ Point(x=np.int64(83), y=np.int64(51))
+   -> ✅ 成功點擊 'backward_03.png'
+✅ 完成每日金幣掃蕩。
+   -> 嘗試點擊: refine.png (嘗試 1/2)
+   ✅ 畫面出現了！(refine.png) (耗時 0.3 秒)
+🎯 發現: refine.png @ Point(x=np.int64(175), y=np.int64(539))
+   -> ✅ 成功點擊 'refine.png'
+   -> 嘗試點擊: thorns_refine.png (嘗試 1/2)
+   ✅ 畫面出現了！(thorns_refine.png) (耗時 0.4 秒)
+🎯 發現: thorns_refine.png @ Point(x=np.int64(1632), y=np.int64(624))
+   -> ✅ 成功點擊 'thorns_refine.png'
+   -> 執行函式: sleep
+
+⏳ 等待 2 秒...
+   -> 嘗試點擊: level_04.png (嘗試 1/2)
+   ✅ 畫面出現了！(level_04.png) (耗時 0.2 秒)
+🎯 發現: level_04.png @ Point(x=np.int64(821), y=np.int64(499))
+   -> ✅ 成功點擊 'level_04.png'
+   -> 嘗試點擊: swap04.png (嘗試 1/2)
+   ✅ 畫面出現了！(swap04.png) (耗時 0.3 秒)
+🎯 發現: swap04.png @ Point(x=np.int64(1325), y=np.int64(977))
+   -> ✅ 成功點擊 'swap04.png'
+   -> 嘗試點擊: confirm.png (嘗試 1/2)
+   ✅ 畫面出現了！(confirm.png) (耗時 0.2 秒)
+🎯 發現: confirm.png @ Point(x=np.int64(1138), y=np.int64(798))
+   -> ✅ 成功點擊 'confirm.png'
+   -> 嘗試點擊: OK.png (嘗試 1/2)
+   ✅ 畫面出現了！(OK.png) (耗時 3.8 秒)
+🎯 發現: OK.png @ Point(x=np.int64(962), y=np.int64(908))
+   -> ✅ 成功點擊 'OK.png'
+   -> 嘗試點擊: backward_03.png (嘗試 1/2)
+   ✅ 畫面出現了！(backward_03.png) (耗時 0.1 秒)
+🎯 發現: backward_03.png @ Point(x=np.int64(83), y=np.int64(51))
+   -> ✅ 成功點擊 'backward_03.png'
+✅ 完成每日試煉掃蕩。
+🎯 依據今日日期，神伴掃蕩關卡為: Level 05
+   -> 偵測到關卡為 05，執行向左滑動尋找關卡...
+   -> 嘗試點擊: bond.png (嘗試 1/2)
+   ✅ 畫面出現了！(bond.png) (耗時 0.3 秒)
+🎯 發現: bond.png @ Point(x=np.int64(890), y=np.int64(160))
+   -> ✅ 成功點擊 'bond.png'
+   -> 執行函式: sleep
+
+⏳ 等待 2 秒...
+   -> 執行函式: swipe_screen 帶參數 ('left', 1400, (1503, 596), 0.2)
+🔄 準備執行畫面滑動 (方向: left, 距離: 1400)...
+👉 準備從 (1503, 596) 甩動至 (103, 596)...
+   ✅ 拖曳完成！(具備慣性釋放)
+   -> 執行函式: sleep
+
+⏳ 等待 2 秒...
+   -> 嘗試點擊: bond_level_05.png (嘗試 1/2)
+   ✅ 畫面出現了！(bond_level_05.png) (耗時 0.2 秒)
+🎯 發現: bond_level_05.png @ Point(x=np.int64(1462), y=np.int64(643))
+   -> ✅ 成功點擊 'bond_level_05.png'
+   -> 嘗試點擊: 05_level.png (嘗試 1/2)
+   ✅ 畫面出現了！(05_level.png) (耗時 0.3 秒)
+🎯 發現: 05_level.png @ Point(x=np.int64(1149), y=np.int64(444))
+   -> ✅ 成功點擊 '05_level.png'
+   -> 嘗試點擊: swap04.png (嘗試 1/2)
+🎯 發現: 05_level.png @ Point(x=np.int64(821), y=np.int64(444))
+   ✅ 畫面出現了！(swap04.png) (耗時 3.7 秒)
+🎯 發現: swap04.png @ Point(x=np.int64(1314), y=np.int64(977))
+   -> ✅ 成功點擊 'swap04.png'
+   -> 嘗試點擊: max.png (嘗試 1/2)
+   ✅ 畫面出現了！(max.png) (耗時 0.1 秒)
+🎯 發現: max.png @ Point(x=np.int64(1310), y=np.int64(464))
+   -> ✅ 成功點擊 'max.png'
+   -> 嘗試點擊: confirm.png (嘗試 1/2)
+   ✅ 畫面出現了！(confirm.png) (耗時 0.2 秒)
+🎯 發現: confirm.png @ Point(x=np.int64(1138), y=np.int64(798))
+   -> ✅ 成功點擊 'confirm.png'
+   -> 嘗試點擊: OK.png (嘗試 1/2)
+   ✅ 畫面出現了！(OK.png) (耗時 3.8 秒)
+🎯 發現: OK.png @ Point(x=np.int64(962), y=np.int64(908))
+   -> ✅ 成功點擊 'OK.png'
+   -> 嘗試點擊: backward_03.png (嘗試 1/2)
+   ✅ 畫面出現了！(backward_03.png) (耗時 0.1 秒)
+🎯 發現: backward_03.png @ Point(x=np.int64(83), y=np.int64(51))
+   -> ✅ 成功點擊 'backward_03.png'
+✅ 完成每日神伴掃蕩 (Level 05)。
+   -> 嘗試點擊: daily_activity.png (嘗試 1/2)
+   ✅ 畫面出現了！(daily_activity.png) (耗時 0.3 秒)
+🎯 發現: daily_activity.png @ Point(x=np.int64(175), y=np.int64(671))
+   -> ✅ 成功點擊 'daily_activity.png'
+   -> 嘗試點擊: activity.png (嘗試 1/2)
+   ✅ 畫面出現了！(activity.png) (耗時 0.4 秒)
+🎯 發現: activity.png @ Point(x=np.int64(672), y=np.int64(596))
+   -> ✅ 成功點擊 'activity.png'
+   -> 嘗試點擊: battle.png (嘗試 1/2)
+   ✅ 畫面出現了！(battle.png) (耗時 0.6 秒)
+🎯 發現: battle.png @ Point(x=np.int64(158), y=np.int64(623))
+   -> ✅ 成功點擊 'battle.png'
+   -> 執行函式: sleep 帶參數 (3,)
+
+⏳ 等待 3 秒...
+   -> 執行函式: ensure_pass_tutorial
+   -> 檢查是否有活動教學或多頁面需要切換...
+   -> 嘗試點擊: battle7.png (嘗試 1/2)
+   ✅ 畫面出現了！(battle7.png) (耗時 0.1 秒)
+🎯 發現: battle7.png @ Point(x=np.int64(303), y=np.int64(491))
+   -> ✅ 成功點擊 'battle7.png'
+   -> 嘗試點擊: plus.png (嘗試 1/2)
+   ✅ 畫面出現了！(plus.png) (耗時 0.1 秒)
+🎯 發現: plus.png @ Point(x=np.int64(1075), y=np.int64(48))
+   -> ✅ 成功點擊 'plus.png'
+   -> 執行函式: use_expiring_energy
+-> 嘗試點擊: OK03.png
+   ✅ 畫面出現了！(OK03.png) (耗時 0.2 秒)
+🎯 發現: OK03.png @ Point(x=np.int64(1137), y=np.int64(878))
+-> 嘗試點擊: confirm.png
+   ✅ 畫面出現了！(confirm.png) (耗時 1.2 秒)
+🎯 發現: confirm.png @ Point(x=np.int64(958), y=np.int64(719))
+   -> 嘗試點擊: swap04.png (嘗試 1/2)
+   ✅ 畫面出現了！(swap04.png) (耗時 0.2 秒)
+🎯 發現: swap04.png @ Point(x=np.int64(1314), y=np.int64(977))
+   -> ✅ 成功點擊 'swap04.png'
+   -> 嘗試點擊: max.png (嘗試 1/2)
+   ✅ 畫面出現了！(max.png) (耗時 0.3 秒)
+🎯 發現: max.png @ Point(x=np.int64(1310), y=np.int64(464))
+   -> ✅ 成功點擊 'max.png'
+   -> 嘗試點擊: confirm.png (嘗試 1/2)
+   ✅ 畫面出現了！(confirm.png) (耗時 0.1 秒)
+🎯 發現: confirm.png @ Point(x=np.int64(1138), y=np.int64(798))
+   -> ✅ 成功點擊 'confirm.png'
+   -> 執行函式: if_upgrade
+   -> 👌 未偵測到升級畫面，繼續正常流程。
+   -> 嘗試點擊: ok_03.png (嘗試 1/2)
+   ✅ 畫面出現了！(ok_03.png) (耗時 0.6 秒)
+🎯 發現: ok_03.png @ Point(x=np.int64(958), y=np.int64(907))
+   -> ✅ 成功點擊 'ok_03.png'
+   -> 嘗試點擊: home.png (嘗試 1/2)
+   ✅ 畫面出現了！(home.png) (耗時 0.2 秒)
+🎯 發現: home.png @ Point(x=np.int64(1826), y=np.int64(47))
+   -> ✅ 成功點擊 'home.png'
+✅ 完成每日活動掃蕩。
+-> 嘗試點擊: PVP
+   ✅ 畫面出現了！(pvp.png) (耗時 0.2 秒)
+🎯 發現: pvp.png @ Point(x=np.int64(1293), y=np.int64(236))
+-> 嘗試點擊: 一般
+🎯 發現: pvp.png @ Point(x=np.int64(1531), y=np.int64(161))
+   ✅ 畫面出現了！(normal.png) (耗時 4.2 秒)
+🎯 發現: normal.png @ Point(x=np.int64(673), y=np.int64(467))
+   ✅ 畫面出現了！(accumulate_rewards.png) (耗時 0.6 秒)
+🎯 發現: accumulate_rewards.png @ Point(x=np.int64(1344), y=np.int64(174))
+   ✅ 畫面出現了！(get_rewards.png) (耗時 0.6 秒)
+🎯 發現: get_rewards.png @ Point(x=np.int64(882), y=np.int64(1010))
+   ✅ 畫面出現了！(OK.png) (耗時 0.7 秒)
+🎯 發現: OK.png @ Point(x=np.int64(962), y=np.int64(909))
+   ✅ 畫面出現了！(backward_08.png) (耗時 0.2 秒)
+🎯 發現: backward_08.png @ Point(x=np.int64(81), y=np.int64(51))
+-> 嘗試點擊: 出戰
+   ✅ 畫面出現了！(fight_02.png) (耗時 0.3 秒)
+🎯 發現: fight_02.png @ Point(x=np.int64(369), y=np.int64(882))
+-> 嘗試點擊: skip
+
+⏳ 等待 2 秒...
+   ✅ 畫面出現了！(skip.png) (耗時 0.2 秒)
+🎯 發現: skip.png @ Point(x=np.int64(1368), y=np.int64(1010))
+-> 發現眷族技能配置警告！
+🎯 發現: yes_01.png @ Point(x=np.int64(1139), y=np.int64(719))
+-> 等待戰鬥結果...
+   ✅ 畫面出現了！(new_rank.png) (耗時 15.1 秒)
+-> 本輪 PVP 勝利！
+🎯 發現: ok.png @ Point(x=np.int64(962), y=np.int64(914))
+   ✅ 畫面出現了！(back.png) (耗時 0.2 秒)
+🎯 發現: back.png @ Point(x=np.int64(1783), y=np.int64(984))
+-> 嘗試點擊: backward_04
+   ✅ 畫面出現了！(backward_04.png) (耗時 0.3 秒)
+🎯 發現: backward_04.png @ Point(x=np.int64(82), y=np.int64(50))
+✅ 完成每日一般競技場出戰。
+-> 嘗試點擊: special
+   ✅ 畫面出現了！(special.png) (耗時 0.7 秒)
+🎯 發現: special.png @ Point(x=np.int64(1196), y=np.int64(639))
+   ✅ 畫面出現了！(accumulate_rewards.png) (耗時 0.1 秒)
+🎯 發現: accumulate_rewards.png @ Point(x=np.int64(1344), y=np.int64(174))
+   ✅ 畫面出現了！(get_rewards.png) (耗時 0.3 秒)
+🎯 發現: get_rewards.png @ Point(x=np.int64(948), y=np.int64(1010))
+   ✅ 畫面出現了！(OK.png) (耗時 0.7 秒)
+🎯 發現: OK.png @ Point(x=np.int64(962), y=np.int64(909))
+   ✅ 畫面出現了！(backward_08.png) (耗時 0.2 秒)
+🎯 發現: backward_08.png @ Point(x=np.int64(81), y=np.int64(51))
+-> 嘗試點擊: 出戰
+   ✅ 畫面出現了！(fight_02.png) (耗時 0.3 秒)
+🎯 發現: fight_02.png @ Point(x=np.int64(369), y=np.int64(882))
+-> 嘗試點擊: skip
+
+⏳ 等待 2 秒...
+   ✅ 畫面出現了！(skip.png) (耗時 0.2 秒)
+🎯 發現: skip.png @ Point(x=np.int64(1368), y=np.int64(1010))
+-> 發現眷族技能配置警告！
+🎯 發現: yes_01.png @ Point(x=np.int64(1139), y=np.int64(719))
+-> 等待戰鬥結果...
+   ✅ 畫面出現了！(defeated.png) (耗時 37.2 秒)
+-> 本輪 PVP 失敗...
+🎯 發現: back.png @ Point(x=np.int64(1783), y=np.int64(984))
+-> 嘗試點擊: backward_05
+   ✅ 畫面出現了！(backward_05.png) (耗時 0.3 秒)
+🎯 發現: backward_05.png @ Point(x=np.int64(81), y=np.int64(52))
+-> 嘗試點擊: backward_05
+   ✅ 畫面出現了！(backward_05.png) (耗時 0.2 秒)
+🎯 發現: backward_05.png @ Point(x=np.int64(81), y=np.int64(52))
+✅ 完成每日特殊競技場出戰。
+
+🎁 === 開始領取獎勵流程 ===
+   -> 嘗試點擊: rewards.png (嘗試 1/2)
+   ✅ 畫面出現了！(rewards.png) (耗時 0.2 秒)
+🎯 發現: rewards.png @ Point(x=np.int64(354), y=np.int64(167))
+   -> ✅ 成功點擊 'rewards.png'
+   -> 嘗試點擊: get_all.png (嘗試 1/2)
+🎯 發現: rewards.png @ Point(x=np.int64(354), y=np.int64(167))
+   ✅ 畫面出現了！(get_all.png) (耗時 3.6 秒)
+🎯 發現: get_all.png @ Point(x=np.int64(1609), y=np.int64(988))
+   -> ✅ 成功點擊 'get_all.png'
+   -> 嘗試點擊: get_all.png (嘗試 1/2)
+   ✅ 畫面出現了！(get_all.png) (耗時 0.2 秒)
+🎯 發現: get_all.png @ Point(x=np.int64(1609), y=np.int64(988))
+   -> ✅ 成功點擊 'get_all.png'
+   -> 嘗試點擊: backward_02.png (嘗試 1/2)
+   ✅ 畫面出現了！(backward_02.png) (耗時 0.2 秒)
+🎯 發現: backward_02.png @ Point(x=np.int64(80), y=np.int64(48))
+   -> ✅ 成功點擊 'backward_02.png'
+✅ 完成領獎流程。
+
+🎁 === 開始領取獎勵流程 ===
+   -> 嘗試點擊: temple.png (嘗試 1/2)
+   ✅ 畫面出現了！(temple.png) (耗時 0.3 秒)
+🎯 發現: temple.png @ Point(x=np.int64(1278), y=np.int64(984))
+   -> ✅ 成功點擊 'temple.png'
+   -> 嘗試點擊: wish_place.png (嘗試 1/2)
+   ✅ 畫面出現了！(wish_place.png) (耗時 4.0 秒)
+🎯 發現: wish_place.png @ Point(x=np.int64(468), y=np.int64(418))
+   -> ✅ 成功點擊 'wish_place.png'
+   -> 嘗試點擊: wish.png (嘗試 1/2)
+   ✅ 畫面出現了！(wish.png) (耗時 0.6 秒)
+🎯 發現: wish.png @ Point(x=np.int64(1452), y=np.int64(980))
+   -> ✅ 成功點擊 'wish.png'
+   -> 執行函式: sleep
+
+⏳ 等待 2 秒...
+   -> 嘗試點擊: wish.png (嘗試 1/2)
+   ✅ 畫面出現了！(wish.png) (耗時 0.1 秒)
+🎯 發現: wish.png @ Point(x=np.int64(1452), y=np.int64(975))
+   -> ✅ 成功點擊 'wish.png'
+   -> 嘗試點擊: home_black_background.png (嘗試 1/2)
+   ✅ 畫面出現了！(home_black_background.png) (耗時 0.2 秒)
+🎯 發現: home_black_background.png @ Point(x=np.int64(1829), y=np.int64(50))
+   -> ✅ 成功點擊 'home_black_background.png'
+✅ 完成許願流程。
+
+🚪 === 開始執行離開遊戲流程 ===
+   -> 執行函式: find_set
+   -> 嘗試點擊: set.png
+🎯 發現: set.png @ Point(x=np.int64(1820), y=np.int64(49))
+   -> 嘗試點擊: quit_game.png (嘗試 1/2)
+   ✅ 畫面出現了！(quit_game.png) (耗時 3.9 秒)
+🎯 發現: quit_game.png @ Point(x=np.int64(1712), y=np.int64(980))
+   -> ✅ 成功點擊 'quit_game.png'
+   -> 嘗試點擊: confirm.png (嘗試 1/2)
+   ✅ 畫面出現了！(confirm.png) (耗時 0.3 秒)
+🎯 發現: confirm.png @ Point(x=np.int64(1139), y=np.int64(719))
+   -> ✅ 成功點擊 'confirm.png'
+   -> 嘗試點擊: steam_sign.png (嘗試 1/2)
+   ✅ 畫面出現了！(steam_sign.png) (耗時 3.9 秒)
+🎯 發現: steam_sign.png @ Point(x=np.int64(67), y=np.int64(27))
+   -> ✅ 成功點擊 'steam_sign.png'
+   -> 嘗試點擊: quit.png (嘗試 1/2)
+   ✅ 畫面出現了！(quit.png) (耗時 0.1 秒)
+🎯 發現: quit.png @ Point(x=np.int64(67), y=np.int64(374))
+   -> ✅ 成功點擊 'quit.png'
+✅ 離開遊戲流程完成。
+🔍 完成每日任務...
+[2026-04-03_11:17:47] daily mission scheduled run end (exit=0) 

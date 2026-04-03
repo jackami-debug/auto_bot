@@ -328,6 +328,56 @@ def swap_pvp_normal(round=5):
     return True
 
 
+def swap_god_fight():
+    print("-> 嘗試點擊:特殊")
+    wait_for_image("special_01.png", timeout=12,try_click_name="backward_03.png")
+    if not find_and_click("special_01.png", custom_confidence=0.85):
+        return False
+    
+    wait_for_image("swap_it.png", timeout=12,try_click_name="special_01.png")
+    if not find_and_click("swap_it.png", custom_confidence=0.85):
+        return False
+    
+    wait_for_image("swap_01.png", timeout=12,try_click_name="swap_it.png")
+    if not find_and_click("swap_01.png", custom_confidence=0.85):
+        return False
+
+    wait_for_image(["max_01.png","warn_02.png"], timeout=12,try_click_name="swap_01.png")
+    if not find_and_click(["max_01.png","warn_02.png"], custom_confidence=0.85):
+        return False
+
+    wait_for_image("confirm.png", timeout=12,try_click_name=["max_01.png","warn_02.png"])
+    if not find_and_click("confirm.png", custom_confidence=0.85):
+        return False
+
+    if find_only("OK.png", custom_confidence=0.85):
+        find_and_click("OK.png", custom_confidence=0.85)
+
+    wait_for_image("category.png", timeout=12,try_click_name=["confirm.png","OK.png"])
+    if not find_and_click("category.png", custom_confidence=0.85):
+        return False
+    
+    wait_for_image(["accept_all.png","accept_all_blank.png"], timeout=12,try_click_name="category.png")
+    if not find_and_click("accept_all.png", custom_confidence=0.85):
+        find_and_click("back_05.png", custom_confidence=0.85)
+        find_and_click("back_06.png", custom_confidence=0.85)
+        return True
+    
+    wait_for_image("OK.png", timeout=12,try_click_name="accept_all.png")
+    if not find_and_click("OK.png", custom_confidence=0.85):
+        return False
+    
+    wait_for_image("back_05.png", timeout=12,try_click_name="OK.png")
+    if not find_and_click("back_05.png", custom_confidence=0.85):
+        return False
+
+    wait_for_image("back_06.png", timeout=12,try_click_name="back_05.png")
+    if not find_and_click("back_06.png", custom_confidence=0.85):
+        return False
+
+    print("✅ 完成每日神力殊死戰掃蕩。")
+    return True
+
 def swap_pvp_special(round=5):
     print("-> 嘗試點擊: special")
     wait_for_image("special.png", timeout=12,try_click_name="backward_04.png")
@@ -399,24 +449,25 @@ def daily_job(
     pvpspecial_round=1,
 ):
     print("🔍 正在尋找遊戲畫面...")
-    time.sleep(0.5)
-    launch_game_from_steam(accout_name)
-    time.sleep(1)
-    wait_for_press_to_start(
-        max_wait_seconds=120,
-        center_click_interval=120.0,
-        post_click_verify_seconds=90.0,
-    )
-    time.sleep(1)
-    handle_dialog_windows()
-    time.sleep(1)
-    sleep()
-    dispatch()
-    swap_coins()
-    swap_refine(element)
-    today_level = get_bond_level_by_date()
-    print(f"🎯 依據今日日期，神伴掃蕩關卡為: Level {today_level}")
-    swap_bond(today_level)
+    # time.sleep(0.5)
+    # launch_game_from_steam(accout_name)
+    # time.sleep(1)
+    # wait_for_press_to_start(
+    #     max_wait_seconds=120,
+    #     center_click_interval=120.0,
+    #     post_click_verify_seconds=90.0,
+    # )
+    # time.sleep(1)
+    # handle_dialog_windows()
+    # time.sleep(1)
+    # sleep()
+    # dispatch()
+    # swap_coins()
+    # swap_refine(element)
+    # today_level = get_bond_level_by_date()
+    # print(f"🎯 依據今日日期，神伴掃蕩關卡為: Level {today_level}")
+    # swap_bond(today_level)
+    swap_god_fight()
     swap_activity(activity_battle)
     time.sleep(0.5)
     swap_pvp_normal(pvp_normal_round)
