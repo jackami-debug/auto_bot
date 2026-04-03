@@ -411,16 +411,110 @@ def load_reward_codes():
     return available_codes
 
 
-def append_reward_exchange_record(account_name, code):
-    available_codes, history, account_order = parse_reward_code_file()
+import os
+
+def parse_reward_code_file(filename="reward_code.txt"):
+    available_codes = []
+    history = {}
+    account_order = []
+    
+    if not os.path.exists(filename):
+        return available_codes, history, account_order
+        
+    with open(filename, 'r', encoding='utf-8') as f:
+        # 讀取並去除每行頭尾空白
+        lines = [line.strip() for line in f.readlines()]
+        
+    current_account = None
+    for line in lines:
+        if not line:
+            continue  # 跳過空白行
+            
+        if line.startswith("account :"):
+            # 取得帳號名稱
+            current_account = line.split(":", 1)[1].strip()
+            
+            # 【關鍵修復】: 去除可能誤傳的 .png 副檔名，自動合併重複的帳號紀錄
+            if current_account.endswith('.png'):
+                current_account = current_account[:-4]
+                
+            if current_account not in history:
+                history[current_account] = []
+                account_order.append(current_account)
+                
+        elif line == "already changed:":
+            continue
+        else:
+            if current_account is None:
+                # 讀取最上方的可用序號
+                if line not in available_codes:
+                    available_codes.append(line)
+            else:
+                # 讀取該帳號已經兌換過的序號
+                if line not in history[current_account]:
+                    history[current_account].append(line)
+                    
+    return available_codes, history, account_order
+
+
+def write_reward_code_file(available_codes, history, account_order, filename="reward_code.txt"):
+    with open(filename, 'w', encoding='utf-8') as f:
+        # 1. 寫入還未被全部帳號兌換完的可用序號
+        for code in available_codes:
+            f.write(f"{code}\n")
+            
+        # 如果上方有效序號區塊有內容，空一行作區隔
+        if available_codes:
+            f.write("\n")
+            
+        # 2. 寫入每個帳號的兌換紀錄
+        for i, acc in enumerate(account_order):
+            f.write(f"account :{acc}\n")
+            f.write("already changed:\n")
+            for code in history[acc]:
+                f.write(f"{code}\n")
+                
+            # 每個帳號區塊之間保留一行空行，方便閱讀 (最後一個不空行)
+            if i < len(account_order) - 1:
+                f.write("\n")
+
+
+def append_reward_exchange_record(account_name, code, filename="reward_code.txt"):
+    # 避免傳入的是圖片檔名，確保邏輯一致
+    if account_name.endswith('.png'):
+        account_name = account_name[:-4]
+
+    # 解析目前的文字檔狀態
+    available_codes, history, account_order = parse_reward_code_file(filename)
+    
     if not account_name:
         return
+        
+    # 如果是新帳號，加入清單
     if account_name not in history:
         history[account_name] = []
         account_order.append(account_name)
+        
+    # 將這次兌換的序號加入該帳號的歷史紀錄中
     if code and code not in history[account_name]:
         history[account_name].append(code)
-    write_reward_code_file(available_codes, history, account_order)
+        
+    # 【新增機制】: 檢查是否有序號已經被「所有帳號」兌換過
+    if account_order:
+        codes_to_keep = []
+        for avail_code in available_codes:
+            # 判斷是否所有存檔中的帳號，都已經包含了這個序號
+            is_used_by_all = all(avail_code in history[acc] for acc in account_order)
+            
+            # 如果沒有被全部人兌換過，就保留下來
+            if not is_used_by_all:
+                codes_to_keep.append(avail_code)
+                
+        # 更新可用序號清單
+        available_codes = codes_to_keep
+
+    # 覆寫回檔案，保持乾淨整齊的格式
+    write_reward_code_file(available_codes, history, account_order, filename)
 
 def get_reward_flow(account_name):
     codes = load_reward_codes()
@@ -508,7 +602,7 @@ def consume_flow(
 
 
 def main():
-    consume_flow(accout_name="e08s93.png",activity_battle=7)
+    consume_flow(accout_name="e08s93.png",activity_battle=8)
     consume_flow(accout_name="e08s93.123.png",activity_battle=7)
     consume_flow(accout_name="loopcraft001.png",activity_battle=7)
 
