@@ -573,7 +573,7 @@ def wait_for_image(image_name, timeout=15.0, custom_confidence=None, try_click_n
             find_and_click(try_click_name, clicks=clicks)
 
         # 3. 稍等一下再進行下一次尋找
-        time.sleep(0.5)
+        time.sleep(3)
 
     log(f"   ❌ 等待超時 ({timeout} 秒)，沒看到 {target_names_str}！")
     return False
@@ -918,18 +918,19 @@ def _finish_steam_launch():
 
     if find_only("window_up.png", custom_confidence=0.9):
         find_and_click("window_up.png", custom_confidence=0.9)
-        time.sleep(1)
+        time.sleep(5)
 
 
     log("   -> 正在從收藏庫選擇 'Rise of Eros'...")
     wait_for_image("rise_of_eros_list.png", timeout=60.0)
     if not find_and_click("rise_of_eros_list.png", custom_confidence=0.9):
+        find_and_click("window_up.png", custom_confidence=0.9)
         log("   -> ❌ 錯誤：在收藏庫中找不到遊戲 'rise_of_eros_list.png'。")
         return False
     time.sleep(0)
 
     log("   -> 正在點擊「開始遊戲」按鈕...")
-    wait_for_image("steam_play_btn.png", timeout=60.0)
+    wait_for_image("steam_play_btn.png", timeout=60.0,try_click_name="window_up.png")
     if not find_and_click("steam_play_btn.png", custom_confidence=1):
         log("   -> ❌ 錯誤：找不到「開始遊戲」按鈕 'steam_play_btn.png'。")
         return False
@@ -989,20 +990,13 @@ def find_set():
     log("   -> 嘗試點擊: set.png")
     if find_and_click("set.png", custom_confidence=0.8):
         return True
-
     log("   -> ❌ 錯誤：找不到 'set.png'。")
     log("   -> 嘗試先點擊 'home_black_background.png' 或 'main_page.png' 再點選 'set.png'")
 
     # 使用 or 來分開執行：先找 A，找不到再找 B
-    clicked_home = find_and_click("home_black_background.png", custom_confidence=0.8) or \
-                   find_and_click("main_page.png", custom_confidence=0.8)
-
-    if not clicked_home:
-        log("   -> ❌ 錯誤：找不到 'main_page.png' 也不見 'home_black_background'。")
-        save_debug_screenshot("main_page_not_found")
-        return False
-
-    time.sleep(2)
+    find_and_click(["home_black_background.png","main_page.png"], custom_confidence=0.8) 
+    wait_for_image("set.png", timeout=10.0, custom_confidence=0.8,try_click_name=["home_black_background.png","main_page.png"])  # 等待 set.png 出現，給遊戲一些反應時間
+    time.sleep(1)
     if not find_and_click("set.png", custom_confidence=0.8):
         log("   -> ❌ 錯誤：找不到 'set.png'。")
         save_debug_screenshot("set_not_found")

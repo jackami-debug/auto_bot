@@ -449,24 +449,24 @@ def daily_job(
     pvpspecial_round=1,
 ):
     print("🔍 正在尋找遊戲畫面...")
-    # time.sleep(0.5)
-    # launch_game_from_steam(accout_name)
-    # time.sleep(1)
-    # wait_for_press_to_start(
-    #     max_wait_seconds=120,
-    #     center_click_interval=120.0,
-    #     post_click_verify_seconds=90.0,
-    # )
-    # time.sleep(1)
-    # handle_dialog_windows()
-    # time.sleep(1)
-    # sleep()
-    # dispatch()
-    # swap_coins()
-    # swap_refine(element)
-    # today_level = get_bond_level_by_date()
-    # print(f"🎯 依據今日日期，神伴掃蕩關卡為: Level {today_level}")
-    # swap_bond(today_level)
+    time.sleep(0.5)
+    launch_game_from_steam(accout_name)
+    time.sleep(1)
+    wait_for_press_to_start(
+        max_wait_seconds=120,
+        center_click_interval=120.0,
+        post_click_verify_seconds=90.0,
+    )
+    time.sleep(1)
+    handle_dialog_windows()
+    time.sleep(1)
+    sleep()
+    dispatch()
+    swap_coins()
+    swap_refine(element)
+    today_level = get_bond_level_by_date()
+    print(f"🎯 依據今日日期，神伴掃蕩關卡為: Level {today_level}")
+    swap_bond(today_level)
     swap_god_fight()
     swap_activity(activity_battle)
     time.sleep(0.5)
