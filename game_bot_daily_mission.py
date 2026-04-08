@@ -1,6 +1,29 @@
 import random
 import time
 from datetime import date
+import sys
+import os
+
+# --- 新增這段將 Print 同步到 G 槽的程式碼 ---
+log_dir = r"G:\我的雲端硬碟\auto_bot_log"
+os.makedirs(log_dir, exist_ok=True) # 確保資料夾存在，避免報錯
+
+class DriveLogger:
+    def __init__(self, filename):
+        self.terminal = sys.stdout
+        self.log_file = open(filename, "a", encoding="utf-8")
+    def write(self, message):
+        self.terminal.write(message)
+        self.log_file.write(message)
+        self.log_file.flush() # 確保每一行都馬上存檔
+    def flush(self):
+        self.terminal.flush()
+        self.log_file.flush()
+
+# 這裡檔名改成了 daily_mission_scheduled_run.txt
+sys.stdout = DriveLogger(os.path.join(log_dir, "daily_mission_scheduled_run.txt"))
+sys.stderr = sys.stdout # 讓紅字錯誤訊息也一起存進去
+# ------------------------------------------
 
 from tools import (
     find_and_click,
@@ -23,6 +46,7 @@ from tools import (
     get_bond_level_by_date,
     swipe_screen,
     log,
+    consume_wish,
 )
 
 
@@ -215,9 +239,9 @@ def swap_bond(level="01"):
     )
 
 def use_expiring_energy():
-    search_area = (406, 427, 881, 233)
+    search_area = (379,407,909,87)
     while True:
-        location = find_only("hour_label.png", custom_confidence=0.7, region=search_area)
+        location = find_only("hour_label.png", custom_confidence=0.98, region=search_area)
         if not location:
             break
         human_click(location)
@@ -336,12 +360,13 @@ def swap_god_fight():
     
     wait_for_image("swap_it.png", timeout=12,try_click_name="special_01.png")
     if not find_and_click("swap_it.png", custom_confidence=0.85):
-        return False
+        return True
     
     wait_for_image("swap_01.png", timeout=12,try_click_name="swap_it.png")
     if not find_and_click("swap_01.png", custom_confidence=0.85):
-        return False
-
+        find_and_click("back_06.png", custom_confidence=0.85)
+        return True
+    
     wait_for_image(["max_01.png","warn_02.png"], timeout=12,try_click_name="swap_01.png")
     if not find_and_click(["max_01.png","warn_02.png"], custom_confidence=0.85):
         return False
@@ -486,7 +511,7 @@ def main():
     daily_job(accout_name="e08s93.png", element="water", activity_battle=8, pvp_normal_round=1, pvpspecial_round=1)
     daily_job(accout_name="e08s93.123.png", element="thorns", activity_battle=7, pvp_normal_round=1, pvpspecial_round=1)
     daily_job(accout_name="loopcraft001.png", element="thorns", activity_battle=7, pvp_normal_round=1, pvpspecial_round=1)
-
+    
 
 if __name__ == "__main__":
     main()

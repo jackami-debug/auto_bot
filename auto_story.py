@@ -53,6 +53,15 @@ def auto_story_mode():
             # --------------------------------------------------
             if find_and_click("next_level_02.png", custom_confidence=0.8):
                 log("🚀 點擊下一關")
+                if find_only("18+.png", custom_confidence=0.85):
+                    log("🔞 發現 18+ 警告，點擊同意")
+                    find_and_click("yes_01.png", custom_confidence=0.9)
+                if find_only("energy_board.png", custom_confidence=0.8):
+                    log("⚡ 發現體力不足，點擊補充")
+                    find_and_click("energy_01.png", custom_confidence=0.9)
+                    find_and_click("OK.png", custom_confidence=0.9)
+                    time.sleep(1)
+                
                 time.sleep(1)
                 action_taken = True
                 
@@ -97,9 +106,9 @@ def auto_story_mode():
                         
                         time.sleep(0.1) # 點擊後短暫冷卻
                         action_taken = True         
-            elif find_only("leave_01.png", custom_confidence=0.8,region=(1681,929,238,150)):
-                log("🚪 發現離開按鈕，完成故事劇情，跳出迴圈。")
-                break
+            # elif find_only("leave_01.png", custom_confidence=0.8,region=(1681,929,238,150)):
+            #     log("🚪 發現離開按鈕，完成故事劇情，跳出迴圈。")
+            #     break
         # 這裡補上了漏掉的 except 區塊，防止語法崩潰！
         except Exception as e:
             log(f"執行過程中發生錯誤: {e}")

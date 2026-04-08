@@ -3,6 +3,27 @@ import json
 import os
 import random
 import time
+import sys
+
+# --- 新增這段將 Print 同步到 G 槽的程式碼 ---
+log_dir = r"G:\我的雲端硬碟\auto_bot_log"
+os.makedirs(log_dir, exist_ok=True) # 確保資料夾存在，避免報錯
+
+class DriveLogger:
+    def __init__(self, filename):
+        self.terminal = sys.stdout
+        self.log_file = open(filename, "a", encoding="utf-8")
+    def write(self, message):
+        self.terminal.write(message)
+        self.log_file.write(message)
+        self.log_file.flush() # 確保每一行都馬上存檔
+    def flush(self):
+        self.terminal.flush()
+        self.log_file.flush()
+
+sys.stdout = DriveLogger(os.path.join(log_dir, "scheduled_run.txt"))
+sys.stderr = sys.stdout # 讓紅字錯誤訊息也一起存進去
+# ------------------------------------------
 
 from tools import (
     IMAGE_FOLDER,
@@ -245,11 +266,11 @@ def consume_energy(battle):
         print("   -> ⚠️ 警告：找不到 'swape.png'，腳本將繼續。")
         save_debug_screenshot("swape_not_found")
 
-    wait_for_image("max.png", timeout=10.0,try_click_name="swape.png")
-    if not find_and_click("max.png", custom_confidence=0.8):
-        print("   -> ❌ 錯誤：找不到 'max.png'。")
-        save_debug_screenshot("max_not_found")
-        return False
+    # wait_for_image("max.png", timeout=10.0,try_click_name="swape.png")
+    # if not find_and_click("max.png", custom_confidence=0.8):
+    #     print("   -> ❌ 錯誤：找不到 'max.png'。")
+    #     save_debug_screenshot("max_not_found")
+    #     return False
     if not find_and_click("confirm.png", custom_confidence=0.8):
         print("   -> ❌ 錯誤：找不到 'confirm.png'。")
         save_debug_screenshot("confirm_not_found")

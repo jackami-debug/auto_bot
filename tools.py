@@ -1046,6 +1046,7 @@ def get_wish():
         ("temple.png", 0.99, "backward_06.png"),
         ("wish_place.png", 0.85, "temple.png"),
         ("wish.png", 0.88, "wish_place.png"),#原本要點擊"ok.png",改成點擊"get_all.png"比較穩定
+        consume_wish,
         sleep,
         ("wish.png", 0.85, "wish_place.png"),
         ("home_black_background.png", 0.85, "OK.png"),
@@ -1056,6 +1057,32 @@ def get_wish():
         screenshot_prefix="get_wish",
         success_message="✅ 完成許願流程。",
     )
+
+def consume_wish():
+    if find_only("warn_03", custom_confidence=0.99):
+        log("\n🎁 === 開始消耗聖物 ===")
+        steps = [
+            ("confirm.png", 0.99,),
+            ("back_06.png", 0.85, "confirm.png"),
+            ("flower.png", 0.88, "back_06.png"),#原本要點擊"ok.png",改成點擊"get_all.png"比較穩定
+            ("wish_gift.png", 0.85, "flower.png"),
+            ("max.png", 0.85, "wish_gift.png"),
+            ("yes_01.png", 0.85, "max.png"),
+            (sleep,10),
+            ("OK.png", 0.85, "yes_01.png"),
+            ("back_07.png", 0.85, "OK.png"),
+            ("wish.png", 0.88, "back_07.png"),
+        ]
+        return run_image_steps(
+            steps,
+            wait_timeout=120,
+            screenshot_prefix="get_wish",
+            success_message="✅ 完成許願流程。",
+        )
+    else:
+        return True
+
+
 
 def click_till_see(image_name, click_location=(1000, 500), max_attempts=15):
     """
