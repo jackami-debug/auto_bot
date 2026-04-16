@@ -1062,7 +1062,7 @@ def consume_wish():
     if find_only("warn_03", custom_confidence=0.99):
         log("\n🎁 === 開始消耗聖物 ===")
         steps = [
-            ("confirm.png", 0.99,),
+            ("confirm.png", 0.99,"confirm.png"),
             ("back_06.png", 0.85, "confirm.png"),
             ("flower.png", 0.88, "back_06.png"),#原本要點擊"ok.png",改成點擊"get_all.png"比較穩定
             ("wish_gift.png", 0.85, "flower.png"),
@@ -1071,7 +1071,7 @@ def consume_wish():
             (sleep,10),
             ("OK.png", 0.85, "yes_01.png"),
             ("back_07.png", 0.85, "OK.png"),
-            ("wish.png", 0.88, "back_07.png"),
+            ("wish_place.png", 0.88, "back_07.png"),
         ]
         return run_image_steps(
             steps,
@@ -1081,8 +1081,6 @@ def consume_wish():
         )
     else:
         return True
-
-
 
 def click_till_see(image_name, click_location=(1000, 500), max_attempts=15):
     """

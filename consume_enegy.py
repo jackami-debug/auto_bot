@@ -266,11 +266,11 @@ def consume_energy(battle):
         print("   -> ⚠️ 警告：找不到 'swape.png'，腳本將繼續。")
         save_debug_screenshot("swape_not_found")
 
-    # wait_for_image("max.png", timeout=10.0,try_click_name="swape.png")
-    # if not find_and_click("max.png", custom_confidence=0.8):
-    #     print("   -> ❌ 錯誤：找不到 'max.png'。")
-    #     save_debug_screenshot("max_not_found")
-    #     return False
+    wait_for_image("max.png", timeout=10.0,try_click_name="swape.png")
+    if not find_and_click("max.png", custom_confidence=0.8):
+        print("   -> ❌ 錯誤：找不到 'max.png'。")
+        save_debug_screenshot("max_not_found")
+        return False
     if not find_and_click("confirm.png", custom_confidence=0.8):
         print("   -> ❌ 錯誤：找不到 'confirm.png'。")
         save_debug_screenshot("confirm_not_found")
