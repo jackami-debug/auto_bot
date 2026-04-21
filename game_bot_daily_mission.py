@@ -493,7 +493,7 @@ def daily_job(
     print(f"🎯 依據今日日期，神伴掃蕩關卡為: Level {today_level}")
     swap_bond(today_level)
     swap_god_fight()
-    swap_activity(activity_battle)
+    # swap_activity(activity_battle)
     time.sleep(0.5)
     swap_pvp_normal(pvp_normal_round)
     swap_pvp_special(pvpspecial_round)
@@ -508,7 +508,7 @@ def daily_job(
 
 
 def main():
-    daily_job(accout_name="e08s93.png", element="water", activity_battle=8, pvp_normal_round=1, pvpspecial_round=1)
+    # daily_job(accout_name="e08s93.png", element="water", activity_battle=8, pvp_normal_round=1, pvpspecial_round=1)
     daily_job(accout_name="e08s93.123.png", element="thorns", activity_battle=8, pvp_normal_round=1, pvpspecial_round=1)
     daily_job(accout_name="loopcraft001.png", element="thorns", activity_battle=8, pvp_normal_round=1, pvpspecial_round=1)
     
