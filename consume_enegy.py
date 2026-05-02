@@ -624,8 +624,8 @@ def consume_flow(
 
 def main():
     consume_flow(accout_name="e08s93.png",activity_battle=8)
-    consume_flow(accout_name="e08s93.123.png",activity_battle=7)
-    consume_flow(accout_name="loopcraft001.png",activity_battle=7)
+    consume_flow(accout_name="e08s93.123.png",activity_battle=8)
+    consume_flow(accout_name="loopcraft001.png",activity_battle=8)
 
 if __name__ == "__main__":
     main()

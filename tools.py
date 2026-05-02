@@ -476,7 +476,7 @@ def handle_dialog_windows():
     return False
 
 def wait_for_press_to_start(
-    max_wait_seconds=120,
+    max_wait_seconds=1200,
     center_click_interval=60.0,
     post_click_verify_seconds=10.0,
 ):
@@ -762,6 +762,7 @@ def human_drag(start_location, end_location, duration=0.35):
         return False
     finally:
         pyautogui.FAILSAFE = original_failsafe_state
+
 def swipe_screen(direction="left", distance=400, start_location=None, duration=0.5):
     """
     根據方向滑動畫面。適用於切換關卡或滑動選單。
@@ -914,16 +915,16 @@ def _finish_steam_launch():
     if not find_and_click("steam_library.png", custom_confidence=0.8):
         log("   -> ❌ 錯誤：找不到「收藏庫」按鈕 'steam_library.png'。")
         return False
-    time.sleep(0)
+    time.sleep(3)
 
     if find_only("window_up.png", custom_confidence=0.9):
         find_and_click("window_up.png", custom_confidence=0.9)
-        time.sleep(5)
+        time.sleep(2)
 
 
     log("   -> 正在從收藏庫選擇 'Rise of Eros'...")
     wait_for_image("rise_of_eros_list.png", timeout=60.0)
-    if not find_and_click("rise_of_eros_list.png", custom_confidence=0.9):
+    if not find_and_click("rise_of_eros_list.png", custom_confidence=0.9,region=(3,114,424,895)):
         find_and_click("window_up.png", custom_confidence=0.9)
         log("   -> ❌ 錯誤：在收藏庫中找不到遊戲 'rise_of_eros_list.png'。")
         return False
