@@ -217,12 +217,11 @@ def consume_energy(battle):
         save_debug_screenshot("no_ongoing_activity")
         return False
 
-    wait_for_image("activity.png", timeout=5.0,try_click_name="ongoing_activity.png")
+    wait_for_image("activity.png", timeout=5.0,try_click_name="ongoing_activity.png",try_click_point=(287,574))
     if not find_and_click("activity.png", custom_confidence=0.8, clicks=2):
         print("   -> ❌ 錯誤：找不到 'activity.png'。")
         save_debug_screenshot("no_activity_button")
-        return False
-
+        
     print("   -> 檢查是否有活動教學或多頁面需要切換...")
     max_clicks = 6  # 設定最大嘗試次數，防止無限迴圈
     click_count = 0
@@ -238,14 +237,16 @@ def consume_energy(battle):
         # 這裡可以視情況決定是否要 return False 或是截圖存檔
         # save_debug_screenshot("stuck_at_tutorial")
 
-    wait_for_image("battle.png", timeout=5.0,try_click_name="activity.png")
+    wait_for_image("battle.png", timeout=5.0,try_click_name="activity.png",try_click_point=(56,578))
     if not find_and_click("battle.png", custom_confidence=0.85):
         print("   -> ❌ 錯誤：找不到 'battle.png'。")
         save_debug_screenshot("no_battle_button")
-        return False
-    wait_for_image("battle7.png", timeout=15.0,try_click_name="battle.png")
+        
+    wait_for_image("battle7.png", timeout=15.0,try_click_name="battle.png",try_click_point=(56,578))
+    
+    
     if battle == 8:
-        wait_for_image("battle7.png", timeout=5.0,try_click_name="battle.png")
+        wait_for_image("battle7.png", timeout=5.0,try_click_name="battle.png",try_click_point=(56,578))
         print("   -> 嘗試點擊 'battle7' 按鈕右方的關卡...")
         battle_location = find_only("battle7.png", custom_confidence=0.9)
         if not battle_location:
@@ -256,8 +257,10 @@ def consume_energy(battle):
         target_y = battle_location.y
         print(f"   -> 計算出的關卡座標: ({target_x}, {target_y})")
         human_click((target_x, target_y))
+    
+    
     elif battle == 7:
-        wait_for_image("battle7.png", timeout=5.0,try_click_name="battle.png")
+        wait_for_image("battle7.png", timeout=5.0,try_click_name="battle.png",try_click_point=(56,578))
         print("   -> 嘗試點擊 'battle7' 按鈕右方的關卡...")
         find_and_click("battle7.png", custom_confidence=0.9)
 
@@ -623,9 +626,9 @@ def consume_flow(
 
 
 def main():
-    consume_flow(accout_name="e08s93.png",activity_battle=8)
-    consume_flow(accout_name="e08s93.123.png",activity_battle=8)
-    consume_flow(accout_name="loopcraft001.png",activity_battle=8)
+    consume_flow(accout_name="e08s93.png",activity_battle=7)
+    consume_flow(accout_name="e08s93.123.png",activity_battle=7)
+    consume_flow(accout_name="loopcraft001.png",activity_battle=7)
 
 if __name__ == "__main__":
     main()

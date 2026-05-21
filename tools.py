@@ -477,7 +477,7 @@ def handle_dialog_windows():
 
 def wait_for_press_to_start(
     max_wait_seconds=1200,
-    center_click_interval=60.0,
+    center_click_interval=6.0,
     post_click_verify_seconds=10.0,
 ):
     log("\n⏳ 全螢幕持續偵測 'press_to_start.png'（含中央點擊備援）...")
@@ -502,8 +502,7 @@ def wait_for_press_to_start(
                 log("   -> 偵測到 'game_sign_02.png'，先點擊一次。")
                 human_click(game_sign_location)
                 time.sleep(0.5)
-
-
+                
         if handle_dialog_windows():
             time.sleep(0)
             continue
@@ -552,7 +551,14 @@ def wait_for_press_to_start(
     save_debug_screenshot("press_to_start_timeout")
     return False
 
-def wait_for_image(image_name, timeout=15.0, custom_confidence=None, try_click_name=None,clicks=1):
+def wait_for_image(
+    image_name, 
+    timeout=15.0, 
+    custom_confidence=None, 
+    try_click_name=None,
+    clicks=1,
+    try_click_point=None
+):
     image_targets = [image_name] if isinstance(image_name, str) else list(image_name)
     target_names_str = ", ".join(image_targets)
 
@@ -566,11 +572,19 @@ def wait_for_image(image_name, timeout=15.0, custom_confidence=None, try_click_n
                 log(f"   ✅ 畫面出現了！({img}) (耗時 {elapsed:.1f} 秒)")
                 return True
         
-        # 2. 如果這一輪沒看到目標圖片，且有指定 try_click_name，就嘗試點擊它
+        # 2. 如果這一輪沒看到目標圖片，執行備援點擊機制
+        clicked_fallback = False
+        
         if try_click_name is not None:
             time.sleep(2)  # 等待一點時間，讓畫面有機會更新
-            # 這裡假設 find_and_click 會自己尋找並點擊，如果找不到也不會讓程式崩潰
-            find_and_click(try_click_name, clicks=clicks)
+            # 假設 find_and_click 成功點擊會回傳 True，失敗回傳 False
+            clicked_fallback = find_and_click(try_click_name, clicks=clicks)
+            
+        # 如果前面沒點擊到備援圖片 (或者根本沒提供備援圖片)，且有提供座標，就點座標
+        if not clicked_fallback and try_click_point is not None:
+            time.sleep(2)
+            log(f"   👉 尚未找到目標，嘗試點擊備援座標: {try_click_point}")
+            human_click(try_click_point) 
 
         # 3. 稍等一下再進行下一次尋找
         time.sleep(3)
@@ -1119,6 +1133,7 @@ def ensure_pass_tutorial():
             # 這裡可以視情況決定是否要 return False 或是截圖存檔
             # save_debug_screenshot("stuck_at_tutorial")
 
+
 def get_bond_level_by_date():
     # 取得今天距離公元 1 年 1 月 1 日的總天數
     today_ordinal = date.today().toordinal()
@@ -1169,3 +1184,18 @@ __all__ = [
     "wait_seconds_with_abort",
     "wake_up_gpu",
 ]
+
+
+
+def main():
+   time.sleep(2)
+   print("開始")
+   while True:
+    print("嘗試點擊 'battle.png'... ")
+    if find_and_click("battle.png", custom_confidence=0.85):
+            print("點擊成功。")
+            break
+
+
+if __name__ == "__main__":
+    main()

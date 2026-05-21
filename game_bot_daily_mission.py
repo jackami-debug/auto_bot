@@ -49,36 +49,64 @@ from tools import (
     consume_wish,
 )
 
+def use_expiring_energy():
+    search_area = (379,407,909,87)
+    while True:
+        location = find_only("hour_label.png", custom_confidence=0.98, region=search_area)
+        if not location:
+            break
+        human_click(location)
+
+    print("-> 嘗試點擊: OK03.png")
+    wait_for_image("OK03.png", timeout=60)
+    if not find_and_click("OK03.png", custom_confidence=0.85):
+        print("   -> ❌ 錯誤：找不到 'OK03.png'。")
+        try_click(1519,55,62,57)
+        save_debug_screenshot("leave_game_no_ok03")
+        return True
+
+    print("-> 嘗試點擊: confirm.png")
+    wait_for_image("confirm.png", timeout=5)
+    if not find_and_click("confirm.png", custom_confidence=0.85):
+        print("   -> ❌ 錯誤：找不到 'confirm.png'。")
+        find_and_click("cancel.png", custom_confidence=0.85)
+        return True
+    return True
 
 
-
-def consume_energy(battle):
-    print("\n💪 === 開始執行消耗體力流程 ===")
-    wait_for_image("ongoing_activity.png", timeout=10.0)
-    if not find_and_click("ongoing_activity.png", custom_confidence=0.8):
+def consume_energy_daily(battle):
+    print("\n💪 === 開始每日消耗體力流程 ===")
+    wait_for_image("daily_activity.png", timeout=10.0)
+    if not find_and_click("daily_activity.png", custom_confidence=0.8):
         return False
 
-    wait_for_image("activity.png", timeout=10.0,try_click_name="ongoing_activity.png")
-    if not find_and_click("activity.png", custom_confidence=0.8):
-       return False
-
-    wait_for_image("battle.png", timeout=10.0,try_click_name="activity.png")
-    if not find_and_click("battle.png", custom_confidence=0.85):
-       return False
-
+    wait_for_image("activity.png", timeout=10.0,try_click_name="ongoing_activity.png",try_click_point=(682,641))
+     
+    wait_for_image("battle.png", timeout=10.0,try_click_name="activity.png",try_click_point=(56,578))
+  
+    
     if not wait_seconds_with_abort(2, "等待關卡選擇畫面"):
         return False
+    
+    
 
     if battle == 8:
         wait_for_image("battle8.png", timeout=10.0)
         print("   -> 嘗試點擊 'battle8' 按鈕右方的關卡...")
         find_and_click("battle8.png", custom_confidence=0.9)
-        wait_for_image("swape.png", timeout=10.0,try_click_name="battle8.png")
+
+        wait_for_image("plus.png", timeout=10.0,try_click_name="battle8.png")
+        find_and_click("plus.png", custom_confidence=0.9)
+        use_expiring_energy()
+
     elif battle == 7:
         wait_for_image("battle7.png", timeout=10.0)
-        print("   -> 嘗試點擊 'battle7' 按鈕右方的關卡...")
+        print("   -> 嘗試點擊 'battle7")
         find_and_click("battle7.png", custom_confidence=0.9)
-        wait_for_image("swape.png", timeout=10.0,try_click_name="battle7.png")
+        
+        wait_for_image("plus.png", timeout=10.0,try_click_name="battle8.png")
+        find_and_click("plus.png", custom_confidence=0.9)
+        use_expiring_energy()
 
 
     if not find_and_click("swape.png", custom_confidence=0.8):
@@ -238,35 +266,14 @@ def swap_bond(level="01"):
         success_message=f"✅ 完成每日神伴掃蕩 (Level {level})。",
     )
 
-def use_expiring_energy():
-    search_area = (379,407,909,87)
-    while True:
-        location = find_only("hour_label.png", custom_confidence=0.98, region=search_area)
-        if not location:
-            break
-        human_click(location)
 
-    print("-> 嘗試點擊: OK03.png")
-    wait_for_image("OK03.png", timeout=60)
-    if not find_and_click("OK03.png", custom_confidence=0.85):
-        print("   -> ❌ 錯誤：找不到 'OK03.png'。")
-        try_click(1519,55,62,57)
-        save_debug_screenshot("leave_game_no_ok03")
-        return True
-
-    print("-> 嘗試點擊: confirm.png")
-    wait_for_image("confirm.png", timeout=5)
-    if not find_and_click("confirm.png", custom_confidence=0.85):
-        print("   -> ❌ 錯誤：找不到 'confirm.png'。")
-        find_and_click("cancel.png", custom_confidence=0.85)
-        return True
-    return True
 
 
 def swap_activity(battle=7):
     steps = [
         ("daily_activity.png", 0.85, "backward_03.png"),
         ("activity.png", 0.85, "daily_activity.png"),
+
         ("battle.png", 0.85, "activity.png"),
         (sleep, 3),
         ensure_pass_tutorial,
@@ -477,11 +484,7 @@ def daily_job(
     time.sleep(0.5)
     launch_game_from_steam(accout_name)
     time.sleep(1)
-    wait_for_press_to_start(
-        max_wait_seconds=120,
-        center_click_interval=120.0,
-        post_click_verify_seconds=90.0,
-    )
+    wait_for_press_to_start()
     time.sleep(1)
     handle_dialog_windows()
     time.sleep(1)
@@ -493,7 +496,7 @@ def daily_job(
     print(f"🎯 依據今日日期，神伴掃蕩關卡為: Level {today_level}")
     swap_bond(today_level)
     swap_god_fight()
-    swap_activity(activity_battle)
+    consume_energy_daily(activity_battle)
     time.sleep(0.5)
     swap_pvp_normal(pvp_normal_round)
     swap_pvp_special(pvpspecial_round)
@@ -508,9 +511,9 @@ def daily_job(
 
 
 def main():
-    # daily_job(accout_name="e08s93.png", element="water", activity_battle=7, pvp_normal_round=1, pvpspecial_round=1)
+    daily_job(accout_name="e08s93.png", element="water", activity_battle=7, pvp_normal_round=1, pvpspecial_round=1)
     daily_job(accout_name="e08s93.123.png", element="thorns", activity_battle=7, pvp_normal_round=1, pvpspecial_round=1)
-    # daily_job(accout_name="loopcraft001.png", element="thorns", activity_battle=7, pvp_normal_round=1, pvpspecial_round=1)
+    daily_job(accout_name="loopcraft001.png", element="thorns", activity_battle=7, pvp_normal_round=1, pvpspecial_round=1)
     
 
 if __name__ == "__main__":
