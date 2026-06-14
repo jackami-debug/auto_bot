@@ -609,11 +609,7 @@ def consume_flow(
     time.sleep(0.5)
     launch_game_from_steam(accout_name)
     time.sleep(1)
-    wait_for_press_to_start(
-        max_wait_seconds=120,
-        center_click_interval=120.0,
-        post_click_verify_seconds=90.0,
-    )
+    wait_for_press_to_start()
     time.sleep(1)
     handle_dialog_windows()
     time.sleep(1)

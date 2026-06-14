@@ -2,6 +2,7 @@ import tkinter as tk
 import time
 import sys
 import ctypes
+import re
 
 try:
     from pynput import keyboard as pynput_keyboard
@@ -39,8 +40,12 @@ class RegionPickerApp:
         self.rect_id = None
         self.help_text_id = None
         self.value_text_id = None
+        self.point_marker_id = None
+        self.point_cross_h_id = None
+        self.point_cross_v_id = None
 
         self.selection = None
+        self.preview_kind = None
         self.drag_mode = None
         self.drag_start = None
         self.drag_origin = None
@@ -63,6 +68,7 @@ class RegionPickerApp:
 
         self.region_var = tk.StringVar(value="(x, y, width, height)")
         self.point_var = tk.StringVar(value="(x, y)")
+        self.reverse_input_var = tk.StringVar(value="74,849,360,71")
         self.status_var = tk.StringVar(value="Press Enter to start selecting region.")
 
         self._build_ui()
@@ -195,6 +201,44 @@ class RegionPickerApp:
         )
         point_value.pack(side="left", fill="x", expand=True)
 
+        reverse_row = tk.Frame(container)
+        reverse_row.pack(fill="x", pady=(14, 6))
+
+        reverse_label = tk.Label(
+            reverse_row,
+            text="座標:",
+            font=("Segoe UI", 10),
+            anchor="w",
+        )
+        reverse_label.pack(side="left")
+
+        reverse_entry = tk.Entry(
+            reverse_row,
+            textvariable=self.reverse_input_var,
+            font=("Consolas", 12),
+            width=24,
+        )
+        reverse_entry.pack(side="left", padx=(8, 8), fill="x", expand=True)
+
+        reverse_btn = tk.Button(
+            reverse_row,
+            text="反推畫面位置",
+            width=14,
+            font=("Segoe UI", 10, "bold"),
+            command=self.preview_input_position,
+        )
+        reverse_btn.pack(side="left")
+
+        reverse_hint = tk.Label(
+            container,
+            text="格式：x,y 代表點位；x,y,w,h 代表螢幕區域。",
+            font=("Segoe UI", 9),
+            fg="#666666",
+            anchor="w",
+            pady=4,
+        )
+        reverse_hint.pack(fill="x")
+
         status = tk.Label(
             container,
             textvariable=self.status_var,
@@ -239,6 +283,138 @@ class RegionPickerApp:
         self.status_var.set(f"Point recorded: {x}, {y}. Click point button to copy.")
         if self.overlay is not None:
             self._close_overlay()
+
+    def _parse_reverse_input(self, raw_value: str) -> tuple[str, tuple[int, ...]]:
+        normalized = raw_value.strip()
+        normalized = normalized.replace("(", "").replace(")", "")
+        normalized = normalized.replace("，", ",")
+        parts = [part for part in re.split(r"[\s,]+", normalized) if part]
+
+        if len(parts) not in (2, 4):
+            raise ValueError("Expected 2 or 4 numbers.")
+
+        values = tuple(int(part) for part in parts)
+        return ("point" if len(values) == 2 else "region"), values
+
+    def preview_input_position(self) -> None:
+        raw_value = self.reverse_input_var.get()
+
+        try:
+            kind, values = self._parse_reverse_input(raw_value)
+        except Exception:
+            self.status_var.set("Invalid input. Use x,y or x,y,w,h.")
+            return
+
+        if kind == "point":
+            x, y = values
+            self._show_point_preview(x, y)
+            self.status_var.set(f"Previewing point: ({x}, {y})")
+            return
+
+        x, y, width, height = values
+        if width <= 0 or height <= 0:
+            self.status_var.set("Region width and height must be greater than 0.")
+            return
+
+        self._show_region_preview(x, y, width, height)
+        self.status_var.set(f"Previewing region: ({x}, {y}, {width}, {height})")
+
+    def _show_region_preview(self, x: int, y: int, width: int, height: int) -> None:
+        self._close_overlay()
+        self.start_selection()
+        if self.canvas is None:
+            return
+
+        left = self._clamp_x(x)
+        top = self._clamp_y(y)
+        right = max(left, min(x + width, self.screen_w))
+        bottom = max(top, min(y + height, self.screen_h))
+
+        if right < left:
+            left, right = right, left
+        if bottom < top:
+            top, bottom = bottom, top
+
+        self.preview_kind = "region"
+        self.selection = (left, top, right, bottom)
+        self._render_selection()
+        if self.help_text_id is not None:
+            self.canvas.itemconfig(self.help_text_id, text="Preview mode: press Esc or Enter to close")
+        if self.value_text_id is not None:
+            self.canvas.itemconfig(
+                self.value_text_id,
+                text=f"Preview: ({left}, {top}, {right - left}, {bottom - top})",
+            )
+
+    def _show_point_preview(self, x: int, y: int) -> None:
+        self._close_overlay()
+        self.start_selection()
+        if self.canvas is None:
+            return
+
+        cx = self._clamp_x(x)
+        cy = self._clamp_y(y)
+        self.preview_kind = "point"
+        self.selection = None
+        self._render_point_preview(cx, cy)
+        if self.help_text_id is not None:
+            self.canvas.itemconfig(self.help_text_id, text="Preview mode: press Esc or Enter to close")
+        if self.value_text_id is not None:
+            self.canvas.itemconfig(self.value_text_id, text=f"Preview: ({cx}, {cy})")
+
+    def _render_point_preview(self, x: int, y: int) -> None:
+        if self.canvas is None:
+            return
+
+        self._clear_point_preview()
+
+        radius = 10
+        color = "#ff4d4f"
+        self.point_marker_id = self.canvas.create_oval(
+            x - radius,
+            y - radius,
+            x + radius,
+            y + radius,
+            outline=color,
+            width=3,
+        )
+        self.point_cross_h_id = self.canvas.create_line(
+            x - radius - 6,
+            y,
+            x + radius + 6,
+            y,
+            fill=color,
+            width=2,
+        )
+        self.point_cross_v_id = self.canvas.create_line(
+            x,
+            y - radius - 6,
+            x,
+            y + radius + 6,
+            fill=color,
+            width=2,
+        )
+        self.canvas.create_text(
+            x + 18,
+            y - 18,
+            anchor="nw",
+            fill="white",
+            font=("Consolas", 11, "bold"),
+            text=f"({x}, {y})",
+        )
+
+    def _clear_point_preview(self) -> None:
+        if self.canvas is None:
+            return
+
+        for attr_name in ("point_marker_id", "point_cross_h_id", "point_cross_v_id"):
+            item_id = getattr(self, attr_name)
+            if item_id is not None:
+                try:
+                    self.canvas.delete(item_id)
+                except tk.TclError:
+                    pass
+                setattr(self, attr_name, None)
 
     def start_selection(self) -> None:
         if self.overlay is not None:
@@ -441,6 +617,9 @@ class RegionPickerApp:
         self.canvas.configure(cursor=self._cursor_for_mode(mode))
 
     def _on_canvas_press(self, event) -> None:
+        if self.preview_kind is not None:
+            return
+
         x = self._clamp_x(event.x)
         y = self._clamp_y(event.y)
         mode = self._hit_test(x, y)
@@ -460,6 +639,9 @@ class RegionPickerApp:
         self._render_selection()
 
     def _on_canvas_drag(self, event) -> None:
+        if self.preview_kind is not None:
+            return
+
         if self.drag_mode is None or self.drag_start is None or self.drag_origin is None:
             return
 
@@ -524,6 +706,9 @@ class RegionPickerApp:
         self._render_selection()
 
     def _on_canvas_release(self, _event) -> None:
+        if self.preview_kind is not None:
+            return
+
         self.drag_mode = None
         self.drag_start = None
         self.drag_origin = None
@@ -549,6 +734,11 @@ class RegionPickerApp:
         self.canvas.itemconfig(self.value_text_id, text=f"({x1}, {y1}, {width}, {height})")
 
     def _confirm_selection(self, _event=None) -> None:
+        if self.preview_kind == "point":
+            self.status_var.set("Point preview shown. Press Esc or Enter to close.")
+            self._close_overlay()
+            return
+
         if self.selection is None or self.overlay is None:
             self.status_var.set("No region selected yet.")
             return
@@ -586,7 +776,11 @@ class RegionPickerApp:
         self.rect_id = None
         self.help_text_id = None
         self.value_text_id = None
+        self.point_marker_id = None
+        self.point_cross_h_id = None
+        self.point_cross_v_id = None
         self.selection = None
+        self.preview_kind = None
         self.drag_mode = None
         self.drag_start = None
         self.drag_origin = None

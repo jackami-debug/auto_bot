@@ -82,6 +82,21 @@ def consume_energy_daily(battle):
 
     wait_for_image("activity.png", timeout=10.0,try_click_name="ongoing_activity.png",try_click_point=(682,641))
      
+    print("   -> 檢查是否有活動教學或多頁面需要切換...")
+    max_clicks = 6  # 設定最大嘗試次數，防止無限迴圈
+    click_count = 0
+
+    while find_only("right_arrow.png", custom_confidence=0.8,region=(1078,963,70,70)) and click_count < max_clicks:
+        print(f"   -> 發現右箭頭，嘗試點擊以切換活動頁面... (第 {click_count + 1} 次)")
+        find_and_click("right_arrow.png", custom_confidence=0.8,region=(1078,963,70,70))
+        time.sleep(1.0)  # 加上短暫等待，讓遊戲播放翻頁動畫
+        click_count += 1
+
+    if click_count >= max_clicks:
+        print("   -> ⚠️ 警告：點擊右箭頭次數達上限，可能卡在教學畫面或發生異常！")
+        # 這裡可以視情況決定是否要 return False 或是截圖存檔
+        # save_debug_screenshot("stuck_at_tutorial")
+
     wait_for_image("battle.png", timeout=10.0,try_click_name="activity.png",try_click_point=(56,578))
   
     
@@ -331,24 +346,24 @@ def swap_pvp_normal(round=5):
         print("-> 嘗試點擊: skip")
         sleep()
         wait_for_image("skip.png", timeout=12)
-        if not find_and_click("skip.png", custom_confidence=0.85):
+        if not find_and_click("skip.png", custom_confidence=0.85,region=(1225,940,251,134)):
             try_click(74,849,360,71)
-            find_and_click("skip.png", custom_confidence=0.85)
+            find_and_click("skip.png", custom_confidence=0.85,region=(1225,940,251,134))
 
         if find_only("warn_01.png", custom_confidence=0.85):
             print("-> 發現眷族技能配置警告！")
             find_and_click("yes_01.png", custom_confidence=0.85)
 
         print("-> 等待戰鬥結果...")
-        wait_for_image(["new_rank.png", "defeated.png"], timeout=120)
+        wait_for_image(["new_rank.png", "defeated.png"], timeout=180)
         if find_only("new_rank.png", custom_confidence=0.85):
             print("-> 本輪 PVP 勝利！")
             find_and_click("ok.png", custom_confidence=0.85)
             wait_for_image("back.png", timeout=5,try_click_name="ok.png")
-            find_and_click("back.png", custom_confidence=0.85)
+            find_and_click("back.png", custom_confidence=0.85,region=(1661,911,258,168))
         elif find_only("defeated.png", custom_confidence=0.85):
             print("-> 本輪 PVP 失敗...")
-            find_and_click("back.png", custom_confidence=0.85)
+            find_and_click("back.png", custom_confidence=0.85,region=(1661,911,258,168))
 
     print("-> 嘗試點擊: backward_04")
     wait_for_image("backward_04.png", timeout=12,try_click_name="back.png")
@@ -441,7 +456,7 @@ def swap_pvp_special(round=5):
 
         print("-> 嘗試點擊: skip")
         sleep()
-        wait_for_image("skip.png", timeout=12,try_click_name="fight_02.png")
+        wait_for_image("skip.png", timeout=12,try_click_point=(349,894))
         if not find_and_click("skip.png", custom_confidence=0.85):
             return False
         if find_only("warn_01.png", custom_confidence=0.85):
@@ -449,15 +464,15 @@ def swap_pvp_special(round=5):
             find_and_click("yes_01.png", custom_confidence=0.85)
 
         print("-> 等待戰鬥結果...")
-        wait_for_image(["new_rank.png", "defeated.png"], timeout=120)
+        wait_for_image(["new_rank.png", "defeated.png"], timeout=180)
         if find_only("new_rank.png", custom_confidence=0.85):
             print("-> 本輪 PVP 勝利！")
             find_and_click("ok.png", custom_confidence=0.85)
             wait_for_image("back.png", timeout=5,try_click_name="ok.png")
-            find_and_click("back.png", custom_confidence=0.85)
+            find_and_click("back.png", custom_confidence=0.85,region=(1661,911,258,168))
         elif find_only("defeated.png", custom_confidence=0.85):
             print("-> 本輪 PVP 失敗...")
-            find_and_click("back.png", custom_confidence=0.85)
+            find_and_click("back.png", custom_confidence=0.85,region=(1661,911,258,168))
 
     print("-> 嘗試點擊: backward_05")
     wait_for_image("backward_05.png", timeout=12,try_click_name="back.png")
@@ -482,22 +497,22 @@ def daily_job(
 ):
     print("🔍 正在尋找遊戲畫面...")
     time.sleep(0.5)
-    launch_game_from_steam(accout_name)
-    time.sleep(1)
-    wait_for_press_to_start()
-    time.sleep(1)
-    handle_dialog_windows()
-    time.sleep(1)
-    sleep()
-    dispatch()
-    swap_coins()
-    swap_refine(element)
-    today_level = get_bond_level_by_date()
-    print(f"🎯 依據今日日期，神伴掃蕩關卡為: Level {today_level}")
-    swap_bond(today_level)
-    swap_god_fight()
-    consume_energy_daily(activity_battle)
-    time.sleep(0.5)
+    # launch_game_from_steam(accout_name)
+    # time.sleep(1)
+    # wait_for_press_to_start()
+    # time.sleep(1)
+    # handle_dialog_windows()
+    # time.sleep(1)
+    # sleep()
+    # dispatch()
+    # swap_coins()
+    # swap_refine(element)
+    # today_level = get_bond_level_by_date()
+    # print(f"🎯 依據今日日期，神伴掃蕩關卡為: Level {today_level}")
+    # swap_bond(today_level)
+    # swap_god_fight()
+    # consume_energy_daily(activity_battle)
+    # time.sleep(0.5)
     swap_pvp_normal(pvp_normal_round)
     swap_pvp_special(pvpspecial_round)
     time.sleep(0.5)
