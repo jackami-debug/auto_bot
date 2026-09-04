@@ -556,6 +556,7 @@ def wait_for_image(
     timeout=15.0, 
     custom_confidence=None, 
     try_click_name=None,
+    try_click_region=None,
     clicks=1,
     try_click_point=None
 ):
@@ -578,7 +579,7 @@ def wait_for_image(
         if try_click_name is not None:
             time.sleep(2)  # 等待一點時間，讓畫面有機會更新
             # 假設 find_and_click 成功點擊會回傳 True，失敗回傳 False
-            clicked_fallback = find_and_click(try_click_name, clicks=clicks)
+            clicked_fallback = find_and_click(try_click_name, clicks=clicks , region=try_click_region)
             
         # 如果前面沒點擊到備援圖片 (或者根本沒提供備援圖片)，且有提供座標，就點座標
         if not clicked_fallback and try_click_point is not None:

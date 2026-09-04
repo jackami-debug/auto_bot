@@ -80,7 +80,7 @@ def consume_energy_daily(battle):
     if not find_and_click("daily_activity.png", custom_confidence=0.8):
         return False
 
-    wait_for_image("activity.png", timeout=10.0,try_click_name="ongoing_activity.png",try_click_point=(682,641))
+    wait_for_image("activity.png", timeout=10.0,try_click_point=(682,641))
      
     print("   -> 檢查是否有活動教學或多頁面需要切換...")
     max_clicks = 6  # 設定最大嘗試次數，防止無限迴圈
@@ -107,8 +107,9 @@ def consume_energy_daily(battle):
 
     if battle == 8:
         wait_for_image("battle8.png", timeout=10.0)
-        print("   -> 嘗試點擊 'battle8' 按鈕右方的關卡...")
-        find_and_click("battle8.png", custom_confidence=0.9)
+        print("   -> 嘗試點擊 'battle8'")
+        if not find_and_click("battle8.png", custom_confidence=0.9):
+            human_click((834,509),clicks = 1)
 
         wait_for_image("plus.png", timeout=10.0,try_click_name="battle8.png")
         find_and_click("plus.png", custom_confidence=0.9)
@@ -511,8 +512,8 @@ def daily_job(
     # print(f"🎯 依據今日日期，神伴掃蕩關卡為: Level {today_level}")
     # swap_bond(today_level)
     # swap_god_fight()
-    # consume_energy_daily(activity_battle)
-    # time.sleep(0.5)
+    consume_energy_daily(activity_battle)
+    time.sleep(0.5)
     swap_pvp_normal(pvp_normal_round)
     swap_pvp_special(pvpspecial_round)
     time.sleep(0.5)
@@ -526,7 +527,7 @@ def daily_job(
 
 
 def main():
-    daily_job(accout_name="e08s93.png", element="water", activity_battle=7, pvp_normal_round=1, pvpspecial_round=1)
+    daily_job(accout_name="e08s93.png", element="water", activity_battle=8, pvp_normal_round=5, pvpspecial_round=5)
     daily_job(accout_name="e08s93.123.png", element="thorns", activity_battle=7, pvp_normal_round=1, pvpspecial_round=1)
     daily_job(accout_name="loopcraft001.png", element="thorns", activity_battle=7, pvp_normal_round=1, pvpspecial_round=1)
     

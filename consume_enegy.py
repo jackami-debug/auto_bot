@@ -217,10 +217,11 @@ def consume_energy(battle):
         save_debug_screenshot("no_ongoing_activity")
         return False
 
-    wait_for_image("activity.png", timeout=5.0,try_click_name="ongoing_activity.png",try_click_point=(287,574))
-    if not find_and_click("activity.png", custom_confidence=0.8, clicks=2):
-        print("   -> ❌ 錯誤：找不到 'activity.png'。")
-        save_debug_screenshot("no_activity_button")
+    wait_for_image("activity.png", timeout=5.0,try_click_name="ongoing_activity.png",try_click_region=(16,660,573,328),try_click_point=(287,574))
+
+    if find_and_click("confirm_08.png", custom_confidence=0.8, clicks=1,region=(675,618,689,227)):
+        human_click((574,518),clicks = 1)
+        
         
     print("   -> 檢查是否有活動教學或多頁面需要切換...")
     max_clicks = 6  # 設定最大嘗試次數，防止無限迴圈
@@ -615,7 +616,6 @@ def consume_flow(
     time.sleep(1)
     consume_energy(activity_battle)
     time.sleep(0.5)
-    get_reward_flow(accout_name)
     time.sleep(0.5)
     leave_game()
     print("🔍 完成每日消耗體力流程...")
