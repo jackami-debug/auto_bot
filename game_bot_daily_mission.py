@@ -76,11 +76,12 @@ def use_expiring_energy():
 
 def consume_energy_daily(battle):
     print("\n💪 === 開始每日消耗體力流程 ===")
+    wait_for_image("backward.png", timeout=10.0)
+    if not find_and_click("backward.png", custom_confidence=0.8):
+        return False
     wait_for_image("daily_activity.png", timeout=10.0)
     if not find_and_click("daily_activity.png", custom_confidence=0.8):
         return False
-
-    wait_for_image("activity.png", timeout=10.0,try_click_point=(682,641))
      
     print("   -> 檢查是否有活動教學或多頁面需要切換...")
     max_clicks = 6  # 設定最大嘗試次數，防止無限迴圈
@@ -210,7 +211,7 @@ def dispatch():
 
 def swap_coins():
     steps = [
-        ("fight.png", 0.85, "backward_02.png"),
+        (human_click,(1348,303,366,181)),
         ("resource.png", 0.85, "fight.png"),
         ("coins.png", 0.88, "resource.png"),
         ("level_05.png", 0.96, "coins.png"),
@@ -282,6 +283,11 @@ def swap_bond(level="01"):
         success_message=f"✅ 完成每日神伴掃蕩 (Level {level})。",
     )
 
+def go_to_resource():
+    wait_for_image("resource.png", 
+                   timeout=15,try_click_name="fight.png",
+                   try_click_point=(1515,395))
+    find_and_click("resource.png", custom_confidence=0.85,region=(431,300,422,211))
 
 
 
@@ -503,14 +509,15 @@ def daily_job(
     # wait_for_press_to_start()
     # time.sleep(1)
     # handle_dialog_windows()
-    # time.sleep(1)
-    # sleep()
+    time.sleep(1)
+    sleep()
     # dispatch()
+    go_to_resource()
     # swap_coins()
     # swap_refine(element)
-    # today_level = get_bond_level_by_date()
-    # print(f"🎯 依據今日日期，神伴掃蕩關卡為: Level {today_level}")
-    # swap_bond(today_level)
+    today_level = get_bond_level_by_date()
+    print(f"🎯 依據今日日期，神伴掃蕩關卡為: Level {today_level}")
+    swap_bond(today_level)
     # swap_god_fight()
     consume_energy_daily(activity_battle)
     time.sleep(0.5)

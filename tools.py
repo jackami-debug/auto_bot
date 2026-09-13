@@ -553,6 +553,7 @@ def wait_for_press_to_start(
 
 def wait_for_image(
     image_name, 
+    image_region=None,
     timeout=15.0, 
     custom_confidence=None, 
     try_click_name=None,
@@ -567,7 +568,7 @@ def wait_for_image(
     while time.time() - start_time < timeout:
         # 1. 優先檢查要等待的目標圖片是否出現
         for img in image_targets:
-            location = find_only(img, custom_confidence)
+            location = find_only(img, custom_confidence,region=image_region)
             if location:
                 elapsed = time.time() - start_time
                 log(f"   ✅ 畫面出現了！({img}) (耗時 {elapsed:.1f} 秒)")
