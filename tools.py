@@ -587,6 +587,7 @@ def wait_for_image(
             time.sleep(2)
             log(f"   👉 尚未找到目標，嘗試點擊備援座標: {try_click_point}")
             human_click(try_click_point) 
+            return True  # 假設點擊座標後就算成功了，直接回傳 True
 
         # 3. 稍等一下再進行下一次尋找
         time.sleep(3)
@@ -1099,7 +1100,7 @@ def consume_wish():
     else:
         return True
 
-def click_till_see(image_name, click_location=(1000, 500), max_attempts=15):
+def click_till_see(image_name, click_location=(1000, 500), max_attempts=15,region=None):
     """
     不斷點擊指定座標，直到畫面上出現目標圖片為止。
     """
@@ -1107,13 +1108,13 @@ def click_till_see(image_name, click_location=(1000, 500), max_attempts=15):
     attempts = 0
     
     while attempts < max_attempts:
-        if find_only(image_name, custom_confidence=0.85):
+        if find_only(image_name, custom_confidence=0.85,region=region):
             log(f"✅ 已看到 {image_name}，停止點擊。")
             return True
             
         log(f"   -> 尚未看到 {image_name}，點擊 {click_location} (第 {attempts + 1} 次)")
         human_click(click_location)  # 👈 現在這裡有座標可以點了
-        time.sleep(1)
+        time.sleep(5)
         attempts += 1
 
     log(f"❌ 錯誤：已點擊 {max_attempts} 次，仍未看到 '{image_name}'。")

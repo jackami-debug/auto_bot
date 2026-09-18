@@ -76,12 +76,9 @@ def use_expiring_energy():
 
 def consume_energy_daily(battle):
     print("\n💪 === 開始每日消耗體力流程 ===")
-    wait_for_image("backward.png", timeout=10.0)
-    if not find_and_click("backward.png", custom_confidence=0.8):
-        return False
     wait_for_image("daily_activity.png", timeout=10.0)
     if not find_and_click("daily_activity.png", custom_confidence=0.8):
-        return False
+        human_click((1625,994),clicks = 1)
      
     print("   -> 檢查是否有活動教學或多頁面需要切換...")
     max_clicks = 6  # 設定最大嘗試次數，防止無限迴圈
@@ -98,7 +95,7 @@ def consume_energy_daily(battle):
         # 這裡可以視情況決定是否要 return False 或是截圖存檔
         # save_debug_screenshot("stuck_at_tutorial")
 
-    wait_for_image("battle.png", timeout=10.0,try_click_name="activity.png",try_click_point=(56,578))
+    wait_for_image("battle.png", timeout=10.0,try_click_name="daily_activity.png",try_click_point=(56,578))
   
     
     if not wait_seconds_with_abort(2, "等待關卡選擇畫面"):
@@ -190,24 +187,44 @@ def if_upgrade():
         print("   -> 👌 未偵測到升級畫面，繼續正常流程。")
         return True
 
+# def dispatch():
+#     print("\n📦 === 開始派遣 ===")
+#     steps = [
+#         ("dispatch.png", 0.85, "close.png"),
+#         ("all_accept.png", 0.85, "dispatch.png"),
+#         ("all_accept.png", 0.88, None),#這裡原本是點擊OK，但是連續點兩次"all_accept.png"也可以。
+#         (sleep, 3),
+#         ("all_dispatch.png", 0.85, "ok.png"),
+#         (click_till_see, "speed_up.png",(1220,1006)),
+#         ("backward_02.png", 0.8, "all_dispatch.png"),
+#     ]
+#     return run_image_steps(
+#         steps,
+#         wait_timeout=120,
+#         screenshot_prefix="dispatch",
+#         success_message="✅ 完成派遣。",
+#     )
 def dispatch():
     print("\n📦 === 開始派遣 ===")
-    steps = [
-        ("dispatch.png", 0.85, "close.png"),
-        ("all_accept.png", 0.85, "dispatch.png"),
-        ("all_accept.png", 0.88, None),#這裡原本是點擊OK，但是連續點兩次"all_accept.png"也可以。
-        (sleep, 3),
-        ("all_dispatch.png", 0.85, "ok.png"),
-        (click_till_see, "speed_up.png",(1220,1006)),
-        ("backward_02.png", 0.8, "all_dispatch.png"),
-    ]
-    return run_image_steps(
-        steps,
-        wait_timeout=120,
-        screenshot_prefix="dispatch",
-        success_message="✅ 完成派遣。",
-    )
+    wait_for_image("dispatch.png", timeout=10.0,try_click_name="close.png")
+    if not find_and_click("dispatch.png", custom_confidence=0.85):
+        human_click((1433,991))
+    
+    wait_for_image("all_accept.png", timeout=10.0,try_click_name="dispatch.png")
+    if not find_and_click("all_accept.png", custom_confidence=0.85,clicks=2):
+            human_click((1658,1008),clicks = 2)
+    sleep(3)
 
+    
+    wait_for_image("all_dispatch.png", timeout=10.0,try_click_name="ok.png")
+    if not find_and_click("all_dispatch.png", custom_confidence=0.85):
+            human_click((1205,1013))
+
+    click_till_see("speed_up.png", (1220,1006))
+
+    wait_for_image("backward_02.png", timeout=10.0,try_click_name="all_dispatch.png")
+    if not find_and_click("backward_02.png", custom_confidence=0.85):
+            human_click((77,52))
 
 def swap_coins():
     steps = [
@@ -246,11 +263,30 @@ def swap_refine(element="water"):
         success_message="✅ 完成每日試煉掃蕩。",
     )
 
+def click_till_see_dispatch(image_name="dispatch.png", click_location=(69,47), max_attempts=4):
+    """
+    不斷點擊指定座標，直到畫面上出現目標圖片為止。
+    """
+    log(f"\n👉 開始點擊直到看到 {image_name}...")
+    attempts = 0
+    
+    while attempts < max_attempts:
+        if find_only(image_name, custom_confidence=0.85,region=(1354,890,180,184)):
+            log(f"✅ 已看到 {image_name}，停止點擊。")
+            return True
+            
+        log(f"   -> 尚未看到 {image_name}，點擊 {click_location} (第 {attempts + 1} 次)")
+        human_click(click_location)  # 👈 現在這裡有座標可以點了
+        time.sleep(5)
+        attempts += 1
+
+    log(f"❌ 錯誤：已點擊 {max_attempts} 次，仍未看到 '{image_name}'。")
+    return False
 
 def swap_bond(level="01"):
     # 1. 先放入共通的開頭步驟（點擊進入神伴介面並等待）
     steps = [
-        ("bond.png", 0.85, "backward_03.png"),
+        ("bond.png", 0.85, "resource.png"),
         sleep,
     ]
     
@@ -272,7 +308,7 @@ def swap_bond(level="01"):
         ("max.png", 0.8, "swap04.png"),
         ("confirm.png", 0.8, "max.png"),
         ("OK.png", 0.8, "confirm.png"),
-        ("backward_03.png", 0.8, "OK.png"),
+          (click_till_see_dispatch)
     ])
     
     # 4. 丟給 run_image_steps 執行
@@ -284,12 +320,21 @@ def swap_bond(level="01"):
     )
 
 def go_to_resource():
+    wait_for_image("dispatch.png", 
+                       timeout=15,try_click_name="backward_02.png",
+                       try_click_point=(72,46))
+    
+    human_click((1515,395))
+    
     wait_for_image("resource.png", 
                    timeout=15,try_click_name="fight.png",
                    try_click_point=(1515,395))
     find_and_click("resource.png", custom_confidence=0.85,region=(431,300,422,211))
 
-
+def go_to_fight():
+    human_click((1515,395))
+    wait_for_image("daily_activity.png",timeout=15,try_click_name="fight.png",try_click_point=(1515,395))
+           
 
 def swap_activity(battle=7):
     steps = [
@@ -504,21 +549,22 @@ def daily_job(
 ):
     print("🔍 正在尋找遊戲畫面...")
     time.sleep(0.5)
-    # launch_game_from_steam(accout_name)
-    # time.sleep(1)
-    # wait_for_press_to_start()
-    # time.sleep(1)
-    # handle_dialog_windows()
+    launch_game_from_steam(accout_name)
+    time.sleep(1)
+    wait_for_press_to_start()
+    time.sleep(1)
+    handle_dialog_windows()
     time.sleep(1)
     sleep()
-    # dispatch()
+    dispatch()
     go_to_resource()
-    # swap_coins()
-    # swap_refine(element)
+    # # swap_coins()
+    # # swap_refine(element)
     today_level = get_bond_level_by_date()
     print(f"🎯 依據今日日期，神伴掃蕩關卡為: Level {today_level}")
     swap_bond(today_level)
     # swap_god_fight()
+    go_to_fight()
     consume_energy_daily(activity_battle)
     time.sleep(0.5)
     swap_pvp_normal(pvp_normal_round)
@@ -534,8 +580,8 @@ def daily_job(
 
 
 def main():
-    daily_job(accout_name="e08s93.png", element="water", activity_battle=8, pvp_normal_round=5, pvpspecial_round=5)
-    daily_job(accout_name="e08s93.123.png", element="thorns", activity_battle=7, pvp_normal_round=1, pvpspecial_round=1)
+    # daily_job(accout_name="e08s93.png", element="water", activity_battle=7, pvp_normal_round=5, pvpspecial_round=5)
+    # daily_job(accout_name="e08s93.123.png", element="thorns", activity_battle=7, pvp_normal_round=1, pvpspecial_round=1)
     daily_job(accout_name="loopcraft001.png", element="thorns", activity_battle=7, pvp_normal_round=1, pvpspecial_round=1)
     
 
