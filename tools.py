@@ -555,8 +555,9 @@ def wait_for_image(
     image_name, 
     image_region=None,
     timeout=15.0, 
-    custom_confidence=None, 
+    custom_confidence=0.85, 
     try_click_name=None,
+    try_click_name_in_chinese=None,
     try_click_region=None,
     clicks=1,
     try_click_point=None
@@ -586,7 +587,8 @@ def wait_for_image(
         if not clicked_fallback and try_click_point is not None:
             time.sleep(2)
             log(f"   👉 尚未找到目標，嘗試點擊備援座標: {try_click_point}")
-            human_click(try_click_point) 
+            human_click(try_click_point)
+            print(f"   -> 已點擊備援座標: {try_click_point}{try_click_name_in_chinese}")
             return True  # 假設點擊座標後就算成功了，直接回傳 True
 
         # 3. 稍等一下再進行下一次尋找
@@ -595,18 +597,38 @@ def wait_for_image(
     log(f"   ❌ 等待超時 ({timeout} 秒)，沒看到 {target_names_str}！")
     return False
 
-def try_click(x, y, width, height, clicks=1):
-    log(f"   -> 嘗試點擊區域: ({x}, {y}, {width}, {height})")
-    try:
-        safe_margin_x = int(width * 0.2)
-        safe_margin_y = int(height * 0.2)
-        click_x = x + random.randint(safe_margin_x, width - safe_margin_x)
-        click_y = y + random.randint(safe_margin_y, height - safe_margin_y)
-        return human_click((click_x, click_y), clicks=clicks)
-    except Exception as exc:
-        log(f"   -> ⚠️ 點擊區域時發生錯誤: {exc}")
-        return False
+def try_click(x, y, width=0, height=0, clicks=1, try_click_name=None):
+    # 格式化按鈕名稱標註
+    name_info = f"[{try_click_name}] " if try_click_name else ""
 
+    try:
+        # 有指定寬高時：在安全範圍內隨機取點
+        if width > 0 and height > 0:
+                        
+            safe_margin_x = int(width * 0.2)
+            safe_margin_y = int(height * 0.2)
+            
+            min_x = safe_margin_x
+            max_x = max(safe_margin_x, width - safe_margin_x)
+            min_y = safe_margin_y
+            max_y = max(safe_margin_y, height - safe_margin_y)
+
+            click_x = x + random.randint(min_x, max_x)
+            click_y = y + random.randint(min_y, max_y)
+            
+        # 未指定寬高時：直接點擊該座標（加入 ±1px 微小抖動模擬真人點擊）
+        else:
+            click_x = x + random.randint(-1, 1)
+            click_y = y + random.randint(-1, 1)
+
+        result = human_click((click_x, click_y), clicks=clicks)
+        print(f"   -> 已點擊{name_info}座標: ({click_x}, {click_y})")
+        return result
+
+    except Exception as exc:
+        log(f"   -> ⚠️ 點擊{name_info}區域時發生錯誤: {exc}")
+        return False
+    
 def run_image_steps(
     steps, 
     wait_timeout=120, 
@@ -1091,12 +1113,27 @@ def consume_wish():
             ("back_07.png", 0.85, "OK.png"),
             ("wish_place.png", 0.88, "back_07.png"),
         ]
+        
         return run_image_steps(
             steps,
             wait_timeout=120,
             screenshot_prefix="get_wish",
             success_message="✅ 完成許願流程。",
         )
+    elif find_only("yes_04", custom_confidence=0.8):
+         log("\n🎁 === 無視魂魄晶石仍然許願 ===")
+         steps = [
+             ("confirm.png", 0.99,"confirm.png"),
+                         ]
+            
+         return run_image_steps(
+                steps,
+                wait_timeout=120,
+                screenshot_prefix="get_wish",
+                success_message="✅ 完成許願流程。",
+            )
+
+    
     else:
         return True
 

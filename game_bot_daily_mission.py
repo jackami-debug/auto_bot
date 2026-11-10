@@ -366,16 +366,16 @@ def swap_pvp_normal(round=5):
     print("-> 嘗試點擊: PVP")
     wait_for_image("pvp.png", timeout=10,try_click_name="home.png")
     if not find_and_click("pvp.png", custom_confidence=0.85):
-        return False
+        return try_click(1300,236,try_click_name="武鬥會")
 
     print("-> 嘗試點擊: 一般")
-    wait_for_image("normal.png", timeout=12,try_click_name="pvp.png")
+    wait_for_image("normal.png", timeout=12,try_click_name="pvp.png",try_click_region=(1200,187,181,100),image_region=(827,166,1071,452))
     if not find_and_click("normal.png", custom_confidence=0.85):
-        return False
+            try_click(1482,399,try_click_name="一般競技場")
     
     wait_for_image("accumulate_rewards.png", timeout=12,try_click_name="normal.png")
     if not find_and_click("accumulate_rewards.png", custom_confidence=0.85):
-        return False
+           try_click(1156,991,try_click_name="累積獎勵")
     
     wait_for_image("get_rewards.png", timeout=12,try_click_name="accumulate_rewards.png")
     if not find_and_click("get_rewards.png", custom_confidence=0.85):
@@ -479,13 +479,16 @@ def swap_god_fight():
 
 def swap_pvp_special(round=5):
     print("-> 嘗試點擊: special")
-    wait_for_image("special.png", timeout=12,try_click_name="backward_04.png")
+
+
+
+    wait_for_image("special.png", timeout=12,try_click_name="backward_04.png",custom_confidence=0.75)
     if not find_and_click("special.png", custom_confidence=0.85):
-        return False
+        try_click(1463,762,try_click_name="特殊競技場")
     
     wait_for_image("accumulate_rewards.png", timeout=12,try_click_name="normal.png")
     if not find_and_click("accumulate_rewards.png", custom_confidence=0.85):
-        return False
+        try_click(1156,991,try_click_name="累積獎勵")
     
     wait_for_image("get_rewards.png", timeout=12,try_click_name="accumulate_rewards.png")
     if not find_and_click("get_rewards.png", custom_confidence=0.85):
@@ -580,10 +583,9 @@ def daily_job(
 
 
 def main():
-    # daily_job(accout_name="e08s93.png", element="water", activity_battle=7, pvp_normal_round=5, pvpspecial_round=5)
-    # daily_job(accout_name="e08s93.123.png", element="thorns", activity_battle=7, pvp_normal_round=1, pvpspecial_round=1)
-    daily_job(accout_name="loopcraft001.png", element="thorns", activity_battle=7, pvp_normal_round=1, pvpspecial_round=1)
-    
+    daily_job(accout_name="e08s93.png", element="water", activity_battle=7, pvp_normal_round=5, pvpspecial_round=5)
+    daily_job(accout_name="e08s93.123.png", element="thorns", activity_battle=7, pvp_normal_round=5, pvpspecial_round=5)
+    daily_job(accout_name="loopcraft001.png", element="thorns", activity_battle=7, pvp_normal_round=5, pvpspecial_round=5)
 
 if __name__ == "__main__":
     main()
